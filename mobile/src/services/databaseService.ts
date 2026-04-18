@@ -98,6 +98,112 @@ export function initializeLocalDatabase() {
       CREATE INDEX IF NOT EXISTS idx_treatments_diagnosisId ON treatmentPlans(diagnosisId);
       CREATE INDEX IF NOT EXISTS idx_syncQueue_synced ON syncQueue(synced);
     `);
+
+  runLocalMigrations();
+}
+
+function runLocalMigrations() {
+  ensureColumns('patients', [
+    ['id', 'TEXT'],
+    ['firstName', 'TEXT'],
+    ['lastName', 'TEXT'],
+    ['name', 'TEXT'],
+    ['age', 'INTEGER'],
+    ['gender', 'TEXT'],
+    ['phone', 'TEXT'],
+    ['address', 'TEXT'],
+    ['emergencyContact', 'TEXT'],
+    ['medicalHistory', 'TEXT'],
+    ['allergies', 'TEXT'],
+    ['currentMedications', 'TEXT'],
+    ['dateOfBirth', 'TEXT'],
+    ['created_at', 'TEXT']
+  ]);
+
+  ensureColumns('consultations', [
+    ['id', 'TEXT'],
+    ['patientId', 'TEXT'],
+    ['chiefComplaint', 'TEXT'],
+    ['symptoms', 'TEXT'],
+    ['vitals', 'TEXT'],
+    ['notes', 'TEXT'],
+    ['status', "TEXT DEFAULT 'open'"],
+    ['created_at', 'TEXT']
+  ]);
+
+  ensureColumns('diagnoses', [
+    ['id', 'TEXT'],
+    ['consultationId', 'TEXT'],
+    ['possibleDiagnosis1', 'TEXT'],
+    ['confidence1', 'REAL'],
+    ['possibleDiagnosis2', 'TEXT'],
+    ['confidence2', 'REAL'],
+    ['possibleDiagnosis3', 'TEXT'],
+    ['confidence3', 'REAL'],
+    ['suggestedTreatment', 'TEXT'],
+    ['redFlags', 'TEXT'],
+    ['urgency', 'TEXT'],
+    ['modelVersion', 'TEXT'],
+    ['referralRequired', 'INTEGER DEFAULT 0'],
+    ['created_at', 'TEXT']
+  ]);
+
+  ensureColumns('treatmentPlans', [
+    ['id', 'TEXT'],
+    ['diagnosisId', 'TEXT'],
+    ['medication1', 'TEXT'],
+    ['dosage1', 'TEXT'],
+    ['frequency1', 'TEXT'],
+    ['duration1', 'TEXT'],
+    ['medication2', 'TEXT'],
+    ['dosage2', 'TEXT'],
+    ['frequency2', 'TEXT'],
+    ['duration2', 'TEXT'],
+    ['additionalTreatment', 'TEXT'],
+    ['followUpDays', 'INTEGER'],
+    ['referralRequired', 'INTEGER DEFAULT 0'],
+    ['referralSpecialty', 'TEXT'],
+    ['created_at', 'TEXT']
+  ]);
+
+  ensureColumns('chartImages', [
+    ['id', 'TEXT'],
+    ['consultationId', 'TEXT'],
+    ['imagePath', 'TEXT'],
+    ['extractedText', 'TEXT'],
+    ['processedAt', 'TEXT'],
+    ['created_at', 'TEXT']
+  ]);
+
+  ensureColumns('syncQueue', [
+    ['id', 'TEXT'],
+    ['tableType', 'TEXT'],
+    ['recordId', 'TEXT'],
+    ['operation', 'TEXT'],
+    ['payload', 'TEXT'],
+    ['createdAt', 'TEXT'],
+    ['synced', 'INTEGER DEFAULT 0']
+  ]);
+
+  ensureColumns('offline_queue', [
+    ['id', 'TEXT'],
+    ['payload', 'TEXT'],
+    ['created_at', 'TEXT'],
+    ['synced', 'INTEGER DEFAULT 0']
+  ]);
+}
+
+function ensureColumns(tableName: string, columns: Array<[string, string]>) {
+  for (const [columnName, columnType] of columns) {
+    try {
+      db.execSync(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${columnType};`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (!/duplicate column|already exists/i.test(message)) {
+        console.warn(`MediScribe database migration skipped ${tableName}.${columnName}: ${message}`);
+      }
+    }
+  }
 }
 
 export function createPatient(patient: {
