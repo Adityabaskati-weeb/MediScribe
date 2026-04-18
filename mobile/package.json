@@ -10,16 +10,16 @@
     "test": "echo \"Mobile smoke tests pending native dependency installation.\""
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "^1.23.1",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "axios": "^1.6.8",
-    "expo": "^50.0.0",
-    "expo-sqlite": "^13.4.0",
-    "expo-status-bar": "^1.11.1",
-    "react": "18.2.0",
-    "react-native": "0.73.6"
+    "expo": "^54.0.33",
+    "expo-sqlite": "~16.0.10",
+    "expo-status-bar": "~3.0.9",
+    "react": "^19.1.0",
+    "react-native": "0.81.5"
   },
   "devDependencies": {
-    "@types/react": "~18.2.45",
+    "@types/react": "~19.1.10",
     "typescript": "^5.3.0"
   }
 }
