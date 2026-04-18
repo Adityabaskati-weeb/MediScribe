@@ -16,12 +16,14 @@
       ]
     ],
     "android": {
-      "permissions": ["RECORD_AUDIO"]
+      "permissions": ["RECORD_AUDIO", "CAMERA", "READ_MEDIA_IMAGES"]
     },
     "ios": {
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Allow MediScribe to capture symptom dictation.",
-        "NSSpeechRecognitionUsageDescription": "Allow MediScribe to convert speech into clinical notes."
+        "NSSpeechRecognitionUsageDescription": "Allow MediScribe to convert speech into clinical notes.",
+        "NSCameraUsageDescription": "Allow MediScribe to scan paper medical charts.",
+        "NSPhotoLibraryUsageDescription": "Allow MediScribe to import chart photos."
       }
     },
     "extra": {

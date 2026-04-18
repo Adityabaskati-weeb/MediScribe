@@ -60,6 +60,8 @@ ROADMAP_PATHS = [
     "docs/MEDISCRIBE_QUICK_REFERENCE.md",
     "docs/MEDISCRIBE_ENVIRONMENT_SETUP.md",
     "docs/MEDISCRIBE_CODE_TEMPLATES.md",
+    "docs/MEDICAL_KNOWLEDGE_SOURCES.md",
+    "backend/src/data/medicalKnowledge.ts",
     "ROADMAP.md",
 ]
 
@@ -217,6 +219,15 @@ def test_key_roadmap_sections_have_real_implementation() -> None:
     assert "CREATE TABLE IF NOT EXISTS treatments" in backend_db
     assert "LineChart" in dashboard and "BarChart" in dashboard
     assert "healthcheck" in compose
+
+
+def test_medical_knowledge_sources_are_documented() -> None:
+    knowledge = (ROOT / "backend/src/data/medicalKnowledge.ts").read_text(encoding="utf-8")
+    sources = (ROOT / "docs/MEDICAL_KNOWLEDGE_SOURCES.md").read_text(encoding="utf-8")
+    for phrase in ["CDC heart attack", "American Heart Association", "WHO pneumonia", "WHO sepsis", "CDC dengue", "WHO dengue"]:
+        assert phrase in sources
+    for term in ["Acute coronary syndrome", "Acute stroke or TIA", "Sepsis or serious infection", "Dengue", "Pneumonia"]:
+        assert term in knowledge
 
 
 def test_quick_reference_deliverables_exist() -> None:

@@ -100,13 +100,42 @@ export function initializeLocalDatabase() {
     `);
 }
 
-export function createPatient(patient: { id?: string; name: string; age_years: number; gender?: string }) {
+export function createPatient(patient: {
+  id?: string;
+  name: string;
+  age_years: number;
+  gender?: string;
+  phone?: string;
+  address?: string;
+  emergencyContact?: string;
+  known_conditions?: string[];
+  allergies?: string[];
+  medications?: string[];
+  pregnancy_weeks?: number;
+  postpartum_days?: number;
+}) {
   const id = patient.id || `patient-${Date.now()}`;
   db.runSync(
     `INSERT OR REPLACE INTO patients
-       (id, name, age, gender, created_at)
-       VALUES (?, ?, ?, ?, ?);`,
-    [id, patient.name, patient.age_years, patient.gender || 'unknown', new Date().toISOString()]
+       (id, name, age, gender, phone, address, emergencyContact, medicalHistory, allergies, currentMedications, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+    [
+      id,
+      patient.name,
+      patient.age_years,
+      patient.gender || 'unknown',
+      patient.phone || '',
+      patient.address || '',
+      patient.emergencyContact || '',
+      JSON.stringify({
+        known_conditions: patient.known_conditions || [],
+        pregnancy_weeks: patient.pregnancy_weeks,
+        postpartum_days: patient.postpartum_days
+      }),
+      JSON.stringify(patient.allergies || []),
+      JSON.stringify(patient.medications || []),
+      new Date().toISOString()
+    ]
   );
   enqueueOfflinePayload(`patient-${id}`, { type: 'UPSERT_PATIENT', patient: { ...patient, id } });
   return { ...patient, id };
@@ -117,7 +146,7 @@ export function getPatient(patientId: string): Promise<any | null> {
 }
 
 export function getAllPatients(): Promise<any[]> {
-  return db.getAllAsync('SELECT id, name, age, gender, created_at FROM patients ORDER BY created_at DESC;');
+  return db.getAllAsync('SELECT id, name, age, gender, phone, address, emergencyContact, created_at FROM patients ORDER BY created_at DESC;');
 }
 
 export function createConsultation(consultationData: {

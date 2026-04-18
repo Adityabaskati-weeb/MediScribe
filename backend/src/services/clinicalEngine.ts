@@ -12,6 +12,7 @@ import {
   TreatmentRecommendation,
   Urgency
 } from '../models/Clinical';
+import { addKnowledgeDifferentials, addKnowledgeRedFlags, applyKnowledgeTreatment } from '../data/medicalKnowledge';
 
 const assessments: StoredAssessment[] = [];
 const queue: QueuedIntake[] = [];
@@ -128,6 +129,7 @@ function redFlags(intake: ClinicalIntake): SafetySignal[] {
   if (intake.patient.postpartum_days !== undefined && hasAny(text, ['heavy bleeding', 'severe headache', 'visual'])) flags.push({ level: 'red', message: 'Postpartum emergency warning signs.' });
   if ((vitals.temperature_c ?? 0) >= 39) flags.push({ level: 'amber', message: 'High fever.' });
   if ((vitals.glucose_mg_dl ?? 0) >= 300) flags.push({ level: 'amber', message: 'Marked hyperglycemia.' });
+  addKnowledgeRedFlags(text, flags);
   return flags.length ? flags : [{ level: 'green', message: 'No immediate red flag detected from provided data.' }];
 }
 
@@ -152,6 +154,7 @@ function differentials(intake: ClinicalIntake, flags: SafetySignal[]): Different
   if (hasAny(text, ['wheeze', 'shortness of breath', 'asthma'])) add('Asthma or obstructive airway exacerbation', 0.74, 'Wheeze and respiratory distress fit obstructive airway disease.');
   if (hasAny(text, ['high glucose', 'diabetic', 'vomiting'])) add('Diabetic ketoacidosis risk', 0.76, 'Vomiting and hyperglycemia are concerning in diabetes.');
   if (hasAny(text, ['cough', 'sputum', 'fever'])) add('Respiratory infection', 0.58, 'Cough or sputum with fever suggests infection.');
+  addKnowledgeDifferentials(text, items);
   if (!items.length) add('Undifferentiated primary-care presentation', 0.42, 'More history, exam, and basic tests are needed.');
   return items.sort((a, b) => b.confidence - a.confidence).slice(0, 3);
 }
@@ -167,7 +170,7 @@ function treatment(intake: ClinicalIntake, urgencyValue: Urgency): TreatmentReco
   if (hasAny(text, ['fever', 'sepsis', 'rigors'])) suggested_tests.push('CBC if available', 'Local infection testing as relevant');
   if (hasAny(text, ['wheeze', 'asthma'])) medications_to_consider.push('Bronchodilator per local asthma protocol');
   const referral = urgencyValue === 'immediate' ? 'Immediate emergency referral' : urgencyValue === 'emergent' ? 'Urgent clinician review' : urgencyValue === 'urgent' ? 'Same-day review' : 'Routine follow-up';
-  return { immediate_actions, suggested_tests, medications_to_consider, referral, follow_up: urgencyValue === 'routine' ? 'Safety-net before discharge' : 'Reassess within 15 minutes or sooner if worse' };
+  return applyKnowledgeTreatment(text, { immediate_actions, suggested_tests, medications_to_consider, referral, follow_up: urgencyValue === 'routine' ? 'Safety-net before discharge' : 'Reassess within 15 minutes or sooner if worse' });
 }
 
 export function analyzeIntake(intake: ClinicalIntake, modelSource = 'deterministic-clinical-rules-v1'): MediScribeAssessment {
