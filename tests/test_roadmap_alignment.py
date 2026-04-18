@@ -52,6 +52,7 @@ ROADMAP_PATHS = [
     "docs/DEPLOYMENT.md",
     "docs/DEMO_GUIDE.md",
     "docs/MEDISCRIBE_MASTER_GUIDE.md",
+    "docs/MEDISCRIBE_IMPLEMENTATION_ROADMAP.md",
     "docs/MEDISCRIBE_QUICK_REFERENCE.md",
     "docs/MEDISCRIBE_ENVIRONMENT_SETUP.md",
     "docs/MEDISCRIBE_CODE_TEMPLATES.md",
@@ -85,6 +86,11 @@ def test_master_guide_task_navigation_and_timeline_exist() -> None:
     guide = (ROOT / "docs/MEDISCRIBE_MASTER_GUIDE.md").read_text(encoding="utf-8")
     for section in [
         "Quick Navigation By Task",
+        "What You Have Received",
+        "How To Use This Roadmap",
+        "Document Navigation Map",
+        "Success Criteria",
+        "Key Implementation Decisions",
         "I need to start from scratch",
         "I am on Day 10 and need to implement OCR",
         "I need to build the diagnosis system",
@@ -101,9 +107,39 @@ def test_master_guide_task_navigation_and_timeline_exist() -> None:
         "Week 2: Core Features",
         "Week 3: Mobile UI",
         "Week 4: Backend And Deployment",
+        "Hackathon Submission Strategy",
+        "Debugging And Support",
+        "Performance Targets",
+        "Winning Factors",
+        "Learning Resources",
         "Pre-Submission Checklist",
+        "Next Steps",
+        "Pro Tips",
+        "Final Notes",
     ]:
         assert section in guide
+
+
+def test_implementation_roadmap_weekly_breakdown_exists() -> None:
+    roadmap = (ROOT / "docs/MEDISCRIBE_IMPLEMENTATION_ROADMAP.md").read_text(encoding="utf-8")
+    for section in [
+        "Complete File Structure",
+        "Day 1-2: Environment Setup",
+        "Day 3-4: Ollama And Gemma",
+        "Day 5-6: Database Schema",
+        "Day 8-9: Speech-To-Text",
+        "Day 10-11: OCR",
+        "Day 12-14: Diagnosis Engine",
+        "Day 15-16: Forms",
+        "Day 22-23: Backend API",
+        "Day 24-25: Dashboard",
+        "Day 26: Model Training",
+        "Day 27: Docker",
+        "Day 28: Video, Writeup, Submit",
+        "Testing Strategy",
+        "Video Creation Guide",
+    ]:
+        assert section in roadmap
 
 
 def test_legacy_runtime_files_are_not_part_of_product_architecture() -> None:
