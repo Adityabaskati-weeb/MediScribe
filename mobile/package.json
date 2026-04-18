@@ -10,7 +10,7 @@
     "ios": "expo start --ios",
     "android:native": "expo run:android",
     "prebuild": "expo prebuild",
-    "test": "echo \"Mobile smoke tests pending native dependency installation.\""
+    "test": "tsc --noEmit"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -22,7 +22,14 @@
     "expo-sqlite": "~16.0.10",
     "expo-status-bar": "~3.0.9",
     "react": "^19.1.0",
-    "react-native": "0.81.5"
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-web": "^0.21.0"
+  },
+  "overrides": {
+    "@react-native-voice/voice": {
+      "@expo/config-plugins": "55.0.8"
+    }
   },
   "devDependencies": {
     "@types/react": "~19.1.10",

@@ -9,6 +9,6 @@ export const apiClient = axios.create({
 });
 
 export async function generateDiagnosis(payload: unknown) {
-  const response = await apiClient.post('/api/diagnoses/generate', payload);
+  const response = await apiClient.post('/api/diagnoses/agentic', payload);
   return response.data;
 }

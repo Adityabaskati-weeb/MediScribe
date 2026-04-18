@@ -4,6 +4,7 @@ import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
 import { colors } from '../styles/theme';
+import { extractClinicalSymptoms, extractClinicalVitals } from '../utils/clinicalText';
 
 export function PatientSummaryScreen({
   draft,
@@ -95,17 +96,17 @@ function getRisk(text: string) {
 }
 
 function extractSymptoms(text: string) {
-  const candidates = ['fever', 'cough', 'chest pain', 'shortness of breath', 'headache', 'vomiting', 'rash', 'weakness', 'abdominal pain', 'bleeding'];
-  const found = candidates.filter((item) => text.toLowerCase().includes(item));
-  return found.length ? found : ['needs review'];
+  return extractClinicalSymptoms(text);
 }
 
 function extractVitals(text: string) {
-  const bp = text.match(/bp\s*[:\-]?\s*(\d{2,3}\/\d{2,3})/i)?.[1] || '--';
-  const hr = text.match(/hr\s*[:\-]?\s*(\d{2,3})/i)?.[1] || '--';
-  const spo2 = text.match(/spo2\s*[:\-]?\s*(\d{2,3})/i)?.[1] || '--';
-  const temp = text.match(/temp\s*[:\-]?\s*(\d{2}(?:\.\d)?)/i)?.[1] || '--';
-  return { BP: bp, HR: hr, SpO2: spo2, Temp: temp };
+  const extracted = extractClinicalVitals(text);
+  return {
+    BP: extracted.systolic_bp ? `${extracted.systolic_bp}/${extracted.diastolic_bp || '--'}` : '--',
+    HR: extracted.heart_rate || '--',
+    SpO2: extracted.oxygen_saturation || '--',
+    Temp: extracted.temperature_c || '--'
+  };
 }
 
 const styles = StyleSheet.create({

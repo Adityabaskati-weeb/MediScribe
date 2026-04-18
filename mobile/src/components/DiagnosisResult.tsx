@@ -4,7 +4,14 @@ import { Card } from './Card';
 import { colors } from '../styles/theme';
 
 function getAssessment(result: any) {
-  return result?.data?.ai?.assessment || result?.data?.stored?.assessment || result?.data?.assessment || result?.assessment;
+  return (
+    result?.data?.agentic?.assessment ||
+    result?.data?.agentic?.stored?.assessment ||
+    result?.data?.ai?.assessment ||
+    result?.data?.stored?.assessment ||
+    result?.data?.assessment ||
+    result?.assessment
+  );
 }
 
 export function DiagnosisResult({ result }: { result: any }) {

@@ -6,6 +6,7 @@ import { DiagnosisResult } from '../components/DiagnosisResult';
 import { analyzeMedicalCase } from '../services/gemmaService';
 import { saveDiagnosis } from '../services/databaseService';
 import { colors } from '../styles/theme';
+import { extractClinicalSymptoms, extractClinicalVitals } from '../utils/clinicalText';
 
 export function DiagnosisScreen({
   draft,
@@ -24,9 +25,18 @@ export function DiagnosisScreen({
     let response: any;
     try {
       response = await analyzeMedicalCase({
-        patient: { age_years: 35, gender: 'unknown' },
+        patient: {
+          age_years: draft.patient?.age_years || 35,
+          gender: draft.patient?.gender || 'unknown',
+          known_conditions: draft.patient?.known_conditions || [],
+          medications: draft.patient?.medications || [],
+          allergies: draft.patient?.allergies || []
+        },
         chief_complaint: symptoms,
-        symptoms: [symptoms]
+        symptoms: extractClinicalSymptoms(symptoms),
+        vitals: extractClinicalVitals(symptoms),
+        language: draft.language,
+        offline_captured: true
       });
       setStatus('Assessment saved locally and queued for sync');
     } catch {
@@ -34,7 +44,13 @@ export function DiagnosisScreen({
       setStatus('Backend unavailable. Offline triage result saved locally.');
     }
     setResult(response);
-    const assessment = response?.data?.stored?.assessment || response?.data?.ai?.assessment || response?.data?.assessment || response?.assessment;
+    const assessment =
+      response?.data?.agentic?.assessment ||
+      response?.data?.agentic?.stored?.assessment ||
+      response?.data?.stored?.assessment ||
+      response?.data?.ai?.assessment ||
+      response?.data?.assessment ||
+      response?.assessment;
     if (assessment) {
       onDraftChange({ ...draft, assessment });
       saveDiagnosis(`consultation-${Date.now()}`, assessment);
