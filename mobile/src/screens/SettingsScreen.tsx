@@ -4,8 +4,7 @@ import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
 import { colors } from '../styles/theme';
-
-const languages = ['Hindi', 'Tamil', 'Telugu', 'Bengali', 'English'];
+import { appLanguages, t } from '../utils/i18n';
 
 export function SettingsScreen({
   draft,
@@ -16,24 +15,26 @@ export function SettingsScreen({
   onDraftChange: (draft: ConsultationDraft) => void;
   onNavigate: (screen: ScreenName) => void;
 }) {
+  const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ActionButton title="Back" onPress={() => onNavigate('home')} variant="secondary" />
-      <Text style={styles.title}>Sync and settings</Text>
+      <ActionButton title={copy('back')} onPress={() => onNavigate('home')} variant="secondary" />
+      <Text style={styles.title}>{copy('syncSettings')}</Text>
 
       <Card>
-        <Text style={styles.sectionTitle}>Offline status</Text>
+        <Text style={styles.sectionTitle}>{copy('offlineStatus')}</Text>
         <View style={styles.statusRow}>
           <View style={styles.dot} />
-          <Text style={styles.statusText}>Clinic mode active. Patient data is saved on device.</Text>
+          <Text style={styles.statusText}>{copy('offlineStatusCopy')}</Text>
         </View>
-        <Text style={styles.meta}>Queued records: 4 - Last sync: demo clinic morning round</Text>
+        <Text style={styles.meta}>{copy('queuedRecords')}</Text>
       </Card>
 
       <Card>
-        <Text style={styles.sectionTitle}>Language</Text>
+        <Text style={styles.sectionTitle}>{copy('language')}</Text>
         <View style={styles.languageGrid}>
-          {languages.map((language) => (
+          {appLanguages.map((language) => (
             <Pressable
               key={language}
               style={[styles.languageChip, draft.language === language && styles.languageChipActive]}
@@ -46,13 +47,13 @@ export function SettingsScreen({
       </Card>
 
       <Card>
-        <Text style={styles.sectionTitle}>Model status</Text>
-        <Text style={styles.meta}>Gemma medical assistant: cached for offline triage</Text>
-        <Text style={styles.meta}>Guidelines pack: WHO-style danger signs cached</Text>
-        <Text style={styles.meta}>SQLite: local storage ready</Text>
+        <Text style={styles.sectionTitle}>{copy('modelStatus')}</Text>
+        <Text style={styles.meta}>{copy('modelCached')}</Text>
+        <Text style={styles.meta}>{copy('guidelinesCached')}</Text>
+        <Text style={styles.meta}>{copy('sqliteReady')}</Text>
       </Card>
 
-      <ActionButton title="Return Home" onPress={() => onNavigate('home')} />
+      <ActionButton title={copy('returnHome')} onPress={() => onNavigate('home')} />
     </ScrollView>
   );
 }

@@ -4,12 +4,17 @@ import { ActionButton } from './ActionButton';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
 import { getSpeechSupportMessage, isNativeSpeechAvailable, startSpeechRecognition } from '../services/speechService';
+import { t } from '../utils/i18n';
 
-export function VoiceInput({ onTranscript }: { onTranscript: (text: string) => void }) {
+export function VoiceInput({ language, onTranscript }: { language: string; onTranscript: (text: string) => void }) {
   const [transcript, setTranscript] = useState('');
-  const [status, setStatus] = useState('Use demo voice capture or type the dictated symptoms.');
+  const [status, setStatus] = useState(t(language, 'useDemoOrType'));
   const [loading, setLoading] = useState(false);
   const [nativeAvailable, setNativeAvailable] = useState(false);
+
+  useEffect(() => {
+    setStatus(t(language, 'useDemoOrType'));
+  }, [language]);
 
   useEffect(() => {
     isNativeSpeechAvailable()
@@ -19,9 +24,9 @@ export function VoiceInput({ onTranscript }: { onTranscript: (text: string) => v
 
   const capture = async () => {
     setLoading(true);
-    setStatus(nativeAvailable ? 'Listening with native speech...' : 'Using Expo Go demo dictation...');
+    setStatus(nativeAvailable ? t(language, 'listening') : t(language, 'demoDictation'));
     try {
-      const result = await startSpeechRecognition();
+      const result = await startSpeechRecognition(language);
       setTranscript(result.text);
       setStatus(`${result.note || `Captured with ${Math.round(result.confidence * 100)}% confidence.`} Sending to triage...`);
       onTranscript(result.text);
@@ -42,11 +47,11 @@ export function VoiceInput({ onTranscript }: { onTranscript: (text: string) => v
       <View style={styles.header}>
         <View>
           <Text style={styles.eyebrow}>Voice intake</Text>
-          <Text style={styles.heading}>Dictate symptoms</Text>
+          <Text style={styles.heading}>{t(language, 'dictateSymptoms')}</Text>
         </View>
         <View style={[styles.pill, nativeAvailable ? styles.nativePill : styles.demoPill]}>
           <Text style={[styles.pillText, nativeAvailable ? styles.nativePillText : styles.demoPillText]}>
-            {nativeAvailable ? 'Native mic' : 'Demo mode'}
+            {nativeAvailable ? t(language, 'nativeMic') : t(language, 'demoMode')}
           </Text>
         </View>
       </View>
@@ -58,7 +63,7 @@ export function VoiceInput({ onTranscript }: { onTranscript: (text: string) => v
         style={({ pressed }) => [styles.micButton, pressed && styles.micPressed, loading && styles.micDisabled]}
       >
         <Text style={styles.micIcon}>MIC</Text>
-        <Text style={styles.micLabel}>{nativeAvailable ? 'Start speaking' : 'Demo voice'}</Text>
+        <Text style={styles.micLabel}>{nativeAvailable ? t(language, 'startSpeaking') : t(language, 'demoVoice')}</Text>
       </Pressable>
       <View style={styles.waveform}>
         {[18, 32, 48, 28, 56, 36, 22].map((height, index) => (
@@ -69,13 +74,13 @@ export function VoiceInput({ onTranscript }: { onTranscript: (text: string) => v
       <TextInput
         multiline
         numberOfLines={4}
-        placeholder="Dictated transcript appears here. You can edit it before analysis."
+        placeholder={t(language, 'transcriptPlaceholder')}
         style={styles.input}
         value={transcript}
         onChangeText={setTranscript}
       />
-      <ActionButton title="Analyze Typed Transcript" onPress={submit} disabled={!transcript.trim() || loading} variant="secondary" />
-      <Text style={styles.note}>{getSpeechSupportMessage()}</Text>
+      <ActionButton title={t(language, 'analyzeTyped')} onPress={submit} disabled={!transcript.trim() || loading} variant="secondary" />
+      <Text style={styles.note}>{t(language, 'speechSupport')}</Text>
     </Card>
   );
 }

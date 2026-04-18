@@ -6,6 +6,7 @@ import { ChartOCR } from '../components/ChartOCR';
 import { SymptomChecker } from '../components/SymptomChecker';
 import { VoiceInput } from '../components/VoiceInput';
 import { colors } from '../styles/theme';
+import { t } from '../utils/i18n';
 
 export function VoiceScreen({
   draft,
@@ -16,6 +17,8 @@ export function VoiceScreen({
   onDraftChange: (draft: ConsultationDraft) => void;
   onNavigate: (screen: ScreenName) => void;
 }) {
+  const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
+
   const saveTranscript = (text: string) => {
     onDraftChange({ ...draft, transcript: text });
     onNavigate('summary');
@@ -28,17 +31,17 @@ export function VoiceScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ActionButton title="Back" onPress={() => onNavigate('newPatient')} variant="secondary" />
+      <ActionButton title={copy('back')} onPress={() => onNavigate('newPatient')} variant="secondary" />
       <View style={styles.header}>
-        <Text style={styles.kicker}>Step 2 of 5</Text>
-        <Text style={styles.title}>Describe symptoms</Text>
-        <Text style={styles.copy}>Use voice first. Add chart scan or typed notes when the clinic is noisy.</Text>
+        <Text style={styles.kicker}>{copy('step2')}</Text>
+        <Text style={styles.title}>{copy('describeSymptoms')}</Text>
+        <Text style={styles.copy}>{copy('voiceScreenCopy')}</Text>
         <View style={styles.languageBar}>
-          <Text style={styles.languageLabel}>Language</Text>
+          <Text style={styles.languageLabel}>{copy('language')}</Text>
           <Text style={styles.languageValue}>{draft.language}</Text>
         </View>
       </View>
-      <VoiceInput onTranscript={saveTranscript} />
+      <VoiceInput language={draft.language} onTranscript={saveTranscript} />
       <ChartOCR onText={saveChartText} />
       <SymptomChecker onAnalyze={saveTranscript} />
     </ScrollView>

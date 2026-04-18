@@ -3,8 +3,9 @@ import { StyleSheet, Text, TextInput } from 'react-native';
 import { ActionButton } from './ActionButton';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
+import { t } from '../utils/i18n';
 
-export function PatientForm({ onSubmit }: { onSubmit: (patient: any) => void }) {
+export function PatientForm({ language, onSubmit }: { language: string; onSubmit: (patient: any) => void }) {
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('unknown');
@@ -21,21 +22,21 @@ export function PatientForm({ onSubmit }: { onSubmit: (patient: any) => void }) 
 
   return (
     <Card>
-      <Text style={styles.eyebrow}>Patient profile</Text>
-      <Text style={styles.heading}>Patient registration</Text>
-      <TextInput style={styles.input} placeholder="Patient name" value={name} onChangeText={setName} />
-      <TextInput style={styles.input} placeholder="Age" keyboardType="number-pad" value={age} onChangeText={setAge} />
-      <TextInput style={styles.input} placeholder="Gender: female, male, other, unknown" value={gender} onChangeText={setGender} />
-      <TextInput style={styles.input} placeholder="Phone number" keyboardType="phone-pad" value={phone} onChangeText={setPhone} />
-      <TextInput style={styles.input} placeholder="Village / address" value={address} onChangeText={setAddress} />
-      <TextInput style={styles.input} placeholder="Emergency contact" value={emergencyContact} onChangeText={setEmergencyContact} />
-      <TextInput style={styles.input} placeholder="Known conditions, comma separated" value={conditions} onChangeText={setConditions} />
-      <TextInput style={styles.input} placeholder="Allergies, comma separated" value={allergies} onChangeText={setAllergies} />
-      <TextInput style={styles.input} placeholder="Current medications, comma separated" value={medications} onChangeText={setMedications} />
-      <TextInput style={styles.input} placeholder="Pregnancy weeks, if applicable" keyboardType="number-pad" value={pregnancyWeeks} onChangeText={setPregnancyWeeks} />
-      <TextInput style={styles.input} placeholder="Postpartum days, if applicable" keyboardType="number-pad" value={postpartumDays} onChangeText={setPostpartumDays} />
+      <Text style={styles.eyebrow}>{t(language, 'patientProfile')}</Text>
+      <Text style={styles.heading}>{t(language, 'registerPatient')}</Text>
+      <TextInput style={styles.input} placeholder={t(language, 'patientName')} value={name} onChangeText={setName} />
+      <TextInput style={styles.input} placeholder={t(language, 'age')} keyboardType="number-pad" value={age} onChangeText={setAge} />
+      <TextInput style={styles.input} placeholder={t(language, 'gender')} value={gender} onChangeText={setGender} />
+      <TextInput style={styles.input} placeholder={t(language, 'phone')} keyboardType="phone-pad" value={phone} onChangeText={setPhone} />
+      <TextInput style={styles.input} placeholder={t(language, 'address')} value={address} onChangeText={setAddress} />
+      <TextInput style={styles.input} placeholder={t(language, 'emergencyContact')} value={emergencyContact} onChangeText={setEmergencyContact} />
+      <TextInput style={styles.input} placeholder={t(language, 'conditions')} value={conditions} onChangeText={setConditions} />
+      <TextInput style={styles.input} placeholder={t(language, 'allergies')} value={allergies} onChangeText={setAllergies} />
+      <TextInput style={styles.input} placeholder={t(language, 'medications')} value={medications} onChangeText={setMedications} />
+      <TextInput style={styles.input} placeholder={t(language, 'pregnancyWeeks')} keyboardType="number-pad" value={pregnancyWeeks} onChangeText={setPregnancyWeeks} />
+      <TextInput style={styles.input} placeholder={t(language, 'postpartumDays')} keyboardType="number-pad" value={postpartumDays} onChangeText={setPostpartumDays} />
       <ActionButton
-        title="Register and Continue"
+        title={t(language, 'registerContinue')}
         disabled={!canSubmit}
         onPress={() => onSubmit({
           name,

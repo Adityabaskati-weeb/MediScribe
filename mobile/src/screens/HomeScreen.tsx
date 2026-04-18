@@ -4,55 +4,58 @@ import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
 import { colors } from '../styles/theme';
+import { t } from '../utils/i18n';
 
 export function HomeScreen({ draft, onNavigate }: { draft: ConsultationDraft; onNavigate: (screen: ScreenName) => void }) {
+  const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.hero}>
         <View style={styles.topRow}>
           <View style={styles.offlinePill}>
             <View style={styles.dot} />
-            <Text style={styles.offlineText}>Offline Ready</Text>
+            <Text style={styles.offlineText}>{copy('offlineReady')}</Text>
           </View>
           <Pressable style={styles.languagePill} onPress={() => onNavigate('settings')}>
             <Text style={styles.languageText}>{draft.language}</Text>
           </Pressable>
         </View>
         <Text style={styles.kicker}>MediScribe</Text>
-        <Text style={styles.title}>Fast clinical help for rural health workers</Text>
-        <Text style={styles.copy}>Speak symptoms, scan notes, spot danger signs, and decide the next safe step.</Text>
-        <ActionButton title="Start Consultation" onPress={() => onNavigate('newPatient')} variant="success" />
+        <Text style={styles.title}>{copy('heroTitle')}</Text>
+        <Text style={styles.copy}>{copy('heroCopy')}</Text>
+        <ActionButton title={copy('startConsultation')} onPress={() => onNavigate('newPatient')} variant="success" />
       </View>
 
       <View style={styles.metrics}>
         <Card style={styles.metric}>
           <Text style={styles.metricValue}>24</Text>
-          <Text style={styles.metricLabel}>patients today</Text>
+          <Text style={styles.metricLabel}>{copy('patientsToday')}</Text>
         </Card>
         <Card style={styles.metric}>
           <Text style={[styles.metricValue, styles.alertMetric]}>3</Text>
-          <Text style={styles.metricLabel}>urgent alerts</Text>
+          <Text style={styles.metricLabel}>{copy('urgentAlerts')}</Text>
         </Card>
       </View>
 
       <Card style={styles.alertCard}>
-        <Text style={styles.panelTitle}>Needs attention</Text>
-        <Text style={styles.alertText}>Child fever with low oxygen: review before next queue.</Text>
-        <Text style={styles.alertText}>Pregnancy headache and high BP: referral check.</Text>
+        <Text style={styles.panelTitle}>{copy('needsAttention')}</Text>
+        <Text style={styles.alertText}>{copy('childAlert')}</Text>
+        <Text style={styles.alertText}>{copy('pregnancyAlert')}</Text>
       </Card>
 
       <View style={styles.quickGrid}>
         <Pressable style={styles.quickTile} onPress={() => onNavigate('voice')}>
           <Text style={styles.quickIcon}>Mic</Text>
-          <Text style={styles.quickText}>Voice Intake</Text>
+          <Text style={styles.quickText}>{copy('voiceIntake')}</Text>
         </Pressable>
         <Pressable style={styles.quickTile} onPress={() => onNavigate('history')}>
           <Text style={styles.quickIcon}>Scan</Text>
-          <Text style={styles.quickText}>Records</Text>
+          <Text style={styles.quickText}>{copy('records')}</Text>
         </Pressable>
         <Pressable style={styles.quickTile} onPress={() => onNavigate('settings')}>
           <Text style={styles.quickIcon}>Sync</Text>
-          <Text style={styles.quickText}>Settings</Text>
+          <Text style={styles.quickText}>{copy('settings')}</Text>
         </Pressable>
       </View>
     </ScrollView>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { DiagnosisScreen } from './screens/DiagnosisScreen';
 import { HistoryScreen } from './screens/HistoryScreen';
@@ -10,6 +11,7 @@ import { SettingsScreen } from './screens/SettingsScreen';
 import { TreatmentScreen } from './screens/TreatmentScreen';
 import { VoiceScreen } from './screens/VoiceScreen';
 import { initializeLocalDatabase } from './services/databaseService';
+import { normalizeLanguage } from './utils/i18n';
 
 export type ScreenName = 'home' | 'newPatient' | 'voice' | 'summary' | 'diagnosis' | 'treatment' | 'history' | 'settings';
 
@@ -27,7 +29,16 @@ export default function App() {
 
   useEffect(() => {
     initializeLocalDatabase();
+    AsyncStorage.getItem('mediscribe.language')
+      .then((language) => {
+        if (language) setDraft((current) => ({ ...current, language: normalizeLanguage(language) }));
+      })
+      .catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    AsyncStorage.setItem('mediscribe.language', draft.language).catch(() => undefined);
+  }, [draft.language]);
 
   const renderScreen = () => {
     if (screen === 'newPatient') return <NewPatientScreen draft={draft} onDraftChange={setDraft} onNavigate={setScreen} />;

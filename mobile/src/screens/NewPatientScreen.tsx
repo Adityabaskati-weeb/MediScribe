@@ -5,6 +5,7 @@ import { ActionButton } from '../components/ActionButton';
 import { PatientForm } from '../components/PatientForm';
 import { createPatient } from '../services/databaseService';
 import { colors } from '../styles/theme';
+import { t } from '../utils/i18n';
 
 export function NewPatientScreen({
   draft,
@@ -15,17 +16,19 @@ export function NewPatientScreen({
   onDraftChange: (draft: ConsultationDraft) => void;
   onNavigate: (screen: ScreenName) => void;
 }) {
+  const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ActionButton title="Back" onPress={() => onNavigate('home')} variant="secondary" />
-      <Text style={styles.kicker}>Step 1 of 5</Text>
-      <Text style={styles.title}>Register patient</Text>
-      <Text style={styles.copy}>Only the essential details are needed to start. More can be added after triage.</Text>
+      <ActionButton title={copy('back')} onPress={() => onNavigate('home')} variant="secondary" />
+      <Text style={styles.kicker}>{copy('step1')}</Text>
+      <Text style={styles.title}>{copy('registerPatient')}</Text>
+      <Text style={styles.copy}>{copy('registerCopy')}</Text>
       <PatientForm onSubmit={(patient) => {
         createPatient(patient);
         onDraftChange({ ...draft, patient });
         onNavigate('voice');
-      }} />
+      }} language={draft.language} />
     </ScrollView>
   );
 }
