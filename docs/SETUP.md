@@ -4,6 +4,10 @@ This setup follows the uploaded MediScribe architecture: Node/Express backend,
 React Native mobile app, React dashboard, PostgreSQL, Ollama/Gemma, and model
 training scripts.
 
+Full environment setup, dependency matrix, VS Code setup, and verification script:
+
+- `docs/MEDISCRIBE_ENVIRONMENT_SETUP.md`
+
 ## Backend
 
 ```powershell

@@ -1,0 +1,15 @@
+{
+  "editor.formatOnSave": true,
+  "typescript.tsdk": "mobile/node_modules/typescript/lib",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.expo": true,
+    "**/.pytest_cache": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.expo": true
+  }
+}

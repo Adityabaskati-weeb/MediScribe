@@ -52,6 +52,8 @@ ROADMAP_PATHS = [
     "docs/DEPLOYMENT.md",
     "docs/DEMO_GUIDE.md",
     "docs/MEDISCRIBE_QUICK_REFERENCE.md",
+    "docs/MEDISCRIBE_ENVIRONMENT_SETUP.md",
+    "docs/MEDISCRIBE_CODE_TEMPLATES.md",
     "ROADMAP.md",
 ]
 
@@ -156,6 +158,25 @@ def test_quick_reference_deliverables_exist() -> None:
         "Writeup Structure",
     ]:
         assert section in quick
+
+
+def test_environment_setup_deliverables_exist() -> None:
+    setup = (ROOT / "docs/MEDISCRIBE_ENVIRONMENT_SETUP.md").read_text(encoding="utf-8")
+    assert (ROOT / "scripts/verify_environment.ps1").exists()
+    assert (ROOT / ".vscode/settings.json").exists()
+    assert (ROOT / ".vscode/extensions.json").exists()
+    for section in ["Ollama And Gemma", "Node.js And npm", "React Native / Expo", "Python And ML Tools", "PostgreSQL And SQLite", "Docker", "VS Code", "Verification Script", "Troubleshooting"]:
+        assert section in setup
+
+
+def test_code_template_deliverables_exist() -> None:
+    template_doc = (ROOT / "docs/MEDISCRIBE_CODE_TEMPLATES.md").read_text(encoding="utf-8")
+    assert (ROOT / "mobile/src/hooks/useMedicalData.ts").exists()
+    assert (ROOT / "backend/src/tests/validators.test.ts").exists()
+    validators = (ROOT / "backend/src/utils/validators.ts").read_text(encoding="utf-8")
+    assert "validateRequest" in validators
+    for phrase in ["API response wrapper", "Error middleware", "Rate limiting", "Data synchronization", "Model inference wrapper", "Unit test example", "Integration test example"]:
+        assert phrase in template_doc
 
 
 def test_model_training_outputs_are_benchmark_artifacts() -> None:

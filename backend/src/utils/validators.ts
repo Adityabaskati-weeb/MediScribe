@@ -18,3 +18,13 @@ export function validateDiagnosisInput(data: any): ValidationError[] {
   }
   return errors;
 }
+
+export function validateRequest(validationFn: (data: any) => ValidationError[]) {
+  return (req: any, res: any, next: any) => {
+    const errors = validationFn(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({ success: false, errors });
+    }
+    return next();
+  };
+}

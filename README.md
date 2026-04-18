@@ -83,6 +83,8 @@ python model_training/evaluate.py
 - [Deployment](docs/DEPLOYMENT.md)
 - [Demo Guide](docs/DEMO_GUIDE.md)
 - [Quick Reference](docs/MEDISCRIBE_QUICK_REFERENCE.md)
+- [Environment Setup](docs/MEDISCRIBE_ENVIRONMENT_SETUP.md)
+- [Code Templates](docs/MEDISCRIBE_CODE_TEMPLATES.md)
 - [Strict Alignment Report](docs/STRICT_ALIGNMENT_REPORT.md)
 - [Roadmap](ROADMAP.md)
 - [Video Script](docs/MEDISCRIBE_VIDEO_SCRIPT.md)
