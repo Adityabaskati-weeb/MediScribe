@@ -11,6 +11,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mediscribe"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
@@ -18,10 +23,16 @@ services:
       dockerfile: docker/Dockerfile.backend
     environment:
       DATABASE_URL: postgres://mediscribe:${DB_PASSWORD:-mediscribe}@postgres:5432/mediscribe
+      OLLAMA_API: http://ollama:11434
+      PORT: 3001
+      NODE_ENV: production
     ports:
       - "3001:3001"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
 
   dashboard:
     build:
@@ -40,6 +51,8 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
 
 volumes:
   postgres_data:

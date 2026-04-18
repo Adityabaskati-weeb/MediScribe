@@ -25,6 +25,17 @@ router.get('/', asyncHandler(async (_req, res) => {
   return res.json(successResponse(listPatients()));
 }));
 
+router.get('/:patientId', asyncHandler(async (req, res) => {
+  const patient = listPatients().find((item) => item.patient_id === req.params.patientId);
+  if (!patient) return res.status(404).json({ success: false, error: 'Patient not found' });
+  return res.json(successResponse(patient));
+}));
+
+router.get('/:patientId/history', asyncHandler(async (req, res) => {
+  const history = recentAssessments().filter((assessment) => assessment.patient_id === req.params.patientId);
+  return res.json(successResponse(history));
+}));
+
 router.get('/dashboard/summary', asyncHandler(async (_req, res) => {
   return res.json(successResponse(dashboardSummary()));
 }));

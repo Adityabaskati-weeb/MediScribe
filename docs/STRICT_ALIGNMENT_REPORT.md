@@ -35,6 +35,9 @@ define the product architecture.
 - Roadmap alignment tests pass.
 - Model-training scripts generate `metrics.json`, `evaluation_report.md`, and Gemma adapter metadata.
 - Mobile services include speech capture, multilingual symptom capture, OCR parsing, SQLite patient/consultation/diagnosis tables, and local sync queue.
+- Mobile SQLite also includes treatment plan, chart image, and sync queue tables from the roadmap.
+- Gemma service includes structured medical prompting, JSON normalization, translation, and an optional live Ollama test.
+- Dashboard includes KPI cards plus line/bar charts for consultations and diagnosis distribution.
 - Docker Compose uses the uploaded-plan services: PostgreSQL, backend, dashboard, and Ollama.
 
 Native device speech/OCR and GPU-hosted fine-tuning still require the local environment

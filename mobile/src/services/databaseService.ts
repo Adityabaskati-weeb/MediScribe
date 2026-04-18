@@ -16,6 +16,8 @@ export function initializeLocalDatabase() {
         emergencyContact TEXT,
         medicalHistory TEXT,
         allergies TEXT,
+        currentMedications TEXT,
+        dateOfBirth TEXT,
         created_at TEXT NOT NULL
       );
 
@@ -47,12 +49,54 @@ export function initializeLocalDatabase() {
         created_at TEXT NOT NULL
       );
 
+      CREATE TABLE IF NOT EXISTS treatmentPlans (
+        id TEXT PRIMARY KEY NOT NULL,
+        diagnosisId TEXT NOT NULL,
+        medication1 TEXT,
+        dosage1 TEXT,
+        frequency1 TEXT,
+        duration1 TEXT,
+        medication2 TEXT,
+        dosage2 TEXT,
+        frequency2 TEXT,
+        duration2 TEXT,
+        additionalTreatment TEXT,
+        followUpDays INTEGER,
+        referralRequired INTEGER DEFAULT 0,
+        referralSpecialty TEXT,
+        created_at TEXT NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS chartImages (
+        id TEXT PRIMARY KEY NOT NULL,
+        consultationId TEXT NOT NULL,
+        imagePath TEXT NOT NULL,
+        extractedText TEXT,
+        processedAt TEXT,
+        created_at TEXT NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS syncQueue (
+        id TEXT PRIMARY KEY NOT NULL,
+        tableType TEXT NOT NULL,
+        recordId TEXT NOT NULL,
+        operation TEXT NOT NULL,
+        payload TEXT,
+        createdAt TEXT NOT NULL,
+        synced INTEGER DEFAULT 0
+      );
+
       CREATE TABLE IF NOT EXISTS offline_queue (
         id TEXT PRIMARY KEY NOT NULL,
         payload TEXT NOT NULL,
         created_at TEXT NOT NULL,
         synced INTEGER DEFAULT 0
       );
+
+      CREATE INDEX IF NOT EXISTS idx_consultations_patientId ON consultations(patientId);
+      CREATE INDEX IF NOT EXISTS idx_diagnoses_consultationId ON diagnoses(consultationId);
+      CREATE INDEX IF NOT EXISTS idx_treatments_diagnosisId ON treatmentPlans(diagnosisId);
+      CREATE INDEX IF NOT EXISTS idx_syncQueue_synced ON syncQueue(synced);
     `);
 }
 
@@ -66,6 +110,40 @@ export function createPatient(patient: { id?: string; name: string; age_years: n
   );
   enqueueOfflinePayload(`patient-${id}`, { type: 'UPSERT_PATIENT', patient: { ...patient, id } });
   return { ...patient, id };
+}
+
+export function getPatient(patientId: string): Promise<any | null> {
+  return db.getFirstAsync('SELECT * FROM patients WHERE id = ?;', [patientId]);
+}
+
+export function getAllPatients(): Promise<any[]> {
+  return db.getAllAsync('SELECT id, name, age, gender, created_at FROM patients ORDER BY created_at DESC;');
+}
+
+export function createConsultation(consultationData: {
+  patientId: string;
+  chiefComplaint: string;
+  symptoms: string[];
+  vitals?: Record<string, unknown>;
+  notes?: string;
+}) {
+  const id = `consultation-${Date.now()}`;
+  db.runSync(
+    `INSERT OR REPLACE INTO consultations
+     (id, patientId, chiefComplaint, symptoms, vitals, notes, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?);`,
+    [
+      id,
+      consultationData.patientId,
+      consultationData.chiefComplaint,
+      JSON.stringify(consultationData.symptoms),
+      JSON.stringify(consultationData.vitals || {}),
+      consultationData.notes || '',
+      new Date().toISOString()
+    ]
+  );
+  enqueueSyncQueue('consultations', id, 'INSERT', consultationData);
+  return id;
 }
 
 export function saveDiagnosis(consultationId: string, assessment: any) {
@@ -94,11 +172,54 @@ export function saveDiagnosis(consultationId: string, assessment: any) {
     ]
   );
   enqueueOfflinePayload(`diagnosis-${id}`, { type: 'UPSERT_DIAGNOSIS', assessment });
+  saveTreatmentPlan(id, assessment.treatment || {}, ['immediate', 'emergent'].includes(assessment.urgency));
   return { id, consultationId, assessment };
 }
 
-export function getPatientHistory(): Promise<any[]> {
-  return db.getAllAsync('SELECT * FROM diagnoses ORDER BY created_at DESC;');
+export function saveTreatmentPlan(diagnosisId: string, treatment: any, referralRequired = false) {
+  const id = `treatment-${Date.now()}`;
+  const medications = treatment.medications_to_consider || treatment.medications || [];
+  db.runSync(
+    `INSERT OR REPLACE INTO treatmentPlans
+     (id, diagnosisId, medication1, additionalTreatment, followUpDays, referralRequired, referralSpecialty, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
+    [
+      id,
+      diagnosisId,
+      medications[0] || '',
+      JSON.stringify(treatment.immediate_actions || treatment.nonPharmacological || []),
+      treatment.followUpInDays || 7,
+      referralRequired ? 1 : 0,
+      treatment.referral || '',
+      new Date().toISOString()
+    ]
+  );
+  enqueueSyncQueue('treatmentPlans', id, 'INSERT', treatment);
+  return id;
+}
+
+export function saveChartImage(consultationId: string, imagePath: string, extractedText: string) {
+  const id = `chart-${Date.now()}`;
+  db.runSync(
+    `INSERT OR REPLACE INTO chartImages
+     (id, consultationId, imagePath, extractedText, processedAt, created_at)
+     VALUES (?, ?, ?, ?, ?, ?);`,
+    [id, consultationId, imagePath, extractedText, new Date().toISOString(), new Date().toISOString()]
+  );
+  enqueueSyncQueue('chartImages', id, 'INSERT', { consultationId, imagePath, extractedText });
+  return id;
+}
+
+export function getPatientHistory(patientId?: string): Promise<any[]> {
+  if (!patientId) return db.getAllAsync('SELECT * FROM diagnoses ORDER BY created_at DESC;');
+  return db.getAllAsync(
+    `SELECT c.*, d.possibleDiagnosis1, d.possibleDiagnosis2, d.possibleDiagnosis3, d.urgency
+     FROM consultations c
+     LEFT JOIN diagnoses d ON c.id = d.consultationId
+     WHERE c.patientId = ?
+     ORDER BY c.created_at DESC;`,
+    [patientId]
+  );
 }
 
 export function enqueueOfflinePayload(id: string, payload: unknown) {
@@ -106,6 +227,23 @@ export function enqueueOfflinePayload(id: string, payload: unknown) {
     'INSERT OR REPLACE INTO offline_queue (id, payload, created_at, synced) VALUES (?, ?, ?, 0);',
     [id, JSON.stringify(payload), new Date().toISOString()]
   );
+}
+
+export function enqueueSyncQueue(tableType: string, recordId: string, operation: 'INSERT' | 'UPDATE' | 'DELETE', payload: unknown) {
+  const id = `sync-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+  db.runSync(
+    'INSERT OR REPLACE INTO syncQueue (id, tableType, recordId, operation, payload, createdAt, synced) VALUES (?, ?, ?, ?, ?, ?, 0);',
+    [id, tableType, recordId, operation, JSON.stringify(payload), new Date().toISOString()]
+  );
+}
+
+export function getSyncQueue(): Promise<Array<{ id: string; tableType: string; recordId: string; operation: string; payload: string; createdAt: string }>> {
+  return db.getAllAsync('SELECT * FROM syncQueue WHERE synced = 0 ORDER BY createdAt ASC;');
+}
+
+export function markSynced(syncId: string): Promise<void> {
+  db.runSync('UPDATE syncQueue SET synced = 1 WHERE id = ?;', [syncId]);
+  return Promise.resolve();
 }
 
 export function getPendingOfflinePayloads(): Promise<Array<{ id: string; payload: unknown; created_at: string }>> {

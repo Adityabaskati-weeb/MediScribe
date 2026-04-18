@@ -42,3 +42,17 @@ main {
   display: block;
   font-size: 30px;
 }
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.chart {
+  background: white;
+  border: 1px solid #d8e1dd;
+  border-radius: 8px;
+  padding: 16px;
+}

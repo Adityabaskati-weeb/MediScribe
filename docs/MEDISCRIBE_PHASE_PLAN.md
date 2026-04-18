@@ -16,11 +16,13 @@ This plan follows the uploaded roadmap architecture and technologies.
 - deterministic clinical safety guardrails
 - offline queue and sync records
 - Gemma/Ollama service wrapper
+- Gemma prompt wrapper, structured JSON parsing, translation helper, and optional live Ollama test
 
 ## Phase 3: User Interfaces
 
 - mobile patient form, voice capture demo flow, OCR chart capture flow, diagnosis view
 - local SQLite patient, consultation, diagnosis, and offline queue tables
+- treatment plan, chart image, and sync queue persistence tables
 - dashboard analytics, patient list, reports, settings
 - API client integration through the Node backend
 
@@ -28,6 +30,7 @@ This plan follows the uploaded roadmap architecture and technologies.
 
 - `model_training/` Gemma fine-tuning artifact and benchmark scripts
 - Docker Compose with backend, dashboard, PostgreSQL, and Ollama
+- Docker healthchecks and Ollama backend wiring
 - evaluation report
 - video script
 - submission writeup

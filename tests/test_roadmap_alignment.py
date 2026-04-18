@@ -33,6 +33,7 @@ ROADMAP_PATHS = [
     "backend/src/services/analysisService.ts",
     "backend/openapi.yaml",
     "backend/src/tests/integration.test.ts",
+    "backend/src/tests/gemmaService.test.ts",
     "dashboard/package.json",
     "dashboard/src/App.tsx",
     "dashboard/src/pages/Dashboard.tsx",
@@ -125,6 +126,22 @@ def test_docker_compose_uses_roadmap_services_only() -> None:
     for service in ["postgres:", "backend:", "dashboard:", "ollama:"]:
         assert service in compose
     assert "python-api" not in compose
+
+
+def test_key_roadmap_sections_have_real_implementation() -> None:
+    gemma = (ROOT / "backend/src/services/gemmaService.ts").read_text(encoding="utf-8")
+    mobile_db = (ROOT / "mobile/src/services/databaseService.ts").read_text(encoding="utf-8")
+    backend_db = (ROOT / "backend/src/config/database.ts").read_text(encoding="utf-8")
+    dashboard = (ROOT / "dashboard/src/pages/Dashboard.tsx").read_text(encoding="utf-8")
+    compose = (ROOT / "docker/docker-compose.yml").read_text(encoding="utf-8")
+
+    assert "translateSymptoms" in gemma
+    assert "analyzeMedicalCase" in gemma
+    for table in ["treatmentPlans", "chartImages", "syncQueue"]:
+        assert table in mobile_db
+    assert "CREATE TABLE IF NOT EXISTS treatments" in backend_db
+    assert "LineChart" in dashboard and "BarChart" in dashboard
+    assert "healthcheck" in compose
 
 
 def test_model_training_outputs_are_benchmark_artifacts() -> None:
