@@ -34,7 +34,7 @@ export async function getGemmaResponse(prompt: string, systemPrompt: string): Pr
     prompt,
     system: systemPrompt,
     stream: false,
-    options: { temperature: 0.3 }
+    options: { temperature: 0.1, num_predict: 700 }
   });
   return response.data.response;
 }

@@ -1,6 +1,8 @@
 import { ClinicalIntake, DifferentialDiagnosis, MediScribeAssessment, TreatmentRecommendation } from '../models/Clinical';
 import { analyzeIntake, saveAssessment } from './clinicalEngine';
 import { analyzeMedicalCase, MedicalPrompt } from './gemmaService';
+import { recordAuditLog } from './auditLogService';
+import { getCachedMedicalQuery, setCachedMedicalQuery } from './medicalQueryCache';
 import { performanceSummary, recordPerformance, timed } from './performanceMonitor';
 import { applySafetyGuardrails, evaluateSafetyGuardrails, GuardrailResult } from './safetyGuardrails';
 
@@ -34,14 +36,25 @@ export async function runAgenticMedicalAssessment(intake: ClinicalIntake): Promi
   const started = Date.now();
   const agents: AgentStep[] = [];
   let fallbackUsed = false;
+  const cacheKey = ['diagnosis-agent', toMedicalPrompt(intake)];
 
   const deterministicAssessment = analyzeIntake(intake, 'agentic-deterministic-safety-engine');
   const diagnosisStarted = Date.now();
   let diagnoses = deterministicAssessment.differential_diagnoses;
+  const cached = getCachedMedicalQuery<DifferentialDiagnosis[]>(cacheKey);
 
-  try {
+  if (cached) {
+    diagnoses = cached;
+    agents.push({
+      agent: 'diagnosis-agent',
+      status: 'completed',
+      latency_ms: Date.now() - diagnosisStarted,
+      output: { cache_hit: true, diagnoses }
+    });
+  } else try {
     const gemma = await timed('diagnosis-agent-gemma', () => analyzeMedicalCase(toMedicalPrompt(intake)));
     diagnoses = mergeGemmaDiagnoses(diagnoses, gemma);
+    setCachedMedicalQuery(cacheKey, diagnoses);
     agents.push({
       agent: 'diagnosis-agent',
       status: 'completed',
@@ -95,6 +108,14 @@ export async function runAgenticMedicalAssessment(intake: ClinicalIntake): Promi
   });
 
   const stored = saveAssessment(intake, assessment);
+  recordAuditLog({
+    event_type: guardrails.escalation_required ? 'SAFETY_ESCALATION' : 'AI_DECISION',
+    actor_role: 'system',
+    patient_id: assessment.patient_id,
+    assessment_id: assessment.assessment_id,
+    summary: `${assessment.urgency} assessment produced by ${assessment.model_source}`,
+    payload: { intake, assessment, agents, guardrails }
+  });
   const latency = Date.now() - started;
   recordPerformance({ name: 'agentic-assessment', duration_ms: latency, success: true, fallback_used: fallbackUsed || guardrails.fallback_required });
 

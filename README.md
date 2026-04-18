@@ -16,6 +16,7 @@ Offline AI medical assistant for rural clinics.
 - Offline-first: mobile SQLite, local history, offline triage fallback, and sync queue.
 - Gemma optimized: Ollama/Gemma prompting, medical response normalization, and fine-tuning artifact flow.
 - Production-ready: mobile app, backend API, dashboard, Docker, validation, logging, tests, and docs.
+- Agentic safety pipeline: diagnosis, reasoning, treatment, and safety agents with audit logs.
 - Measurable impact: 91% benchmark accuracy, 100% red-flag recall, 3.2 second inference target.
 - Open source: MIT licensed and documented for replication.
 - Clinic scenarios: tested against chest pain, postpartum hypertension, pediatric fever, dengue, pneumonia/sepsis, and stroke workflows.
@@ -78,6 +79,13 @@ python model_training/evaluate.py
 
 - `GET /health`
 - `POST /api/diagnoses/generate`
+- `POST /api/diagnoses/agentic`
+- `GET /api/diagnoses/evaluation`
+- `GET /api/diagnoses/performance`
+- `GET /api/diagnoses/demo-output`
+- `GET /api/system/architecture`
+- `GET /api/system/demo-pack`
+- `GET /metrics`
 - `POST /api/patients`
 - `GET /api/patients/recent`
 - `GET /api/patients/dashboard/summary`
@@ -101,6 +109,8 @@ python model_training/evaluate.py
 - [Hackathon Claims Evidence](docs/HACKATHON_CLAIMS_EVIDENCE.md)
 - [Clinic Scenario Test Pack](docs/CLINIC_SCENARIOS.md)
 - [Strict Alignment Report](docs/STRICT_ALIGNMENT_REPORT.md)
+- [Production System Design](docs/PRODUCTION_SYSTEM_DESIGN.md)
+- [Hackathon Demo Outputs](docs/HACKATHON_DEMO_OUTPUTS.md)
 - [Roadmap](ROADMAP.md)
 - [Video Script](docs/MEDISCRIBE_VIDEO_SCRIPT.md)
 - [Submission Writeup](docs/MEDISCRIBE_SUBMISSION_WRITEUP.md)

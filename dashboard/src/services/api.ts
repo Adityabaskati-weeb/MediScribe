@@ -23,3 +23,23 @@ export async function fetchReports() {
   const response = await api.get('/api/dashboard/reports');
   return response.data.data;
 }
+
+export async function fetchEvaluationMetrics() {
+  const response = await api.get('/api/diagnoses/evaluation');
+  return response.data.data;
+}
+
+export async function fetchPerformanceMetrics() {
+  const response = await api.get('/api/diagnoses/performance');
+  return response.data.data;
+}
+
+export async function fetchSystemArchitecture() {
+  const response = await api.get('/api/system/architecture');
+  return response.data.data;
+}
+
+export async function fetchDemoPack() {
+  const response = await api.get('/api/system/demo-pack');
+  return response.data.data;
+}

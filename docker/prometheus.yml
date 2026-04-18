@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "mediscribe-api"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["api-service:3001"]
+
+  - job_name: "mediscribe-sync"
+    metrics_path: "/health"
+    static_configs:
+      - targets: ["sync-service:3002"]

@@ -4,12 +4,14 @@ import express from 'express';
 import diagnosisRoutes from './routes/diagnoses';
 import patientRoutes from './routes/patients';
 import syncRoutes from './routes/sync';
+import systemRoutes from './routes/system';
 import { queueCapture, analyzeQueued, dashboardSummary, clinicReports } from './services/clinicalEngine';
 import { initializeDatabase } from './config/database';
 import { apiKeyAuth } from './middleware/auth';
 import { errorMiddleware } from './middleware/errorHandler';
 import { requestLogger } from './middleware/logger';
 import { rateLimiter } from './middleware/rateLimiter';
+import { prometheusMetrics } from './services/systemDesignService';
 
 dotenv.config();
 
@@ -31,9 +33,14 @@ app.get('/health', (_req, res) => {
   });
 });
 
+app.get('/metrics', (_req, res) => {
+  res.type('text/plain').send(prometheusMetrics());
+});
+
 app.use('/api/patients', patientRoutes);
 app.use('/api/diagnoses', diagnosisRoutes);
 app.use('/api/sync', syncRoutes);
+app.use('/api/system', systemRoutes);
 
 app.post('/api/offline/intake', (req, res) => {
   res.json({ success: true, data: queueCapture(req.body), timestamp: new Date().toISOString(), statusCode: 200 });
