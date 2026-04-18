@@ -1,5 +1,6 @@
 import { ClinicalIntake } from '../models/Clinical';
-import { analyzeIntake, saveAssessment } from './clinicalEngine';
+import { runAgenticMedicalAssessment } from './agentOrchestrator';
+import { analyzeIntake } from './clinicalEngine';
 import { analyzeMedicalCase, MedicalPrompt } from './gemmaService';
 
 export interface DiagnosisResult {
@@ -25,8 +26,7 @@ export interface DiagnosisResult {
 }
 
 export async function analyzeClinicalIntake(payload: ClinicalIntake) {
-  const assessment = analyzeIntake(payload);
-  return saveAssessment(payload, assessment);
+  return runAgenticMedicalAssessment(payload);
 }
 
 export async function generateDiagnosis(medicalData: MedicalPrompt): Promise<DiagnosisResult> {
