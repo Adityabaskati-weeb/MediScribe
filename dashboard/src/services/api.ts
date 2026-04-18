@@ -13,3 +13,13 @@ export async function fetchRecentAssessments() {
   const response = await api.get('/api/patients/recent');
   return response.data.data || [];
 }
+
+export async function fetchPatients() {
+  const response = await api.get('/api/patients');
+  return response.data.data || [];
+}
+
+export async function fetchReports() {
+  const response = await api.get('/api/dashboard/reports');
+  return response.data.data;
+}

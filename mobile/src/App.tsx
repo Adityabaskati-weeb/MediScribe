@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { DiagnosisScreen } from './screens/DiagnosisScreen';
 import { HistoryScreen } from './screens/HistoryScreen';
@@ -18,15 +18,22 @@ export default function App() {
 
   const renderScreen = () => {
     if (screen === 'newPatient') return <NewPatientScreen onNavigate={setScreen} />;
-    if (screen === 'diagnosis') return <DiagnosisScreen />;
-    if (screen === 'history') return <HistoryScreen />;
+    if (screen === 'diagnosis') return <DiagnosisScreen onNavigate={setScreen} />;
+    if (screen === 'history') return <HistoryScreen onNavigate={setScreen} />;
     return <HomeScreen onNavigate={setScreen} />;
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.shell}>
       {renderScreen()}
-      <StatusBar style="auto" />
+      <StatusBar style="dark" />
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  shell: {
+    flex: 1,
+    backgroundColor: '#f4f7f6'
+  }
+});

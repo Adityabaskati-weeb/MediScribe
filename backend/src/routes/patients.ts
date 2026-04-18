@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { asyncHandler } from '../middleware/errorHandler';
-import { dashboardSummary, recentAssessments } from '../services/clinicalEngine';
+import { dashboardSummary, listPatients, recentAssessments, upsertPatient } from '../services/clinicalEngine';
 import { successResponse } from '../utils/apiResponse';
 import { validatePatientInput } from '../utils/validators';
 
@@ -9,7 +9,20 @@ const router = Router();
 router.post('/', asyncHandler(async (req, res) => {
   const errors = validatePatientInput(req.body);
   if (errors.length > 0) return res.status(400).json({ success: false, errors });
-  return res.json(successResponse({ external_id: req.body.patient_id || `patient_${Date.now()}`, ...req.body }));
+  const patient = upsertPatient({
+    patient_id: req.body.patient_id || req.body.external_id || `patient_${Date.now()}`,
+    name: req.body.name || `${req.body.firstName || ''} ${req.body.lastName || ''}`.trim(),
+    age_years: req.body.age_years ?? req.body.age,
+    gender: req.body.gender || 'unknown',
+    known_conditions: req.body.known_conditions || [],
+    medications: req.body.medications || [],
+    allergies: req.body.allergies || []
+  });
+  return res.json(successResponse(patient));
+}));
+
+router.get('/', asyncHandler(async (_req, res) => {
+  return res.json(successResponse(listPatients()));
 }));
 
 router.get('/dashboard/summary', asyncHandler(async (_req, res) => {

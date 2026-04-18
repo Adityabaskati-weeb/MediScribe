@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import {
   ClinicalIntake,
+  PatientProfile,
   DifferentialDiagnosis,
   IntakeCapture,
   MediScribeAssessment,
@@ -15,6 +16,7 @@ import {
 const assessments: StoredAssessment[] = [];
 const queue: QueuedIntake[] = [];
 const syncItems: SyncItem[] = [];
+const patients: Array<PatientProfile & { created_at: string; last_visit_at?: string; total_assessments: number }> = [];
 
 function now() {
   return new Date().toISOString();
@@ -191,7 +193,32 @@ export function analyzeIntake(intake: ClinicalIntake, modelSource = 'determinist
 export function saveAssessment(intake: ClinicalIntake, assessment = analyzeIntake(intake)): StoredAssessment {
   const stored = { intake: { ...intake, patient: { ...intake.patient, patient_id: assessment.patient_id } }, assessment };
   assessments.push(stored);
+  upsertPatient({ ...stored.intake.patient, patient_id: assessment.patient_id }, assessment.created_at);
   return stored;
+}
+
+export function upsertPatient(patient: PatientProfile, visitAt?: string) {
+  const patientId = patient.patient_id || id('patient');
+  const existing = patients.find((item) => item.patient_id === patientId);
+  if (existing) {
+    Object.assign(existing, patient, {
+      patient_id: patientId,
+      last_visit_at: visitAt || existing.last_visit_at,
+      total_assessments: assessments.filter((item) => item.assessment.patient_id === patientId).length
+    });
+    return existing;
+  }
+
+  const created = {
+    ...patient,
+    patient_id: patientId,
+    created_at: now(),
+    last_visit_at: visitAt,
+    total_assessments: assessments.filter((item) => item.assessment.patient_id === patientId).length
+  };
+  patients.push(created);
+  syncItems.push({ sync_id: id('sync'), record_id: patientId, operation: 'UPSERT_PATIENT', payload: created, created_at: now(), source: 'backend' });
+  return created;
 }
 
 export function queueCapture(capture: IntakeCapture): QueuedIntake {
@@ -216,19 +243,54 @@ export function recentAssessments() {
   return assessments.map((item) => item.assessment).slice(-20).reverse();
 }
 
+export function listPatients() {
+  return patients
+    .map((patient) => ({
+      ...patient,
+      total_assessments: assessments.filter((item) => item.assessment.patient_id === patient.patient_id).length
+    }))
+    .sort((a, b) => (b.last_visit_at || b.created_at).localeCompare(a.last_visit_at || a.created_at));
+}
+
+export function clinicReports() {
+  const urgencyCounts = assessments.reduce<Record<string, number>>((acc, item) => {
+    acc[item.assessment.urgency] = (acc[item.assessment.urgency] || 0) + 1;
+    return acc;
+  }, {});
+  const topDiagnoses = assessments
+    .flatMap((item) => item.assessment.differential_diagnoses.map((diagnosis) => diagnosis.name))
+    .reduce<Record<string, number>>((acc, name) => {
+      acc[name] = (acc[name] || 0) + 1;
+      return acc;
+    }, {});
+  return {
+    urgency_counts: urgencyCounts,
+    top_diagnoses: Object.entries(topDiagnoses)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5),
+    referral_required: assessments.filter((item) => ['immediate', 'emergent'].includes(item.assessment.urgency)).length,
+    generated_at: now()
+  };
+}
+
 export function dashboardSummary() {
   const total = assessments.length;
   const urgent = assessments.filter((item) => ['immediate', 'emergent', 'urgent'].includes(item.assessment.urgency)).length;
   const pending = syncItems.filter((item) => !item.synced_at).length;
   return {
     total_assessments: total,
+    total_patients: patients.length,
     urgent_or_higher: urgent,
     pending_sync_items: pending,
     metrics: [
       { label: 'Assessments', value: String(total), detail: 'Patient visits analyzed by MediScribe.' },
+      { label: 'Patients', value: String(patients.length), detail: 'Registered local clinic patients.' },
       { label: 'Urgent Cases', value: String(urgent), detail: 'Cases surfaced for clinician action.' },
       { label: 'Offline Ready', value: String(pending), detail: 'Records waiting to sync.' }
-    ]
+    ],
+    reports: clinicReports(),
+    recent_assessments: recentAssessments()
   };
 }
 
