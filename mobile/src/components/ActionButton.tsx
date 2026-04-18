@@ -11,7 +11,7 @@ export function ActionButton({
   title: string;
   onPress: () => void;
   disabled?: boolean;
-  variant?: 'primary' | 'secondary' | 'danger';
+  variant?: 'primary' | 'secondary' | 'danger' | 'success';
 }) {
   return (
     <Pressable
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     borderRadius: radii.md,
-    minHeight: 46,
+    minHeight: 56,
     justifyContent: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12
@@ -50,6 +50,9 @@ const styles = StyleSheet.create({
   danger: {
     backgroundColor: colors.accent
   },
+  success: {
+    backgroundColor: colors.secondary
+  },
   disabled: {
     opacity: 0.45
   },
@@ -58,7 +61,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: '#ffffff',
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '800'
   },
   secondaryLabel: {

@@ -1,0 +1,212 @@
+import React, { useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { ConsultationDraft, ScreenName } from '../App';
+import { ActionButton } from '../components/ActionButton';
+import { Card } from '../components/Card';
+import { colors } from '../styles/theme';
+
+export function PatientSummaryScreen({
+  draft,
+  onDraftChange,
+  onNavigate
+}: {
+  draft: ConsultationDraft;
+  onDraftChange: (draft: ConsultationDraft) => void;
+  onNavigate: (screen: ScreenName) => void;
+}) {
+  const [notes, setNotes] = useState(draft.transcript || '');
+  const risk = useMemo(() => getRisk(notes), [notes]);
+  const vitals = useMemo(() => extractVitals(notes), [notes]);
+  const symptoms = useMemo(() => extractSymptoms(notes), [notes]);
+
+  const continueToDiagnosis = () => {
+    onDraftChange({ ...draft, transcript: notes });
+    onNavigate('diagnosis');
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <ActionButton title="Back" onPress={() => onNavigate('voice')} variant="secondary" />
+      <Text style={styles.kicker}>Step 3 of 5</Text>
+      <Text style={styles.title}>Patient summary</Text>
+      <RiskBanner risk={risk} />
+
+      <Card>
+        <Text style={styles.sectionTitle}>Patient</Text>
+        <Text style={styles.line}>{draft.patient?.name || 'Unnamed patient'} - {draft.patient?.age_years || '--'} yrs - {draft.patient?.gender || 'unknown'}</Text>
+        <Text style={styles.line}>{draft.patient?.address || 'Village not added'}</Text>
+      </Card>
+
+      <Card>
+        <Text style={styles.sectionTitle}>Symptoms found</Text>
+        <View style={styles.chips}>
+          {symptoms.map((item) => <Text style={styles.chip} key={item}>{item}</Text>)}
+        </View>
+      </Card>
+
+      <Card>
+        <Text style={styles.sectionTitle}>Vitals</Text>
+        <View style={styles.vitalGrid}>
+          {Object.entries(vitals).map(([label, value]) => (
+            <View style={styles.vital} key={label}>
+              <Text style={styles.vitalLabel}>{label}</Text>
+              <Text style={styles.vitalValue}>{value}</Text>
+            </View>
+          ))}
+        </View>
+      </Card>
+
+      <Card>
+        <Text style={styles.sectionTitle}>Correct intake notes</Text>
+        <TextInput
+          multiline
+          numberOfLines={7}
+          style={styles.input}
+          value={notes}
+          onChangeText={setNotes}
+          placeholder="Edit symptoms, vitals, medicine, pregnancy status, or danger signs."
+        />
+      </Card>
+
+      <ActionButton title="Run AI Diagnosis" onPress={continueToDiagnosis} disabled={!notes.trim()} />
+    </ScrollView>
+  );
+}
+
+function RiskBanner({ risk }: { risk: 'red' | 'yellow' | 'green' }) {
+  const copy = {
+    red: ['Emergency risk', 'Stabilize and prepare referral now.'],
+    yellow: ['Needs same-day review', 'Check vitals again and watch danger signs.'],
+    green: ['Routine risk', 'Continue assessment and safety-net advice.']
+  }[risk];
+  return (
+    <View style={[styles.riskBanner, risk === 'red' && styles.redRisk, risk === 'yellow' && styles.yellowRisk, risk === 'green' && styles.greenRisk]}>
+      <Text style={styles.riskTitle}>{copy[0]}</Text>
+      <Text style={styles.riskCopy}>{copy[1]}</Text>
+    </View>
+  );
+}
+
+function getRisk(text: string) {
+  const lower = text.toLowerCase();
+  if (/chest pain|stroke|unconscious|seizure|spo2\s*(8|7|6)|bp\s*8\d|pregnan.*headache|bleeding/.test(lower)) return 'red';
+  if (/fever|dengue|pneumonia|vomiting|dehydration|temp\s*3[89]|bp\s*1[4-9]\d/.test(lower)) return 'yellow';
+  return 'green';
+}
+
+function extractSymptoms(text: string) {
+  const candidates = ['fever', 'cough', 'chest pain', 'shortness of breath', 'headache', 'vomiting', 'rash', 'weakness', 'abdominal pain', 'bleeding'];
+  const found = candidates.filter((item) => text.toLowerCase().includes(item));
+  return found.length ? found : ['needs review'];
+}
+
+function extractVitals(text: string) {
+  const bp = text.match(/bp\s*[:\-]?\s*(\d{2,3}\/\d{2,3})/i)?.[1] || '--';
+  const hr = text.match(/hr\s*[:\-]?\s*(\d{2,3})/i)?.[1] || '--';
+  const spo2 = text.match(/spo2\s*[:\-]?\s*(\d{2,3})/i)?.[1] || '--';
+  const temp = text.match(/temp\s*[:\-]?\s*(\d{2}(?:\.\d)?)/i)?.[1] || '--';
+  return { BP: bp, HR: hr, SpO2: spo2, Temp: temp };
+}
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 14,
+    padding: 20
+  },
+  kicker: {
+    color: colors.primary,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  title: {
+    color: colors.ink,
+    fontSize: 28,
+    fontWeight: '900'
+  },
+  riskBanner: {
+    borderRadius: 8,
+    gap: 4,
+    padding: 16
+  },
+  redRisk: {
+    backgroundColor: colors.dangerSoft,
+    borderColor: '#f1b2b2',
+    borderWidth: 1
+  },
+  yellowRisk: {
+    backgroundColor: colors.warningSoft,
+    borderColor: '#f5d08a',
+    borderWidth: 1
+  },
+  greenRisk: {
+    backgroundColor: colors.successSoft,
+    borderColor: '#b8e7d1',
+    borderWidth: 1
+  },
+  riskTitle: {
+    color: colors.ink,
+    fontSize: 18,
+    fontWeight: '900'
+  },
+  riskCopy: {
+    color: colors.muted,
+    fontSize: 15,
+    fontWeight: '700'
+  },
+  sectionTitle: {
+    color: colors.ink,
+    fontSize: 18,
+    fontWeight: '900'
+  },
+  line: {
+    color: colors.muted,
+    fontSize: 15,
+    lineHeight: 22
+  },
+  chips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8
+  },
+  chip: {
+    backgroundColor: colors.infoSoft,
+    borderRadius: 8,
+    color: colors.primaryDark,
+    fontWeight: '800',
+    paddingHorizontal: 10,
+    paddingVertical: 8
+  },
+  vitalGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10
+  },
+  vital: {
+    backgroundColor: colors.surfaceSoft,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    minWidth: '47%',
+    padding: 12
+  },
+  vitalLabel: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '900'
+  },
+  vitalValue: {
+    color: colors.ink,
+    fontSize: 22,
+    fontWeight: '900'
+  },
+  input: {
+    backgroundColor: colors.surfaceSoft,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    minHeight: 150,
+    padding: 12,
+    textAlignVertical: 'top'
+  }
+});

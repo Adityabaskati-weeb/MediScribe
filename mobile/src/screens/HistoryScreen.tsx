@@ -16,7 +16,9 @@ export function HistoryScreen({ onNavigate }: { onNavigate?: (screen: ScreenName
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {onNavigate && <ActionButton title="Back" onPress={() => onNavigate('home')} variant="secondary" />}
+      <Text style={styles.kicker}>Records</Text>
       <Text style={styles.title}>Patient history</Text>
+      <Text style={styles.copy}>Timeline of local visits, photo chart scans, and saved AI assessments.</Text>
       <PatientHistory items={items} />
     </ScrollView>
   );
@@ -31,5 +33,16 @@ const styles = StyleSheet.create({
     color: colors.ink,
     fontSize: 26,
     fontWeight: '800'
+  },
+  kicker: {
+    color: colors.primary,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  copy: {
+    color: colors.muted,
+    fontSize: 16,
+    lineHeight: 22
   }
 });

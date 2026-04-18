@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import type { ScreenName } from '../App';
+import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { DiagnosisResult } from '../components/DiagnosisResult';
-import { SymptomChecker } from '../components/SymptomChecker';
-import { ChartOCR } from '../components/ChartOCR';
-import { VoiceInput } from '../components/VoiceInput';
 import { analyzeMedicalCase } from '../services/gemmaService';
 import { saveDiagnosis } from '../services/databaseService';
 import { colors } from '../styles/theme';
 
-export function DiagnosisScreen({ onNavigate }: { onNavigate?: (screen: ScreenName) => void }) {
-  const [result, setResult] = useState<any>(null);
+export function DiagnosisScreen({
+  draft,
+  onDraftChange,
+  onNavigate
+}: {
+  draft: ConsultationDraft;
+  onDraftChange: (draft: ConsultationDraft) => void;
+  onNavigate?: (screen: ScreenName) => void;
+}) {
+  const [result, setResult] = useState<any>(draft.assessment ? { assessment: draft.assessment } : null);
   const [status, setStatus] = useState('Ready for intake');
 
   const analyze = async (symptoms: string) => {
@@ -30,20 +35,24 @@ export function DiagnosisScreen({ onNavigate }: { onNavigate?: (screen: ScreenNa
     }
     setResult(response);
     const assessment = response?.data?.stored?.assessment || response?.data?.ai?.assessment || response?.data?.assessment || response?.assessment;
-    if (assessment) saveDiagnosis(`consultation-${Date.now()}`, assessment);
+    if (assessment) {
+      onDraftChange({ ...draft, assessment });
+      saveDiagnosis(`consultation-${Date.now()}`, assessment);
+    }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {onNavigate && <ActionButton title="Back" onPress={() => onNavigate('home')} variant="secondary" />}
+      {onNavigate && <ActionButton title="Back" onPress={() => onNavigate('summary')} variant="secondary" />}
       <View style={styles.header}>
-        <Text style={styles.kicker}>Clinical intake</Text>
-        <Text style={styles.title}>Capture symptoms and triage risk</Text>
+        <Text style={styles.kicker}>Step 4 of 5</Text>
+        <Text style={styles.title}>AI diagnosis</Text>
         <Text style={styles.status}>{status}</Text>
       </View>
-      <VoiceInput onTranscript={analyze} />
-      <ChartOCR onText={analyze} />
-      <SymptomChecker onAnalyze={analyze} />
+      <View style={styles.actions}>
+        <ActionButton title="Generate Diagnosis" onPress={() => analyze(draft.transcript || '')} disabled={!draft.transcript?.trim()} />
+        {result && onNavigate && <ActionButton title="Open Treatment Guidelines" onPress={() => onNavigate('treatment')} variant="success" />}
+      </View>
       <DiagnosisResult result={result} />
     </ScrollView>
   );
@@ -76,6 +85,9 @@ const styles = StyleSheet.create({
   status: {
     color: colors.muted,
     lineHeight: 20
+  },
+  actions: {
+    gap: 10
   }
 });
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ActionButton } from './ActionButton';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
@@ -51,7 +51,20 @@ export function VoiceInput({ onTranscript }: { onTranscript: (text: string) => v
         </View>
       </View>
       <Text style={styles.help}>{status}</Text>
-      <ActionButton title={nativeAvailable ? 'Start Microphone Capture' : 'Use Demo Voice Dictation'} onPress={capture} disabled={loading} />
+      <Pressable
+        accessibilityRole="button"
+        disabled={loading}
+        onPress={capture}
+        style={({ pressed }) => [styles.micButton, pressed && styles.micPressed, loading && styles.micDisabled]}
+      >
+        <Text style={styles.micIcon}>MIC</Text>
+        <Text style={styles.micLabel}>{nativeAvailable ? 'Start speaking' : 'Demo voice'}</Text>
+      </Pressable>
+      <View style={styles.waveform}>
+        {[18, 32, 48, 28, 56, 36, 22].map((height, index) => (
+          <View style={[styles.waveBar, { height }]} key={`${height}-${index}`} />
+        ))}
+      </View>
       {loading && <ActivityIndicator />}
       <TextInput
         multiline
@@ -109,6 +122,46 @@ const styles = StyleSheet.create({
   help: {
     color: colors.muted,
     lineHeight: 20
+  },
+  micButton: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    backgroundColor: colors.primary,
+    borderColor: '#9bd7e8',
+    borderRadius: 8,
+    borderWidth: 3,
+    gap: 8,
+    height: 156,
+    justifyContent: 'center',
+    width: 156
+  },
+  micPressed: {
+    opacity: 0.86
+  },
+  micDisabled: {
+    opacity: 0.5
+  },
+  micIcon: {
+    color: '#ffffff',
+    fontSize: 24,
+    fontWeight: '900'
+  },
+  micLabel: {
+    color: '#ffffff',
+    fontSize: 17,
+    fontWeight: '900'
+  },
+  waveform: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 7,
+    justifyContent: 'center',
+    minHeight: 64
+  },
+  waveBar: {
+    backgroundColor: colors.secondary,
+    borderRadius: 6,
+    width: 10
   },
   input: {
     backgroundColor: colors.surfaceSoft,
