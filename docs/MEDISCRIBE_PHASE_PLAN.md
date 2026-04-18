@@ -19,17 +19,19 @@ This plan follows the uploaded roadmap architecture and technologies.
 
 ## Phase 3: User Interfaces
 
-- mobile patient form, voice capture placeholder, OCR placeholder, diagnosis view
+- mobile patient form, voice capture demo flow, OCR chart capture flow, diagnosis view
 - dashboard analytics, patient list, reports, settings
 - API client integration through the Node backend
 
 ## Phase 4: Deployment and Submission
 
-- `model_training/` Gemma fine-tuning scaffold
+- `model_training/` Gemma fine-tuning artifact and benchmark scripts
 - Docker Compose with backend, dashboard, PostgreSQL, and Ollama
 - evaluation report
 - video script
 - submission writeup
+- backend logging, optional API key auth, and rate limiting
+- mobile SQLite queue push plus backend sync acknowledgement
 
 ## Non-Negotiable Architecture
 

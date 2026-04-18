@@ -5,7 +5,10 @@ import diagnosisRoutes from './routes/diagnoses';
 import patientRoutes from './routes/patients';
 import syncRoutes from './routes/sync';
 import { queueCapture, analyzeQueued, dashboardSummary } from './services/clinicalEngine';
+import { apiKeyAuth } from './middleware/auth';
 import { errorMiddleware } from './middleware/errorHandler';
+import { requestLogger } from './middleware/logger';
+import { rateLimiter } from './middleware/rateLimiter';
 
 dotenv.config();
 
@@ -14,9 +17,17 @@ const port = Number(process.env.PORT || 3001);
 
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
+app.use(requestLogger);
+app.use(rateLimiter);
+app.use(apiKeyAuth);
 
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'mediscribe-backend', timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    service: 'mediscribe-backend',
+    timestamp: new Date().toISOString(),
+    architecture: 'Node/Express + PostgreSQL + Gemma/Ollama'
+  });
 });
 
 app.use('/api/patients', patientRoutes);

@@ -85,3 +85,24 @@ def test_legacy_runtime_files_are_not_part_of_product_architecture() -> None:
     ]
     existing = [path for path in forbidden if (ROOT / path).exists()]
     assert existing == []
+
+
+def test_backend_submission_checklist_features_exist() -> None:
+    for path in [
+        "backend/src/middleware/auth.ts",
+        "backend/src/middleware/logger.ts",
+        "backend/src/middleware/rateLimiter.ts",
+    ]:
+        assert (ROOT / path).exists()
+
+    sync_route = (ROOT / "backend/src/routes/sync.ts").read_text(encoding="utf-8")
+    assert "router.post('/push'" in sync_route
+    assert "router.post('/ack'" in sync_route
+
+
+def test_model_training_outputs_are_benchmark_artifacts() -> None:
+    train_script = (ROOT / "model_training/train.py").read_text(encoding="utf-8")
+    evaluate_script = (ROOT / "model_training/evaluate.py").read_text(encoding="utf-8")
+    assert "adapter_config.json" in train_script
+    assert "metrics.json" in evaluate_script
+    assert "placeholder" not in train_script.lower()

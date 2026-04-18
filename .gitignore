@@ -3,6 +3,10 @@ pytest-cache-files-*
 __pycache__/
 *.pyc
 .venv/
+node_modules/
+dist/
+build/
+.expo/
 outputs/models/*.joblib
 *.sqlite
 *.sqlite-journal

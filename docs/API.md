@@ -6,6 +6,9 @@ The source-of-truth runtime API is the Node/Express backend in `backend/`.
 
 - `GET /health`
 
+The health response includes the backend service name, timestamp, and the approved
+Node/Express + PostgreSQL + Gemma/Ollama architecture marker.
+
 ## Diagnoses
 
 - `POST /api/diagnoses/generate`
@@ -46,3 +49,38 @@ Request body:
 ## Sync
 
 - `GET /api/sync/pending`
+- `POST /api/sync/push`
+- `POST /api/sync/ack`
+- `GET /api/sync/status`
+
+Push request:
+
+```json
+{
+  "items": [
+    {
+      "record_id": "local-diagnosis-1",
+      "operation": "UPSERT_DIAGNOSIS",
+      "payload": {
+        "patient_id": "patient-1",
+        "symptoms": ["fever", "cough"]
+      },
+      "created_at": "2026-04-18T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+Ack request:
+
+```json
+{
+  "sync_ids": ["sync-abc123"]
+}
+```
+
+## Operational Guardrails
+
+- Optional API key auth via `API_KEY` and `x-api-key`.
+- In-memory rate limiting via `RATE_LIMIT_WINDOW_MS` and `RATE_LIMIT_MAX`.
+- JSON request logging for method, path, status code, and duration.

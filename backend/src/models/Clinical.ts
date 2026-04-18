@@ -89,3 +89,13 @@ export interface QueuedIntake {
   source: CaptureSource;
   raw_text: string;
 }
+
+export interface SyncItem {
+  sync_id: string;
+  record_id: string;
+  operation: 'CREATE_INTAKE' | 'CREATE_ASSESSMENT' | 'UPSERT_PATIENT' | 'UPSERT_DIAGNOSIS';
+  payload: unknown;
+  created_at: string;
+  synced_at?: string;
+  source?: 'mobile' | 'backend';
+}

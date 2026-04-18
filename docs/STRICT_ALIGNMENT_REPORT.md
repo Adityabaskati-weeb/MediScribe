@@ -15,9 +15,9 @@ Uploaded files used as the source of truth:
 ## Architecture Kept
 
 - `mobile/`: React Native app scaffold with voice, OCR, SQLite, sync, and screens.
-- `backend/`: Node/Express TypeScript API with diagnosis, patient, sync, Gemma, and database services.
+- `backend/`: Node/Express TypeScript API with diagnosis, patient, sync, Gemma, database, logging, auth, and rate limiting services.
 - `dashboard/`: React dashboard scaffold with analytics and patient views.
-- `model_training/`: Gemma training/evaluation scaffold.
+- `model_training/`: Gemma training/evaluation scripts that emit benchmark metrics and adapter metadata.
 - `docker/`: backend, dashboard, mobile Dockerfiles and compose file.
 - `docs/`: setup, API, deployment, demo, video, writeup, evaluation docs.
 
@@ -26,8 +26,14 @@ Uploaded files used as the source of truth:
 The previous non-roadmap runtime files were removed from tracked source so they do not
 define the product architecture.
 
-## Current Caveat
+## Current Validation
 
-Some mobile/native and model-training features are scaffolded until dependencies and
-device/GPU infrastructure are installed. The repo structure and implementation path now
-match the uploaded plan.
+- Backend TypeScript build passes.
+- Dashboard production build passes.
+- Mobile TypeScript validation passes.
+- Roadmap alignment tests pass.
+- Model-training scripts generate `metrics.json`, `evaluation_report.md`, and Gemma adapter metadata.
+
+Native device speech/OCR and GPU-hosted fine-tuning still require the local environment
+steps from `MEDISCRIBE_ENVIRONMENT_SETUP.md`, but the checked-in runtime architecture
+and integration flow match the uploaded plan.

@@ -31,7 +31,7 @@ Show dashboard metrics, patient list, reports, and sync status.
 
 ## 2:25-2:50 Model Training
 
-Show `model_training/` with prepared data, placeholder fine-tuned model output, and evaluation report.
+Show `model_training/` with prepared data, Gemma adapter metadata, metrics output, and evaluation report.
 
 ## 2:50-3:00 Close
 

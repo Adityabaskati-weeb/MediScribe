@@ -6,6 +6,7 @@ import {
   MediScribeAssessment,
   QueuedIntake,
   SafetySignal,
+  SyncItem,
   StoredAssessment,
   TreatmentRecommendation,
   Urgency
@@ -13,7 +14,7 @@ import {
 
 const assessments: StoredAssessment[] = [];
 const queue: QueuedIntake[] = [];
-const syncItems: Array<{ sync_id: string; record_id: string; operation: string; payload: unknown; synced_at?: string }> = [];
+const syncItems: SyncItem[] = [];
 
 function now() {
   return new Date().toISOString();
@@ -197,7 +198,7 @@ export function queueCapture(capture: IntakeCapture): QueuedIntake {
   const intake = normalizeCapture(capture);
   const queued: QueuedIntake = { draft_id: id('draft'), status: 'queued', created_at: now(), updated_at: now(), intake, source: capture.source, raw_text: capture.raw_text };
   queue.push(queued);
-  syncItems.push({ sync_id: id('sync'), record_id: queued.draft_id, operation: 'CREATE_INTAKE', payload: queued });
+  syncItems.push({ sync_id: id('sync'), record_id: queued.draft_id, operation: 'CREATE_INTAKE', payload: queued, created_at: now(), source: 'backend' });
   return queued;
 }
 
@@ -207,7 +208,7 @@ export function analyzeQueued(draftId: string): StoredAssessment | undefined {
   queued.status = 'assessed';
   queued.updated_at = now();
   const stored = saveAssessment(queued.intake);
-  syncItems.push({ sync_id: id('sync'), record_id: stored.assessment.assessment_id, operation: 'CREATE_ASSESSMENT', payload: stored });
+  syncItems.push({ sync_id: id('sync'), record_id: stored.assessment.assessment_id, operation: 'CREATE_ASSESSMENT', payload: stored, created_at: now(), source: 'backend' });
   return stored;
 }
 
@@ -233,4 +234,34 @@ export function dashboardSummary() {
 
 export function pendingSync() {
   return syncItems.filter((item) => !item.synced_at);
+}
+
+export function receiveSyncItems(items: Array<Partial<SyncItem>>) {
+  const accepted: SyncItem[] = [];
+  for (const item of items) {
+    if (!item.record_id || !item.operation || item.payload === undefined) continue;
+    const syncItem: SyncItem = {
+      sync_id: item.sync_id || id('sync'),
+      record_id: item.record_id,
+      operation: item.operation,
+      payload: item.payload,
+      created_at: item.created_at || now(),
+      source: 'mobile'
+    };
+    syncItems.push(syncItem);
+    accepted.push(syncItem);
+  }
+  return accepted;
+}
+
+export function markSynced(syncIds: string[]) {
+  const syncedAt = now();
+  const updated: string[] = [];
+  for (const item of syncItems) {
+    if (syncIds.includes(item.sync_id) && !item.synced_at) {
+      item.synced_at = syncedAt;
+      updated.push(item.sync_id);
+    }
+  }
+  return { synced_at: syncedAt, updated };
 }

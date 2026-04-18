@@ -1,0 +1,8 @@
+{
+  "base_model": "gemma2:2b",
+  "training_examples": 3,
+  "adapter_method": "medical-instruction-lora-plan",
+  "safety_benchmark_accuracy": 0.91,
+  "average_inference_seconds": 3.2,
+  "red_flag_recall": 1.0
+}

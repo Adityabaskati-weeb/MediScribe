@@ -18,3 +18,41 @@ export function enqueueOfflinePayload(id: string, payload: unknown) {
     );
   });
 }
+
+export function getPendingOfflinePayloads(): Promise<Array<{ id: string; payload: unknown; created_at: string }>> {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'SELECT id, payload, created_at FROM offline_queue WHERE synced = 0 ORDER BY created_at ASC;',
+        [],
+        (_, result) => {
+          const rows: Array<{ id: string; payload: unknown; created_at: string }> = [];
+          for (let index = 0; index < result.rows.length; index += 1) {
+            const row = result.rows.item(index);
+            rows.push({ id: row.id, payload: JSON.parse(row.payload), created_at: row.created_at });
+          }
+          resolve(rows);
+        },
+        (_, error) => {
+          reject(error);
+          return false;
+        }
+      );
+    });
+  });
+}
+
+export function markOfflinePayloadsSynced(ids: string[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (ids.length === 0) {
+      resolve();
+      return;
+    }
+
+    db.transaction((tx) => {
+      for (const id of ids) {
+        tx.executeSql('UPDATE offline_queue SET synced = 1 WHERE id = ?;', [id]);
+      }
+    }, reject, () => resolve());
+  });
+}

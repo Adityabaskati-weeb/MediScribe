@@ -15,7 +15,7 @@ When the clinic is offline, the mobile app queues records locally and syncs them
 
 ## Technical Architecture
 
-- `mobile/`: React Native app with patient form, voice input, OCR placeholder, diagnosis
+- `mobile/`: React Native app with patient form, voice input, OCR chart capture, diagnosis
   result, and history screens.
 - `backend/`: Express API with diagnosis, patient, sync, Gemma, validation, and database
   modules.
