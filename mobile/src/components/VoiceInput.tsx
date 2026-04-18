@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActionButton } from './ActionButton';
+import { Card } from './Card';
+import { colors } from '../styles/theme';
 import { getSpeechSupportMessage, startSpeechRecognition } from '../services/speechService';
 
 export function VoiceInput({ onTranscript }: { onTranscript: (text: string) => void }) {
@@ -27,10 +30,18 @@ export function VoiceInput({ onTranscript }: { onTranscript: (text: string) => v
   };
 
   return (
-    <View style={styles.card}>
-      <Text style={styles.heading}>Voice symptoms</Text>
+    <Card>
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.eyebrow}>Voice intake</Text>
+          <Text style={styles.heading}>Dictate symptoms</Text>
+        </View>
+        <View style={styles.pill}>
+          <Text style={styles.pillText}>Native ready</Text>
+        </View>
+      </View>
       <Text style={styles.help}>{status}</Text>
-      <Button title="Capture Symptoms by Voice" onPress={capture} disabled={loading} />
+      <ActionButton title="Start Voice Capture" onPress={capture} disabled={loading} />
       {loading && <ActivityIndicator />}
       <TextInput
         multiline
@@ -40,28 +51,48 @@ export function VoiceInput({ onTranscript }: { onTranscript: (text: string) => v
         value={transcript}
         onChangeText={setTranscript}
       />
-      <Button title="Analyze Voice Transcript" onPress={submit} disabled={!transcript.trim() || loading} />
+      <ActionButton title="Analyze Transcript" onPress={submit} disabled={!transcript.trim() || loading} variant="secondary" />
       <Text style={styles.note}>{getSpeechSupportMessage()}</Text>
-    </View>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    gap: 10,
-    padding: 16
+  header: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'space-between'
+  },
+  eyebrow: {
+    color: colors.primary,
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase'
   },
   heading: {
+    color: colors.ink,
     fontSize: 20,
     fontWeight: '800'
   },
+  pill: {
+    backgroundColor: '#e7f7f0',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 5
+  },
+  pillText: {
+    color: colors.success,
+    fontSize: 11,
+    fontWeight: '800'
+  },
   help: {
-    color: '#42645b'
+    color: colors.muted,
+    lineHeight: 20
   },
   input: {
-    borderColor: '#b7c9c4',
+    backgroundColor: colors.surfaceSoft,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     minHeight: 90,
@@ -69,7 +100,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top'
   },
   note: {
-    color: '#5f6f68',
+    color: colors.muted,
     fontSize: 12,
     lineHeight: 17
   }

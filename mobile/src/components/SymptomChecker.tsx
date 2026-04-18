@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput } from 'react-native';
+import { ActionButton } from './ActionButton';
+import { Card } from './Card';
+import { colors } from '../styles/theme';
 
 export function SymptomChecker({ onAnalyze }: { onAnalyze: (symptoms: string) => void }) {
   const [symptoms, setSymptoms] = useState('');
   return (
-    <View style={styles.card}>
+    <Card>
+      <Text style={styles.eyebrow}>Manual intake</Text>
       <Text style={styles.heading}>Symptom intake</Text>
       <TextInput
         multiline
@@ -14,24 +18,26 @@ export function SymptomChecker({ onAnalyze }: { onAnalyze: (symptoms: string) =>
         value={symptoms}
         onChangeText={setSymptoms}
       />
-      <Button title="Analyze Symptoms" disabled={!symptoms.trim()} onPress={() => onAnalyze(symptoms)} />
-    </View>
+      <ActionButton title="Analyze Symptoms" disabled={!symptoms.trim()} onPress={() => onAnalyze(symptoms)} />
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    gap: 12,
-    padding: 16
+  eyebrow: {
+    color: colors.primary,
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase'
   },
   heading: {
+    color: colors.ink,
     fontSize: 20,
     fontWeight: '700'
   },
   input: {
-    borderColor: '#b7c9c4',
+    backgroundColor: colors.surfaceSoft,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     minHeight: 110,

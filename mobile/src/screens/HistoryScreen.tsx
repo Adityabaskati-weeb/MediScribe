@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import type { ScreenName } from '../App';
+import { ActionButton } from '../components/ActionButton';
 import { PatientHistory } from '../components/PatientHistory';
 import { getPatientHistory } from '../services/databaseService';
+import { colors } from '../styles/theme';
 
 export function HistoryScreen({ onNavigate }: { onNavigate?: (screen: ScreenName) => void }) {
   const [items, setItems] = useState<any[]>([]);
@@ -13,7 +15,7 @@ export function HistoryScreen({ onNavigate }: { onNavigate?: (screen: ScreenName
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {onNavigate && <Button title="Back" onPress={() => onNavigate('home')} />}
+      {onNavigate && <ActionButton title="Back" onPress={() => onNavigate('home')} variant="secondary" />}
       <Text style={styles.title}>Patient history</Text>
       <PatientHistory items={items} />
     </ScrollView>
@@ -26,6 +28,7 @@ const styles = StyleSheet.create({
     padding: 20
   },
   title: {
+    color: colors.ink,
     fontSize: 26,
     fontWeight: '800'
   }

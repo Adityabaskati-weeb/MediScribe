@@ -6,6 +6,24 @@
     "platforms": ["ios", "android"],
     "version": "0.1.0",
     "orientation": "portrait",
+    "plugins": [
+      [
+        "@react-native-voice/voice",
+        {
+          "microphonePermission": "Allow MediScribe to capture symptom dictation.",
+          "speechRecognitionPermission": "Allow MediScribe to convert speech into clinical notes."
+        }
+      ]
+    ],
+    "android": {
+      "permissions": ["RECORD_AUDIO"]
+    },
+    "ios": {
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Allow MediScribe to capture symptom dictation.",
+        "NSSpeechRecognitionUsageDescription": "Allow MediScribe to convert speech into clinical notes."
+      }
+    },
     "extra": {
       "apiBaseUrl": "http://192.168.31.138:3001"
     }

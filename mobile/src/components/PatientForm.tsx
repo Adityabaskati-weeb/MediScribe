@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput } from 'react-native';
+import { ActionButton } from './ActionButton';
+import { Card } from './Card';
+import { colors } from '../styles/theme';
 
 export function PatientForm({ onSubmit }: { onSubmit: (patient: any) => void }) {
   const [name, setName] = useState('');
@@ -10,13 +13,14 @@ export function PatientForm({ onSubmit }: { onSubmit: (patient: any) => void }) 
   const canSubmit = name.trim().length > 1 && Number(age) > 0;
 
   return (
-    <View style={styles.card}>
+    <Card>
+      <Text style={styles.eyebrow}>Patient profile</Text>
       <Text style={styles.heading}>Patient registration</Text>
       <TextInput style={styles.input} placeholder="Patient name" value={name} onChangeText={setName} />
       <TextInput style={styles.input} placeholder="Age" keyboardType="number-pad" value={age} onChangeText={setAge} />
       <TextInput style={styles.input} placeholder="Gender" value={gender} onChangeText={setGender} />
       <TextInput style={styles.input} placeholder="Known conditions" value={conditions} onChangeText={setConditions} />
-      <Button
+      <ActionButton
         title="Register and Continue"
         disabled={!canSubmit}
         onPress={() => onSubmit({
@@ -26,23 +30,25 @@ export function PatientForm({ onSubmit }: { onSubmit: (patient: any) => void }) 
           known_conditions: conditions.split(',').map((item) => item.trim()).filter(Boolean)
         })}
       />
-    </View>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    gap: 12,
-    padding: 16
+  eyebrow: {
+    color: colors.primary,
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase'
   },
   heading: {
+    color: colors.ink,
     fontSize: 20,
     fontWeight: '700'
   },
   input: {
-    borderColor: '#b7c9c4',
+    backgroundColor: colors.surfaceSoft,
+    borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
     padding: 12

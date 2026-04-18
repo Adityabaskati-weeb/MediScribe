@@ -87,6 +87,7 @@ python model_training/evaluate.py
 - [Quick Reference](docs/MEDISCRIBE_QUICK_REFERENCE.md)
 - [Environment Setup](docs/MEDISCRIBE_ENVIRONMENT_SETUP.md)
 - [Code Templates](docs/MEDISCRIBE_CODE_TEMPLATES.md)
+- [Mobile Native Speech](mobile/NATIVE_SPEECH.md)
 - [Strict Alignment Report](docs/STRICT_ALIGNMENT_REPORT.md)
 - [Roadmap](ROADMAP.md)
 - [Video Script](docs/MEDISCRIBE_VIDEO_SCRIPT.md)

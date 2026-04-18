@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ScreenName } from '../App';
+import { ActionButton } from '../components/ActionButton';
 import { DiagnosisResult } from '../components/DiagnosisResult';
 import { SymptomChecker } from '../components/SymptomChecker';
 import { ChartOCR } from '../components/ChartOCR';
 import { VoiceInput } from '../components/VoiceInput';
 import { analyzeMedicalCase } from '../services/gemmaService';
 import { saveDiagnosis } from '../services/databaseService';
+import { colors } from '../styles/theme';
 
 export function DiagnosisScreen({ onNavigate }: { onNavigate?: (screen: ScreenName) => void }) {
   const [result, setResult] = useState<any>(null);
@@ -33,9 +35,12 @@ export function DiagnosisScreen({ onNavigate }: { onNavigate?: (screen: ScreenNa
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {onNavigate && <Button title="Back" onPress={() => onNavigate('home')} />}
-      <Text style={styles.title}>Clinical intake</Text>
-      <Text style={styles.status}>{status}</Text>
+      {onNavigate && <ActionButton title="Back" onPress={() => onNavigate('home')} variant="secondary" />}
+      <View style={styles.header}>
+        <Text style={styles.kicker}>Clinical intake</Text>
+        <Text style={styles.title}>Capture symptoms and triage risk</Text>
+        <Text style={styles.status}>{status}</Text>
+      </View>
       <VoiceInput onTranscript={analyze} />
       <ChartOCR onText={analyze} />
       <SymptomChecker onAnalyze={analyze} />
@@ -49,12 +54,28 @@ const styles = StyleSheet.create({
     gap: 14,
     padding: 20
   },
+  header: {
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 8,
+    padding: 16
+  },
+  kicker: {
+    color: colors.primary,
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase'
+  },
   title: {
+    color: colors.ink,
     fontSize: 26,
     fontWeight: '800'
   },
   status: {
-    color: '#42645b'
+    color: colors.muted,
+    lineHeight: 20
   }
 });
 

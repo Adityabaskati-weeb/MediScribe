@@ -1,13 +1,15 @@
 import React from 'react';
-import { Button, ScrollView, StyleSheet, Text } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import type { ScreenName } from '../App';
+import { ActionButton } from '../components/ActionButton';
 import { PatientForm } from '../components/PatientForm';
 import { createPatient } from '../services/databaseService';
+import { colors } from '../styles/theme';
 
 export function NewPatientScreen({ onNavigate }: { onNavigate: (screen: ScreenName) => void }) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Button title="Back" onPress={() => onNavigate('home')} />
+      <ActionButton title="Back" onPress={() => onNavigate('home')} variant="secondary" />
       <Text style={styles.title}>Register patient</Text>
       <PatientForm onSubmit={(patient) => {
         createPatient(patient);
@@ -23,6 +25,7 @@ const styles = StyleSheet.create({
     padding: 20
   },
   title: {
+    color: colors.ink,
     fontSize: 26,
     fontWeight: '800'
   }

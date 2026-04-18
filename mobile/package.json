@@ -5,14 +5,19 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
+    "start:dev-client": "expo start --dev-client --lan --clear --port 8130",
     "android": "expo start --android",
     "ios": "expo start --ios",
+    "android:native": "expo run:android",
+    "prebuild": "expo prebuild",
     "test": "echo \"Mobile smoke tests pending native dependency installation.\""
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-voice/voice": "^3.2.4",
     "axios": "^1.6.8",
     "expo": "^54.0.33",
+    "expo-dev-client": "~6.0.20",
     "expo-sqlite": "~16.0.10",
     "expo-status-bar": "~3.0.9",
     "react": "^19.1.0",

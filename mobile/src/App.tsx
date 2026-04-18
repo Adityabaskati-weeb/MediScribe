@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { DiagnosisScreen } from './screens/DiagnosisScreen';
 import { HistoryScreen } from './screens/HistoryScreen';
@@ -24,10 +24,10 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.shell}>
+    <View style={styles.shell}>
       {renderScreen()}
       <StatusBar style="dark" />
-    </SafeAreaView>
+    </View>
   );
 }
 

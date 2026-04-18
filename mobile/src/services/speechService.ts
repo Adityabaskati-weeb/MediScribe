@@ -2,11 +2,39 @@ export interface SpeechResult {
   text: string;
   language: string;
   confidence: number;
-  source: 'web-speech' | 'demo-fallback';
+  source: 'native' | 'demo-fallback';
   note?: string;
 }
 
+declare const require: (name: string) => any;
+
+type NativeSpeechEvent = {
+  value?: string[];
+  error?: {
+    message?: string;
+  };
+};
+
+function getNativeVoiceModule() {
+  try {
+    return require('@react-native-voice/voice').default;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function startSpeechRecognition(language = 'en-IN'): Promise<SpeechResult> {
+  if (await isNativeSpeechAvailable()) {
+    const text = await captureNativeSpeechTranscript(language);
+    return {
+      text,
+      language,
+      confidence: 0.86,
+      source: 'native',
+      note: 'Captured from native device speech recognition.'
+    };
+  }
+
   const text = await captureSymptomTranscript(language);
   return {
     text,
@@ -15,6 +43,63 @@ export async function startSpeechRecognition(language = 'en-IN'): Promise<Speech
     source: 'demo-fallback',
     note: 'Expo Go does not include native speech-to-text. This demo transcript keeps the clinical voice workflow testable.'
   };
+}
+
+export async function isNativeSpeechAvailable(): Promise<boolean> {
+  try {
+    const Voice = getNativeVoiceModule();
+    return Boolean(Voice && await Voice.isAvailable());
+  } catch {
+    return false;
+  }
+}
+
+async function captureNativeSpeechTranscript(language: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const Voice = getNativeVoiceModule();
+    if (!Voice) {
+      reject(new Error('Native speech module is not available in this build.'));
+      return;
+    }
+
+    let resolved = false;
+    let transcript = '';
+    const finish = async (value?: string, error?: Error) => {
+      if (resolved) return;
+      resolved = true;
+      clearTimeout(timeout);
+      try {
+        await Voice.stop();
+        await Voice.destroy();
+        Voice.removeAllListeners();
+      } catch {
+        // Native cleanup can throw if the recognizer already stopped.
+      }
+      if (error) reject(error);
+      else resolve(value || transcript);
+    };
+
+    const timeout = setTimeout(() => {
+      finish(transcript, transcript ? undefined : new Error('No speech detected. Type the symptoms or try again.'));
+    }, 12000);
+
+    Voice.onSpeechResults = (event: NativeSpeechEvent) => {
+      transcript = event.value?.[0] || transcript;
+    };
+    Voice.onSpeechPartialResults = (event: NativeSpeechEvent) => {
+      transcript = event.value?.[0] || transcript;
+    };
+    Voice.onSpeechError = (event: NativeSpeechEvent) => {
+      finish(undefined, new Error(event.error?.message || 'Native speech recognition failed.'));
+    };
+    Voice.onSpeechEnd = () => {
+      finish(transcript, transcript ? undefined : new Error('No speech detected. Type the symptoms or try again.'));
+    };
+
+    Voice.start(language).catch((error: unknown) => {
+      finish(undefined, error instanceof Error ? error : new Error('Native speech recognition could not start.'));
+    });
+  });
 }
 
 export async function captureSymptomTranscript(language = 'en-IN'): Promise<string> {
@@ -40,5 +125,5 @@ export async function captureSymptomInMultipleLanguages(symptoms: string[]): Pro
 }
 
 export function getSpeechSupportMessage() {
-  return 'For real microphone speech-to-text on Android, create a custom development build with a native speech module. Expo Go uses the demo transcript/manual dictation fallback.';
+  return 'Native microphone speech works in a custom development build. Expo Go uses the demo transcript/manual dictation fallback.';
 }
