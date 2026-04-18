@@ -4,7 +4,7 @@ import { ActionButton } from './ActionButton';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
 import { getSpeechSupportMessage, isNativeSpeechAvailable, startSpeechRecognition } from '../services/speechService';
-import { t } from '../utils/i18n';
+import { speechLocaleForLanguage, t } from '../utils/i18n';
 
 export function VoiceInput({ language, onTranscript }: { language: string; onTranscript: (text: string) => void }) {
   const [transcript, setTranscript] = useState('');
@@ -26,7 +26,7 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
     setLoading(true);
     setStatus(nativeAvailable ? t(language, 'listening') : t(language, 'demoDictation'));
     try {
-      const result = await startSpeechRecognition(language);
+      const result = await startSpeechRecognition(speechLocaleForLanguage(language));
       setTranscript(result.text);
       setStatus(`${result.note || `Captured with ${Math.round(result.confidence * 100)}% confidence.`} Sending to triage...`);
       onTranscript(result.text);

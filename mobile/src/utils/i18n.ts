@@ -343,3 +343,14 @@ export function t(language: string | undefined, key: TranslationKey) {
 export function normalizeLanguage(language: string | undefined): AppLanguage {
   return appLanguages.includes(language as AppLanguage) ? language as AppLanguage : 'English';
 }
+
+export function speechLocaleForLanguage(language: string | undefined) {
+  const selected = normalizeLanguage(language);
+  return {
+    English: 'en-IN',
+    Hindi: 'hi-IN',
+    Tamil: 'ta-IN',
+    Telugu: 'te-IN',
+    Bengali: 'bn-IN'
+  }[selected];
+}
