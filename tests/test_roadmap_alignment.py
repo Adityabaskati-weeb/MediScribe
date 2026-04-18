@@ -51,6 +51,7 @@ ROADMAP_PATHS = [
     "docs/API.md",
     "docs/DEPLOYMENT.md",
     "docs/DEMO_GUIDE.md",
+    "docs/MEDISCRIBE_MASTER_GUIDE.md",
     "docs/MEDISCRIBE_QUICK_REFERENCE.md",
     "docs/MEDISCRIBE_ENVIRONMENT_SETUP.md",
     "docs/MEDISCRIBE_CODE_TEMPLATES.md",
@@ -78,6 +79,28 @@ def test_alignment_report_names_uploaded_plan_files() -> None:
         "MEDISCRIBE_CODE_TEMPLATES.md",
     ]:
         assert name in report
+
+
+def test_master_guide_task_navigation_and_timeline_exist() -> None:
+    guide = (ROOT / "docs/MEDISCRIBE_MASTER_GUIDE.md").read_text(encoding="utf-8")
+    for section in [
+        "Quick Navigation By Task",
+        "I need to start from scratch",
+        "I am on Day 10 and need to implement OCR",
+        "I need to build the diagnosis system",
+        "I need to debug database issues",
+        "I am ready to deploy",
+        "I need to create the submission video",
+        "I need to write the technical writeup",
+        "Content Distribution",
+        "Implementation Timeline",
+        "Week 1: Foundation",
+        "Week 2: Core Features",
+        "Week 3: Mobile UI",
+        "Week 4: Backend And Deployment",
+        "Pre-Submission Checklist",
+    ]:
+        assert section in guide
 
 
 def test_legacy_runtime_files_are_not_part_of_product_architecture() -> None:
