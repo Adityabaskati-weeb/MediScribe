@@ -3,7 +3,9 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
-import { colors } from '../styles/theme';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { StatusPill } from '../components/StatusPill';
+import { colors, spacing } from '../styles/theme';
 
 export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraft; onNavigate: (screen: ScreenName) => void }) {
   const assessment = draft.assessment;
@@ -12,9 +14,13 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ActionButton title="Back" onPress={() => onNavigate('diagnosis')} variant="secondary" />
-      <Text style={styles.kicker}>Step 5 of 5</Text>
-      <Text style={styles.title}>Treatment and guidelines</Text>
+      <ActionButton compact title="Back" onPress={() => onNavigate('diagnosis')} variant="secondary" />
+      <ScreenHeader
+        eyebrow="Step 5 of 5"
+        title="Treatment and guidelines"
+        subtitle="WHO-style safety checks, local medicine reminders, and referral guidance."
+        right={<StatusPill label={urgent ? 'Refer now' : 'Guided care'} tone={urgent ? 'danger' : 'success'} />}
+      />
 
       {urgent && (
         <View style={styles.emergency}>
@@ -58,19 +64,9 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: colors.background,
     gap: 14,
-    padding: 20
-  },
-  kicker: {
-    color: colors.primary,
-    fontSize: 12,
-    fontWeight: '900',
-    textTransform: 'uppercase'
-  },
-  title: {
-    color: colors.ink,
-    fontSize: 28,
-    fontWeight: '900'
+    padding: spacing.lg
   },
   emergency: {
     backgroundColor: colors.dangerSoft,

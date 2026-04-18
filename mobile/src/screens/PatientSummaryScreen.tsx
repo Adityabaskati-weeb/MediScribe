@@ -3,7 +3,9 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
-import { colors } from '../styles/theme';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { StatusPill } from '../components/StatusPill';
+import { colors, spacing } from '../styles/theme';
 import { extractClinicalSymptoms, extractClinicalVitals } from '../utils/clinicalText';
 
 export function PatientSummaryScreen({
@@ -27,9 +29,13 @@ export function PatientSummaryScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ActionButton title="Back" onPress={() => onNavigate('voice')} variant="secondary" />
-      <Text style={styles.kicker}>Step 3 of 5</Text>
-      <Text style={styles.title}>Patient summary</Text>
+      <ActionButton compact title="Back" onPress={() => onNavigate('voice')} variant="secondary" />
+      <ScreenHeader
+        eyebrow="Step 3 of 5"
+        title="Patient summary"
+        subtitle="Confirm the intake before AI review. Correct anything that looks incomplete."
+        right={<StatusPill label={riskLabel(risk)} tone={riskTone(risk)} />}
+      />
       <RiskBanner risk={risk} />
 
       <Card>
@@ -65,6 +71,7 @@ export function PatientSummaryScreen({
           style={styles.input}
           value={notes}
           onChangeText={setNotes}
+          placeholderTextColor={colors.quiet}
           placeholder="Edit symptoms, vitals, medicine, pregnancy status, or danger signs."
         />
       </Card>
@@ -72,6 +79,18 @@ export function PatientSummaryScreen({
       <ActionButton title="Run AI Diagnosis" onPress={continueToDiagnosis} disabled={!notes.trim()} />
     </ScrollView>
   );
+}
+
+function riskLabel(risk: 'red' | 'yellow' | 'green') {
+  if (risk === 'red') return 'High risk';
+  if (risk === 'yellow') return 'Watch closely';
+  return 'Stable';
+}
+
+function riskTone(risk: 'red' | 'yellow' | 'green') {
+  if (risk === 'red') return 'danger';
+  if (risk === 'yellow') return 'warning';
+  return 'success';
 }
 
 function RiskBanner({ risk }: { risk: 'red' | 'yellow' | 'green' }) {
@@ -111,19 +130,9 @@ function extractVitals(text: string) {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: colors.background,
     gap: 14,
-    padding: 20
-  },
-  kicker: {
-    color: colors.primary,
-    fontSize: 12,
-    fontWeight: '900',
-    textTransform: 'uppercase'
-  },
-  title: {
-    color: colors.ink,
-    fontSize: 28,
-    fontWeight: '900'
+    padding: spacing.lg
   },
   riskBanner: {
     borderRadius: 8,
@@ -206,6 +215,8 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
+    color: colors.ink,
+    fontSize: 16,
     minHeight: 150,
     padding: 12,
     textAlignVertical: 'top'

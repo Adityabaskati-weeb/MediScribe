@@ -18,9 +18,11 @@ export function PatientHistory({ items }: { items: any[] }) {
             <View style={styles.timelineDot} />
             <View style={styles.body}>
               <Text style={styles.title}>{item.possibleDiagnosis1 || item.assessment?.clinical_summary || 'Visit'}</Text>
-              <Text style={styles.meta}>Risk: {item.urgency || item.assessment?.urgency || 'routine'}</Text>
-              <Text style={styles.meta}>{item.created_at || item.assessment?.created_at}</Text>
-              <Text style={styles.scan}>Photo/OCR record ready for review</Text>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaPill}>Risk: {item.urgency || item.assessment?.urgency || 'routine'}</Text>
+                <Text style={styles.metaPill}>OCR ready</Text>
+              </View>
+              <Text style={styles.meta}>{item.created_at || item.assessment?.created_at || 'Saved locally'}</Text>
             </View>
           </View>
         </Card>
@@ -53,7 +55,9 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.ink,
-    fontWeight: '700'
+    fontSize: 16,
+    fontWeight: '900',
+    lineHeight: 22
   },
   emptyTitle: {
     color: colors.ink,
@@ -61,10 +65,22 @@ const styles = StyleSheet.create({
     fontWeight: '900'
   },
   meta: {
-    color: colors.muted
+    color: colors.muted,
+    lineHeight: 20
   },
-  scan: {
+  metaRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8
+  },
+  metaPill: {
+    backgroundColor: colors.surfaceMuted,
+    borderRadius: 8,
     color: colors.primaryDark,
-    fontWeight: '800'
+    fontSize: 12,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 9,
+    paddingVertical: 6
   }
 });

@@ -3,9 +3,11 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { DiagnosisResult } from '../components/DiagnosisResult';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { StatusPill } from '../components/StatusPill';
 import { analyzeMedicalCase } from '../services/gemmaService';
 import { saveDiagnosis } from '../services/databaseService';
-import { colors } from '../styles/theme';
+import { colors, spacing } from '../styles/theme';
 import { extractClinicalSymptoms, extractClinicalVitals } from '../utils/clinicalText';
 
 export function DiagnosisScreen({
@@ -59,10 +61,15 @@ export function DiagnosisScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {onNavigate && <ActionButton title="Back" onPress={() => onNavigate('summary')} variant="secondary" />}
-      <View style={styles.header}>
-        <Text style={styles.kicker}>Step 4 of 5</Text>
-        <Text style={styles.title}>AI diagnosis</Text>
+      {onNavigate && <ActionButton compact title="Back" onPress={() => onNavigate('summary')} variant="secondary" />}
+      <ScreenHeader
+        eyebrow="Step 4 of 5"
+        title="AI diagnosis"
+        subtitle="Ranked diagnosis support with safety guardrails and offline fallback."
+        right={<StatusPill label="Gemma" tone="info" />}
+      />
+      <View style={styles.statusPanel}>
+        <Text style={styles.statusLabel}>Assessment state</Text>
         <Text style={styles.status}>{status}</Text>
       </View>
       <View style={styles.actions}>
@@ -76,10 +83,11 @@ export function DiagnosisScreen({
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: colors.background,
     gap: 14,
-    padding: 20
+    padding: spacing.lg
   },
-  header: {
+  statusPanel: {
     backgroundColor: colors.surface,
     borderColor: colors.border,
     borderRadius: 8,
@@ -87,20 +95,17 @@ const styles = StyleSheet.create({
     gap: 8,
     padding: 16
   },
-  kicker: {
-    color: colors.primary,
+  statusLabel: {
+    color: colors.muted,
     fontSize: 12,
-    fontWeight: '800',
+    fontWeight: '900',
     textTransform: 'uppercase'
   },
-  title: {
-    color: colors.ink,
-    fontSize: 26,
-    fontWeight: '800'
-  },
   status: {
-    color: colors.muted,
-    lineHeight: 20
+    color: colors.ink,
+    fontSize: 15,
+    fontWeight: '800',
+    lineHeight: 21
   },
   actions: {
     gap: 10

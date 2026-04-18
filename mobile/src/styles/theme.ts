@@ -1,25 +1,29 @@
 export const colors = {
-  background: '#eef7f8',
+  background: '#f3f8fa',
   surface: '#ffffff',
-  surfaceSoft: '#f5fbfb',
-  ink: '#102a2f',
-  muted: '#587078',
-  border: '#d3e4e7',
-  primary: '#087ea4',
-  primaryDark: '#07546f',
-  secondary: '#0f9f6e',
-  accent: '#c62828',
-  warning: '#b45309',
-  warningSoft: '#fff4dc',
-  dangerSoft: '#fde8e8',
-  success: '#087f5b',
-  successSoft: '#e6f7ef',
-  infoSoft: '#e8f4ff'
+  surfaceSoft: '#f7fbfc',
+  surfaceMuted: '#edf5f7',
+  ink: '#132a32',
+  muted: '#5d737c',
+  quiet: '#82949b',
+  border: '#d7e5e9',
+  borderStrong: '#b9d1d8',
+  primary: '#0b7893',
+  primaryDark: '#064b5f',
+  secondary: '#0f8f6b',
+  accent: '#c24132',
+  warning: '#ad6500',
+  warningSoft: '#fff3d8',
+  dangerSoft: '#fdebea',
+  success: '#087a5a',
+  successSoft: '#e7f6ef',
+  infoSoft: '#e7f3f8'
 };
 
 export const radii = {
   sm: 6,
-  md: 8
+  md: 8,
+  lg: 8
 };
 
 export const spacing = {
@@ -31,9 +35,16 @@ export const spacing = {
 };
 
 export const shadow = {
-  elevation: 2,
+  elevation: 1,
   shadowColor: '#0f2923',
-  shadowOpacity: 0.08,
-  shadowRadius: 12,
-  shadowOffset: { width: 0, height: 4 }
+  shadowOpacity: 0.05,
+  shadowRadius: 8,
+  shadowOffset: { width: 0, height: 3 }
+};
+
+export const typography = {
+  title: 28,
+  subtitle: 18,
+  body: 16,
+  caption: 12
 };

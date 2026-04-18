@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ActionButton } from './ActionButton';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
@@ -19,22 +19,68 @@ export function PatientForm({ language, onSubmit }: { language: string; onSubmit
   const [postpartumDays, setPostpartumDays] = useState('');
 
   const canSubmit = name.trim().length > 1 && Number(age) > 0;
+  const genderOptions = ['female', 'male', 'other'];
+
+  const field = (
+    label: string,
+    value: string,
+    onChangeText: (value: string) => void,
+    placeholder: string,
+    options?: { keyboardType?: 'default' | 'number-pad' | 'phone-pad'; multiline?: boolean }
+  ) => (
+    <View style={styles.field}>
+      <Text style={styles.label}>{label}</Text>
+      <TextInput
+        multiline={options?.multiline}
+        numberOfLines={options?.multiline ? 3 : 1}
+        keyboardType={options?.keyboardType || 'default'}
+        placeholder={placeholder}
+        placeholderTextColor={colors.quiet}
+        style={[styles.input, options?.multiline && styles.multilineInput]}
+        value={value}
+        onChangeText={onChangeText}
+      />
+    </View>
+  );
 
   return (
     <Card>
       <Text style={styles.eyebrow}>{t(language, 'patientProfile')}</Text>
-      <Text style={styles.heading}>{t(language, 'registerPatient')}</Text>
-      <TextInput style={styles.input} placeholder={t(language, 'patientName')} value={name} onChangeText={setName} />
-      <TextInput style={styles.input} placeholder={t(language, 'age')} keyboardType="number-pad" value={age} onChangeText={setAge} />
-      <TextInput style={styles.input} placeholder={t(language, 'gender')} value={gender} onChangeText={setGender} />
-      <TextInput style={styles.input} placeholder={t(language, 'phone')} keyboardType="phone-pad" value={phone} onChangeText={setPhone} />
-      <TextInput style={styles.input} placeholder={t(language, 'address')} value={address} onChangeText={setAddress} />
-      <TextInput style={styles.input} placeholder={t(language, 'emergencyContact')} value={emergencyContact} onChangeText={setEmergencyContact} />
-      <TextInput style={styles.input} placeholder={t(language, 'conditions')} value={conditions} onChangeText={setConditions} />
-      <TextInput style={styles.input} placeholder={t(language, 'allergies')} value={allergies} onChangeText={setAllergies} />
-      <TextInput style={styles.input} placeholder={t(language, 'medications')} value={medications} onChangeText={setMedications} />
-      <TextInput style={styles.input} placeholder={t(language, 'pregnancyWeeks')} keyboardType="number-pad" value={pregnancyWeeks} onChangeText={setPregnancyWeeks} />
-      <TextInput style={styles.input} placeholder={t(language, 'postpartumDays')} keyboardType="number-pad" value={postpartumDays} onChangeText={setPostpartumDays} />
+      <Text style={styles.heading}>Required details</Text>
+      {field(t(language, 'patientName'), name, setName, 'Full name')}
+      <View style={styles.row}>
+        <View style={styles.rowItem}>{field(t(language, 'age'), age, setAge, 'Years', { keyboardType: 'number-pad' })}</View>
+        <View style={styles.rowItem}>
+          <Text style={styles.label}>{t(language, 'gender')}</Text>
+          <View style={styles.genderRow}>
+            {genderOptions.map((option) => (
+              <Pressable
+                key={option}
+                onPress={() => setGender(option)}
+                style={[styles.genderChip, gender === option && styles.genderChipActive]}
+              >
+                <Text style={[styles.genderText, gender === option && styles.genderTextActive]}>{option}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.sectionDivider} />
+      <Text style={styles.heading}>Contact and location</Text>
+      {field(t(language, 'phone'), phone, setPhone, 'Mobile number', { keyboardType: 'phone-pad' })}
+      {field(t(language, 'address'), address, setAddress, 'Village / clinic / block', { multiline: true })}
+      {field(t(language, 'emergencyContact'), emergencyContact, setEmergencyContact, 'Family contact or ASHA worker', { keyboardType: 'phone-pad' })}
+
+      <View style={styles.sectionDivider} />
+      <Text style={styles.heading}>Clinical risk notes</Text>
+      {field(t(language, 'conditions'), conditions, setConditions, 'Diabetes, asthma, hypertension', { multiline: true })}
+      {field(t(language, 'allergies'), allergies, setAllergies, 'Medicine or food allergies', { multiline: true })}
+      {field(t(language, 'medications'), medications, setMedications, 'Current medicines, comma separated', { multiline: true })}
+      <View style={styles.row}>
+        <View style={styles.rowItem}>{field(t(language, 'pregnancyWeeks'), pregnancyWeeks, setPregnancyWeeks, 'Weeks', { keyboardType: 'number-pad' })}</View>
+        <View style={styles.rowItem}>{field(t(language, 'postpartumDays'), postpartumDays, setPostpartumDays, 'Days', { keyboardType: 'number-pad' })}</View>
+      </View>
       <ActionButton
         title={t(language, 'registerContinue')}
         disabled={!canSubmit}
@@ -69,14 +115,71 @@ const styles = StyleSheet.create({
   },
   heading: {
     color: colors.ink,
-    fontSize: 20,
-    fontWeight: '700'
+    fontSize: 18,
+    fontWeight: '900'
+  },
+  field: {
+    gap: 7
+  },
+  label: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase'
   },
   input: {
     backgroundColor: colors.surfaceSoft,
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
-    padding: 12
+    color: colors.ink,
+    fontSize: 16,
+    minHeight: 50,
+    paddingHorizontal: 12,
+    paddingVertical: 11
+  },
+  multilineInput: {
+    minHeight: 84,
+    textAlignVertical: 'top'
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 10
+  },
+  rowItem: {
+    flex: 1
+  },
+  genderRow: {
+    flexDirection: 'row',
+    gap: 6
+  },
+  genderChip: {
+    alignItems: 'center',
+    backgroundColor: colors.surfaceSoft,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
+    minHeight: 50,
+    justifyContent: 'center',
+    paddingHorizontal: 8
+  },
+  genderChipActive: {
+    backgroundColor: colors.primaryDark,
+    borderColor: colors.primaryDark
+  },
+  genderText: {
+    color: colors.ink,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'capitalize'
+  },
+  genderTextActive: {
+    color: '#ffffff'
+  },
+  sectionDivider: {
+    backgroundColor: colors.border,
+    height: 1,
+    marginVertical: 2
   }
 });

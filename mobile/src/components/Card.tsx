@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.md,
     borderWidth: 1,
     gap: 12,
-    padding: 16,
+    padding: 18,
     ...shadow
   }
 });

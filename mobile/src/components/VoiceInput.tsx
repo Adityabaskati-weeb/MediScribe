@@ -62,8 +62,9 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
         onPress={capture}
         style={({ pressed }) => [styles.micButton, pressed && styles.micPressed, loading && styles.micDisabled]}
       >
-        <Text style={styles.micIcon}>MIC</Text>
+        <Text style={styles.micIcon}>Voice</Text>
         <Text style={styles.micLabel}>{nativeAvailable ? t(language, 'startSpeaking') : t(language, 'demoVoice')}</Text>
+        <Text style={styles.micHint}>Ready offline</Text>
       </Pressable>
       <View style={styles.waveform}>
         {[18, 32, 48, 28, 56, 36, 22].map((height, index) => (
@@ -71,10 +72,12 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
         ))}
       </View>
       {loading && <ActivityIndicator />}
+      <Text style={styles.transcriptLabel}>Structured note</Text>
       <TextInput
         multiline
         numberOfLines={4}
         placeholder={t(language, 'transcriptPlaceholder')}
+        placeholderTextColor={colors.quiet}
         style={styles.input}
         value={transcript}
         onChangeText={setTranscript}
@@ -125,20 +128,27 @@ const styles = StyleSheet.create({
     color: colors.warning
   },
   help: {
-    color: colors.muted,
-    lineHeight: 20
+    backgroundColor: colors.surfaceMuted,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    color: colors.ink,
+    fontSize: 15,
+    fontWeight: '700',
+    lineHeight: 21,
+    padding: 12
   },
   micButton: {
     alignItems: 'center',
     alignSelf: 'center',
-    backgroundColor: colors.primary,
-    borderColor: '#9bd7e8',
+    backgroundColor: colors.primaryDark,
+    borderColor: colors.secondary,
     borderRadius: 8,
-    borderWidth: 3,
+    borderWidth: 2,
     gap: 8,
-    height: 156,
+    height: 168,
     justifyContent: 'center',
-    width: 156
+    width: '100%'
   },
   micPressed: {
     opacity: 0.86
@@ -147,14 +157,20 @@ const styles = StyleSheet.create({
     opacity: 0.5
   },
   micIcon: {
-    color: '#ffffff',
-    fontSize: 24,
+    color: '#d8f7ed',
+    fontSize: 13,
     fontWeight: '900'
   },
   micLabel: {
     color: '#ffffff',
-    fontSize: 17,
-    fontWeight: '900'
+    fontSize: 22,
+    fontWeight: '900',
+    textAlign: 'center'
+  },
+  micHint: {
+    color: '#b9dfe8',
+    fontSize: 12,
+    fontWeight: '800'
   },
   waveform: {
     alignItems: 'center',
@@ -173,9 +189,17 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
+    color: colors.ink,
+    fontSize: 16,
     minHeight: 90,
     padding: 12,
     textAlignVertical: 'top'
+  },
+  transcriptLabel: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase'
   },
   note: {
     color: colors.muted,

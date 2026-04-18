@@ -3,7 +3,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
-import { colors } from '../styles/theme';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { StatusPill } from '../components/StatusPill';
+import { colors, spacing } from '../styles/theme';
 import { appLanguages, t } from '../utils/i18n';
 
 export function SettingsScreen({
@@ -19,8 +21,13 @@ export function SettingsScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ActionButton title={copy('back')} onPress={() => onNavigate('home')} variant="secondary" />
-      <Text style={styles.title}>{copy('syncSettings')}</Text>
+      <ActionButton compact title={copy('back')} onPress={() => onNavigate('home')} variant="secondary" />
+      <ScreenHeader
+        eyebrow="Clinic device"
+        title={copy('syncSettings')}
+        subtitle="Keep the clinic ready for offline consultations, local storage, and model updates."
+        right={<StatusPill label="Offline ready" tone="success" />}
+      />
 
       <Card>
         <Text style={styles.sectionTitle}>{copy('offlineStatus')}</Text>
@@ -60,13 +67,9 @@ export function SettingsScreen({
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: colors.background,
     gap: 14,
-    padding: 20
-  },
-  title: {
-    color: colors.ink,
-    fontSize: 28,
-    fontWeight: '900'
+    padding: spacing.lg
   },
   sectionTitle: {
     color: colors.ink,

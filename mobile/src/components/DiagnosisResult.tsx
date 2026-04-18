@@ -50,11 +50,19 @@ export function DiagnosisResult({ result }: { result: any }) {
 
       <Text style={styles.heading}>Red flags</Text>
       {(assessment.red_flags || []).map((item: any, index: number) => (
-        <Text style={styles.flag} key={`${item.message}-${index}`}>{item.level}: {item.message}</Text>
+        <View style={styles.flag} key={`${item.message}-${index}`}>
+          <Text style={styles.flagLevel}>{item.level}</Text>
+          <Text style={styles.flagMessage}>{item.message}</Text>
+        </View>
       ))}
 
       <Text style={styles.heading}>Recommended next steps</Text>
-      {(assessment.treatment?.immediate_actions || []).map((action: string) => <Text style={styles.step} key={action}>- {action}</Text>)}
+      {(assessment.treatment?.immediate_actions || []).map((action: string, index: number) => (
+        <View style={styles.stepRow} key={action}>
+          <Text style={styles.stepIndex}>{index + 1}</Text>
+          <Text style={styles.step}>{action}</Text>
+        </View>
+      ))}
       <Text style={styles.referral}>Referral: {assessment.treatment?.referral}</Text>
       <Text style={styles.step}>Follow-up: {assessment.treatment?.follow_up}</Text>
       <Text style={styles.disclaimer}>{assessment.disclaimer}</Text>
@@ -69,10 +77,14 @@ const styles = StyleSheet.create({
     padding: 14
   },
   alertDanger: {
-    backgroundColor: '#fee2e2'
+    backgroundColor: colors.dangerSoft,
+    borderColor: '#efb2ac',
+    borderWidth: 1
   },
   alertStable: {
-    backgroundColor: '#dcfce7'
+    backgroundColor: colors.successSoft,
+    borderColor: '#aadcc7',
+    borderWidth: 1
   },
   alertTitle: {
     fontSize: 19,
@@ -145,15 +157,45 @@ const styles = StyleSheet.create({
     lineHeight: 20
   },
   flag: {
+    alignItems: 'flex-start',
     backgroundColor: colors.warningSoft,
+    borderColor: '#f0cf8f',
     borderRadius: 8,
-    color: colors.warning,
-    fontWeight: '800',
-    lineHeight: 22,
+    borderWidth: 1,
+    gap: 4,
     padding: 10
   },
-  step: {
+  flagLevel: {
+    color: colors.warning,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  flagMessage: {
     color: colors.ink,
+    fontWeight: '800',
+    lineHeight: 22
+  },
+  stepRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 10
+  },
+  stepIndex: {
+    backgroundColor: colors.surfaceMuted,
+    borderRadius: 8,
+    color: colors.primaryDark,
+    fontWeight: '900',
+    minWidth: 28,
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    textAlign: 'center'
+  },
+  step: {
+    flex: 1,
+    color: colors.ink,
+    fontSize: 15,
     lineHeight: 22
   },
   referral: {

@@ -14,6 +14,7 @@ export function SymptomChecker({ onAnalyze }: { onAnalyze: (symptoms: string) =>
         multiline
         numberOfLines={5}
         placeholder="Example: fever, cough, BP 120/80, HR 90, temp 38.2"
+        placeholderTextColor={colors.quiet}
         style={styles.input}
         value={symptoms}
         onChangeText={setSymptoms}
@@ -33,13 +34,15 @@ const styles = StyleSheet.create({
   heading: {
     color: colors.ink,
     fontSize: 20,
-    fontWeight: '700'
+    fontWeight: '900'
   },
   input: {
     backgroundColor: colors.surfaceSoft,
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
+    color: colors.ink,
+    fontSize: 16,
     minHeight: 110,
     padding: 12,
     textAlignVertical: 'top'

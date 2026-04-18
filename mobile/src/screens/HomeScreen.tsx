@@ -3,7 +3,8 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
-import { colors } from '../styles/theme';
+import { StatusPill } from '../components/StatusPill';
+import { colors, spacing } from '../styles/theme';
 import { t } from '../utils/i18n';
 
 export function HomeScreen({ draft, onNavigate }: { draft: ConsultationDraft; onNavigate: (screen: ScreenName) => void }) {
@@ -13,10 +14,7 @@ export function HomeScreen({ draft, onNavigate }: { draft: ConsultationDraft; on
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.hero}>
         <View style={styles.topRow}>
-          <View style={styles.offlinePill}>
-            <View style={styles.dot} />
-            <Text style={styles.offlineText}>{copy('offlineReady')}</Text>
-          </View>
+          <StatusPill label={copy('offlineReady')} tone="success" />
           <Pressable style={styles.languagePill} onPress={() => onNavigate('settings')}>
             <Text style={styles.languageText}>{draft.language}</Text>
           </Pressable>
@@ -28,14 +26,14 @@ export function HomeScreen({ draft, onNavigate }: { draft: ConsultationDraft; on
       </View>
 
       <View style={styles.metrics}>
-        <Card style={styles.metric}>
+        <View style={styles.metric}>
           <Text style={styles.metricValue}>24</Text>
           <Text style={styles.metricLabel}>{copy('patientsToday')}</Text>
-        </Card>
-        <Card style={styles.metric}>
+        </View>
+        <View style={styles.metric}>
           <Text style={[styles.metricValue, styles.alertMetric]}>3</Text>
           <Text style={styles.metricLabel}>{copy('urgentAlerts')}</Text>
-        </Card>
+        </View>
       </View>
 
       <Card style={styles.alertCard}>
@@ -46,15 +44,15 @@ export function HomeScreen({ draft, onNavigate }: { draft: ConsultationDraft; on
 
       <View style={styles.quickGrid}>
         <Pressable style={styles.quickTile} onPress={() => onNavigate('voice')}>
-          <Text style={styles.quickIcon}>Mic</Text>
+          <View style={styles.quickMark}><Text style={styles.quickMarkText}>1</Text></View>
           <Text style={styles.quickText}>{copy('voiceIntake')}</Text>
         </Pressable>
         <Pressable style={styles.quickTile} onPress={() => onNavigate('history')}>
-          <Text style={styles.quickIcon}>Scan</Text>
+          <View style={styles.quickMark}><Text style={styles.quickMarkText}>2</Text></View>
           <Text style={styles.quickText}>{copy('records')}</Text>
         </Pressable>
         <Pressable style={styles.quickTile} onPress={() => onNavigate('settings')}>
-          <Text style={styles.quickIcon}>Sync</Text>
+          <View style={styles.quickMark}><Text style={styles.quickMarkText}>3</Text></View>
           <Text style={styles.quickText}>{copy('settings')}</Text>
         </Pressable>
       </View>
@@ -64,39 +62,20 @@ export function HomeScreen({ draft, onNavigate }: { draft: ConsultationDraft; on
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: colors.background,
     gap: 16,
-    padding: 20
+    padding: spacing.lg
   },
   hero: {
     backgroundColor: colors.primaryDark,
     borderRadius: 8,
-    gap: 14,
-    padding: 20
+    gap: 16,
+    padding: 22
   },
   topRow: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between'
-  },
-  offlinePill: {
-    alignItems: 'center',
-    backgroundColor: '#e6f7ef',
-    borderRadius: 8,
-    flexDirection: 'row',
-    gap: 7,
-    paddingHorizontal: 10,
-    paddingVertical: 7
-  },
-  dot: {
-    backgroundColor: colors.success,
-    borderRadius: 5,
-    height: 10,
-    width: 10
-  },
-  offlineText: {
-    color: colors.success,
-    fontSize: 12,
-    fontWeight: '900'
   },
   languagePill: {
     backgroundColor: '#ffffff',
@@ -110,13 +89,15 @@ const styles = StyleSheet.create({
   },
   kicker: {
     color: '#baf0de',
+    fontSize: 12,
     fontWeight: '800',
     textTransform: 'uppercase'
   },
   title: {
     color: '#ffffff',
-    fontSize: 29,
-    fontWeight: '800'
+    fontSize: 30,
+    fontWeight: '900',
+    lineHeight: 36
   },
   copy: {
     color: '#d7eee8',
@@ -128,7 +109,12 @@ const styles = StyleSheet.create({
     gap: 12
   },
   metric: {
-    flex: 1
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
+    padding: 16
   },
   metricValue: {
     color: colors.primaryDark,
@@ -175,9 +161,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10
   },
-  quickIcon: {
-    color: colors.primary,
-    fontSize: 18,
+  quickMark: {
+    alignItems: 'center',
+    backgroundColor: colors.infoSoft,
+    borderRadius: 8,
+    height: 34,
+    justifyContent: 'center',
+    width: 34
+  },
+  quickMarkText: {
+    color: colors.primaryDark,
+    fontSize: 15,
     fontWeight: '900'
   },
   quickText: {

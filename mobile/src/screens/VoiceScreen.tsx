@@ -1,11 +1,13 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { ChartOCR } from '../components/ChartOCR';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { StatusPill } from '../components/StatusPill';
 import { SymptomChecker } from '../components/SymptomChecker';
 import { VoiceInput } from '../components/VoiceInput';
-import { colors } from '../styles/theme';
+import { colors, spacing } from '../styles/theme';
 import { t } from '../utils/i18n';
 
 export function VoiceScreen({
@@ -31,15 +33,17 @@ export function VoiceScreen({
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ActionButton title={copy('back')} onPress={() => onNavigate('newPatient')} variant="secondary" />
-      <View style={styles.header}>
-        <Text style={styles.kicker}>{copy('step2')}</Text>
-        <Text style={styles.title}>{copy('describeSymptoms')}</Text>
-        <Text style={styles.copy}>{copy('voiceScreenCopy')}</Text>
-        <View style={styles.languageBar}>
-          <Text style={styles.languageLabel}>{copy('language')}</Text>
-          <Text style={styles.languageValue}>{draft.language}</Text>
-        </View>
+      <ActionButton compact title={copy('back')} onPress={() => onNavigate('newPatient')} variant="secondary" />
+      <ScreenHeader
+        eyebrow={copy('step2')}
+        title={copy('describeSymptoms')}
+        subtitle={copy('voiceScreenCopy')}
+        right={<StatusPill label={draft.language} tone="info" />}
+      />
+      <View style={styles.intakeRail}>
+        <StatusPill label="Voice" tone="success" />
+        <StatusPill label="Chart scan" tone="info" />
+        <StatusPill label="Manual backup" tone="warning" />
       </View>
       <VoiceInput language={draft.language} onTranscript={saveTranscript} />
       <ChartOCR onText={saveChartText} />
@@ -50,47 +54,14 @@ export function VoiceScreen({
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: colors.background,
     gap: 14,
-    padding: 20
+    padding: spacing.lg
   },
-  header: {
-    backgroundColor: colors.infoSoft,
-    borderColor: '#b7ddff',
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 10,
-    padding: 16
-  },
-  kicker: {
-    color: colors.primary,
-    fontSize: 12,
-    fontWeight: '900',
-    textTransform: 'uppercase'
-  },
-  title: {
-    color: colors.ink,
-    fontSize: 28,
-    fontWeight: '900'
-  },
-  copy: {
-    color: colors.muted,
-    fontSize: 16,
-    lineHeight: 22
-  },
-  languageBar: {
+  intakeRail: {
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: 8,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 12
-  },
-  languageLabel: {
-    color: colors.muted,
-    fontWeight: '800'
-  },
-  languageValue: {
-    color: colors.primaryDark,
-    fontWeight: '900'
+    flexWrap: 'wrap',
+    gap: 8
   }
 });

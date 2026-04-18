@@ -48,7 +48,9 @@ export function ChartOCR({ onText }: { onText: (text: string) => void }) {
     <Card>
       <Text style={styles.eyebrow}>Chart OCR</Text>
       <Text style={styles.heading}>Scan vitals and notes</Text>
-      <Text style={styles.copy}>{status}</Text>
+      <View style={styles.statusBox}>
+        <Text style={styles.copy}>{status}</Text>
+      </View>
       {imageUri && <Image source={{ uri: imageUri }} style={styles.preview} />}
       <View style={styles.actions}>
         <ActionButton title="Open Camera" variant="secondary" onPress={() => scan('camera')} />
@@ -59,6 +61,7 @@ export function ChartOCR({ onText }: { onText: (text: string) => void }) {
         multiline
         numberOfLines={5}
         placeholder="Example: Complaint: fever and cough. BP 120/80 HR 90 SpO2 96 temp 38.2. Meds: paracetamol."
+        placeholderTextColor={colors.quiet}
         style={styles.input}
         value={chartText}
         onChangeText={setChartText}
@@ -85,14 +88,25 @@ const styles = StyleSheet.create({
     fontWeight: '800'
   },
   copy: {
-    color: colors.muted,
-    lineHeight: 20
+    color: colors.ink,
+    fontSize: 15,
+    fontWeight: '700',
+    lineHeight: 21
+  },
+  statusBox: {
+    backgroundColor: colors.surfaceMuted,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    padding: 12
   },
   actions: {
     gap: 8
   },
   preview: {
+    borderColor: colors.border,
     borderRadius: 8,
+    borderWidth: 1,
     height: 180,
     width: '100%'
   },
@@ -101,6 +115,8 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 8,
     borderWidth: 1,
+    color: colors.ink,
+    fontSize: 16,
     minHeight: 110,
     padding: 12,
     textAlignVertical: 'top'

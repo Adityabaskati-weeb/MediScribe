@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import type { ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { PatientHistory } from '../components/PatientHistory';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { StatusPill } from '../components/StatusPill';
 import { getPatientHistory } from '../services/databaseService';
-import { colors } from '../styles/theme';
+import { colors, spacing } from '../styles/theme';
 
 export function HistoryScreen({ onNavigate }: { onNavigate?: (screen: ScreenName) => void }) {
   const [items, setItems] = useState<any[]>([]);
@@ -15,10 +17,13 @@ export function HistoryScreen({ onNavigate }: { onNavigate?: (screen: ScreenName
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {onNavigate && <ActionButton title="Back" onPress={() => onNavigate('home')} variant="secondary" />}
-      <Text style={styles.kicker}>Records</Text>
-      <Text style={styles.title}>Patient history</Text>
-      <Text style={styles.copy}>Timeline of local visits, photo chart scans, and saved AI assessments.</Text>
+      {onNavigate && <ActionButton compact title="Back" onPress={() => onNavigate('home')} variant="secondary" />}
+      <ScreenHeader
+        eyebrow="Records"
+        title="Patient history"
+        subtitle="Local visit timeline with chart scans, triage notes, and saved AI assessments."
+        right={<StatusPill label={`${items.length} saved`} tone={items.length ? 'success' : 'info'} />}
+      />
       <PatientHistory items={items} />
     </ScrollView>
   );
@@ -26,23 +31,8 @@ export function HistoryScreen({ onNavigate }: { onNavigate?: (screen: ScreenName
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: colors.background,
     gap: 14,
-    padding: 20
-  },
-  title: {
-    color: colors.ink,
-    fontSize: 26,
-    fontWeight: '800'
-  },
-  kicker: {
-    color: colors.primary,
-    fontSize: 12,
-    fontWeight: '900',
-    textTransform: 'uppercase'
-  },
-  copy: {
-    color: colors.muted,
-    fontSize: 16,
-    lineHeight: 22
+    padding: spacing.lg
   }
 });

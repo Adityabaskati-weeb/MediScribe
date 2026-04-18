@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { DiagnosisScreen } from './screens/DiagnosisScreen';
@@ -11,6 +11,7 @@ import { SettingsScreen } from './screens/SettingsScreen';
 import { TreatmentScreen } from './screens/TreatmentScreen';
 import { VoiceScreen } from './screens/VoiceScreen';
 import { initializeLocalDatabase } from './services/databaseService';
+import { colors } from './styles/theme';
 import { normalizeLanguage } from './utils/i18n';
 
 export type ScreenName = 'home' | 'newPatient' | 'voice' | 'summary' | 'diagnosis' | 'treatment' | 'history' | 'settings';
@@ -52,16 +53,16 @@ export default function App() {
   };
 
   return (
-    <View style={styles.shell}>
+    <SafeAreaView style={styles.shell}>
       {renderScreen()}
       <StatusBar style="dark" />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   shell: {
     flex: 1,
-    backgroundColor: '#f4f7f6'
+    backgroundColor: colors.background
   }
 });
