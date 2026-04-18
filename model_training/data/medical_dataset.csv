@@ -1,0 +1,4 @@
+patient_info,symptoms,vitals,medical_history,primary_diagnosis,alternative_diagnoses,clinical_reasoning,treatment
+"58F diabetes","crushing chest pain radiating left arm","BP 84/56 HR 118 SpO2 91","diabetes","acute coronary syndrome","pulmonary embolism; aortic syndrome","Chest pain with hypotension is high risk","Immediate referral, ECG, aspirin if safe"
+"29F postpartum","severe headache visual spots","BP 174/112 HR 102","postpartum day 5","postpartum preeclampsia","migraine; intracranial pathology","Postpartum severe hypertension with neuro symptoms","Urgent obstetric referral and BP management"
+"3M child","fever reduced oral intake cough","Temp 39.1 HR 148","none","pediatric febrile illness","pneumonia; viral infection","Young child with fever needs same-day review","Hydration assessment, antipyretic per protocol, safety net"

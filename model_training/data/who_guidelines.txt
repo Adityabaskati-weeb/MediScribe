@@ -1,0 +1,3 @@
+Use local clinical protocols and urgent referral pathways for red flags.
+MediScribe is decision support and does not replace a licensed clinician.
+Danger signs include hypoxia, hypotension, altered mental status, severe hypertension in pregnancy or postpartum, stroke symptoms, chest pain, anaphylaxis, and shock.

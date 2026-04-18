@@ -1,0 +1,8 @@
+FROM node:20-alpine
+WORKDIR /app/mobile
+COPY mobile/package.json mobile/package.json
+COPY mobile/app.json mobile/app.json
+COPY mobile/src mobile/src
+RUN npm install
+EXPOSE 19000
+CMD ["npm", "start"]

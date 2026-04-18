@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "MediScribe",
+    "slug": "mediscribe",
+    "scheme": "mediscribe",
+    "platforms": ["ios", "android"],
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "extra": {
+      "apiBaseUrl": "http://localhost:3001"
+    }
+  }
+}

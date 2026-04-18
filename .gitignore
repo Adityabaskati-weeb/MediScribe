@@ -1,0 +1,11 @@
+.pytest_cache/
+pytest-cache-files-*
+__pycache__/
+*.pyc
+.venv/
+outputs/models/*.joblib
+*.sqlite
+*.sqlite-journal
+.hf-space-push/
+.hf-space-sync*/
+context-engineering-intro-codex-work/

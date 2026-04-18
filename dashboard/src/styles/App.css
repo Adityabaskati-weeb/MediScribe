@@ -1,0 +1,44 @@
+body {
+  margin: 0;
+  font-family: Inter, Segoe UI, Arial, sans-serif;
+  color: #17231f;
+  background: #f7faf9;
+}
+
+.navbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 24px;
+  background: white;
+  border-bottom: 1px solid #d8e1dd;
+}
+
+.navbar a {
+  color: #13795b;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+main {
+  padding: 24px;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.metric,
+.row {
+  background: white;
+  border: 1px solid #d8e1dd;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.metric strong {
+  display: block;
+  font-size: 30px;
+}
