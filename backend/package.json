@@ -7,9 +7,10 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "npm run test:integration",
+    "test": "npm run test:unit && npm run test:diagnosis && npm run test:integration",
     "test:integration": "ts-node src/tests/integration.test.ts",
     "test:gemma": "ts-node src/tests/gemmaService.test.ts",
+    "test:diagnosis": "ts-node src/tests/diagnosis.test.ts",
     "test:unit": "ts-node src/tests/validators.test.ts"
   },
   "dependencies": {
