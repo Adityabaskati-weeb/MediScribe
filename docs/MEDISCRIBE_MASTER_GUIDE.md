@@ -80,6 +80,58 @@ architecture follows the uploaded plan:
 | Code Templates | Reusable backend/mobile/test patterns | `docs/MEDISCRIBE_CODE_TEMPLATES.md` |
 | Package README | Project entry point and doc links | `README.md` |
 
+## File Organization
+
+The uploaded package uses this start-here organization:
+
+```text
+Your Downloads/
+|-- MEDISCRIBE_MASTER_GUIDE.md           START HERE
+|-- MEDISCRIBE_IMPLEMENTATION_ROADMAP.md MAIN GUIDE
+|-- MEDISCRIBE_QUICK_REFERENCE.md        DAILY CHECKLIST
+|-- MEDISCRIBE_ENVIRONMENT_SETUP.md      SETUP
+`-- MEDISCRIBE_CODE_TEMPLATES.md         CODE SNIPPETS
+```
+
+This repository keeps those roles in the checked-in implementation docs:
+
+```text
+MediScribe/
+|-- README.md
+|-- ROADMAP.md
+|-- docs/
+|   |-- MEDISCRIBE_MASTER_GUIDE.md
+|   |-- MEDISCRIBE_QUICK_REFERENCE.md
+|   |-- MEDISCRIBE_ENVIRONMENT_SETUP.md
+|   `-- MEDISCRIBE_CODE_TEMPLATES.md
+|-- mobile/
+|-- backend/
+|-- dashboard/
+|-- model_training/
+`-- docker/
+```
+
+## Recommended Reading Order
+
+1. `docs/MEDISCRIBE_MASTER_GUIDE.md` - 20 minute project overview and navigation.
+2. `docs/MEDISCRIBE_ENVIRONMENT_SETUP.md` - 1-2 hour setup and verification pass.
+3. `ROADMAP.md` - ongoing implementation reference for the four phases.
+4. `docs/MEDISCRIBE_CODE_TEMPLATES.md` - use as needed while coding.
+5. `docs/MEDISCRIBE_QUICK_REFERENCE.md` - daily checklist, commands, metrics, and fixes.
+
+## Unique Features Of This Package
+
+- Production-ready code: implemented services, screens, routes, tests, Docker, and docs.
+- Copy-paste ready patterns: reusable backend middleware, mobile hooks, API client patterns, and tests.
+- Day-by-day breakdown: 28-day checklist with phase checkpoints.
+- Real stack: React Native, Expo SDK 54, SQLite, Node/Express, PostgreSQL, Ollama/Gemma, React, Docker.
+- Error handling: backend error middleware, validators, logging, rate limiting, and troubleshooting docs.
+- Testing: unit tests, integration tests, roadmap alignment tests, TypeScript validation, and model evaluation.
+- Deployment: Dockerfiles, Compose orchestration, health checks, and deployment guide.
+- Hackathon optimized: demo guide, video script, writeup, metrics, and winning strategy.
+- Multi-platform: Windows-focused local commands with stack choices that also work on macOS and Linux.
+- Medical focus: clinical red flags, urgency scoring, referral guidance, vitals parsing, and treatment planning.
+
 ## Implementation Timeline
 
 ### Week 1: Foundation
