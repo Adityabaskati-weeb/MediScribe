@@ -51,6 +51,7 @@ ROADMAP_PATHS = [
     "docs/API.md",
     "docs/DEPLOYMENT.md",
     "docs/DEMO_GUIDE.md",
+    "docs/MEDISCRIBE_QUICK_REFERENCE.md",
     "ROADMAP.md",
 ]
 
@@ -142,6 +143,19 @@ def test_key_roadmap_sections_have_real_implementation() -> None:
     assert "CREATE TABLE IF NOT EXISTS treatments" in backend_db
     assert "LineChart" in dashboard and "BarChart" in dashboard
     assert "healthcheck" in compose
+
+
+def test_quick_reference_deliverables_exist() -> None:
+    quick = (ROOT / "docs/MEDISCRIBE_QUICK_REFERENCE.md").read_text(encoding="utf-8")
+    for section in [
+        "28-Day Progress Tracker",
+        "Essential Commands",
+        "Key Metrics To Track",
+        "Debugging Quick Fixes",
+        "Video Production Checklist",
+        "Writeup Structure",
+    ]:
+        assert section in quick
 
 
 def test_model_training_outputs_are_benchmark_artifacts() -> None:

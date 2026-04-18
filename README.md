@@ -82,6 +82,7 @@ python model_training/evaluate.py
 - [API](docs/API.md)
 - [Deployment](docs/DEPLOYMENT.md)
 - [Demo Guide](docs/DEMO_GUIDE.md)
+- [Quick Reference](docs/MEDISCRIBE_QUICK_REFERENCE.md)
 - [Strict Alignment Report](docs/STRICT_ALIGNMENT_REPORT.md)
 - [Roadmap](ROADMAP.md)
 - [Video Script](docs/MEDISCRIBE_VIDEO_SCRIPT.md)
