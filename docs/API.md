@@ -2,6 +2,8 @@
 
 The source-of-truth runtime API is the Node/Express backend in `backend/`.
 
+OpenAPI reference: `backend/openapi.yaml`.
+
 ## Health
 
 - `GET /health`

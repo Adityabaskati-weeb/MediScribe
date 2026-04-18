@@ -5,6 +5,7 @@ import diagnosisRoutes from './routes/diagnoses';
 import patientRoutes from './routes/patients';
 import syncRoutes from './routes/sync';
 import { queueCapture, analyzeQueued, dashboardSummary } from './services/clinicalEngine';
+import { initializeDatabase } from './config/database';
 import { apiKeyAuth } from './middleware/auth';
 import { errorMiddleware } from './middleware/errorHandler';
 import { requestLogger } from './middleware/logger';
@@ -47,8 +48,19 @@ app.post('/api/offline/queue/:draftId/analyze', (req, res) => {
 app.get('/api/dashboard', (_req, res) => {
   res.json({ success: true, data: dashboardSummary(), timestamp: new Date().toISOString(), statusCode: 200 });
 });
+
+app.get('/api/dashboard/stats', (_req, res) => {
+  res.json({ success: true, data: dashboardSummary(), timestamp: new Date().toISOString(), statusCode: 200 });
+});
+
 app.use(errorMiddleware);
 
-app.listen(port, () => {
-  console.log(`MediScribe backend running on ${port}`);
-});
+initializeDatabase()
+  .catch((error) => {
+    console.warn(`Database initialization skipped: ${error.message}`);
+  })
+  .finally(() => {
+    app.listen(port, () => {
+      console.log(`MediScribe backend running on ${port}`);
+    });
+  });

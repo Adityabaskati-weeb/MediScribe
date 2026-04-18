@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: MediScribe API
+  version: 0.1.0
+  description: Node/Express API for the MediScribe rural clinic assistant.
+servers:
+  - url: http://localhost:3001
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: Backend service status.
+  /api/diagnoses/generate:
+    post:
+      summary: Generate a clinical assessment from structured intake.
+      responses:
+        "200":
+          description: Assessment generated.
+  /api/offline/intake:
+    post:
+      summary: Queue voice, OCR, or form intake for offline-first workflow.
+      responses:
+        "200":
+          description: Intake queued.
+  /api/offline/queue/{draftId}/analyze:
+    post:
+      summary: Analyze a queued draft.
+      parameters:
+        - in: path
+          name: draftId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Assessment generated from queued intake.
+  /api/sync/pending:
+    get:
+      summary: List records waiting for sync acknowledgement.
+      responses:
+        "200":
+          description: Pending sync items.
+  /api/sync/push:
+    post:
+      summary: Push mobile SQLite queue records to backend.
+      responses:
+        "200":
+          description: Accepted sync records.
+  /api/sync/ack:
+    post:
+      summary: Mark sync records acknowledged.
+      responses:
+        "200":
+          description: Sync acknowledgement result.
+  /api/dashboard/stats:
+    get:
+      summary: Dashboard metrics for clinic overview.
+      responses:
+        "200":
+          description: Clinic dashboard metrics.

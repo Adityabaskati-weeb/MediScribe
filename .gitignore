@@ -7,6 +7,7 @@ node_modules/
 dist/
 build/
 .expo/
+.logs/
 outputs/models/*.joblib
 *.sqlite
 *.sqlite-journal

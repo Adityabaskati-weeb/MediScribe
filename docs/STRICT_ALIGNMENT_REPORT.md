@@ -20,6 +20,7 @@ Uploaded files used as the source of truth:
 - `model_training/`: Gemma training/evaluation scripts that emit benchmark metrics and adapter metadata.
 - `docker/`: backend, dashboard, mobile Dockerfiles and compose file.
 - `docs/`: setup, API, deployment, demo, video, writeup, evaluation docs.
+- `backend/openapi.yaml`: API documentation requested by the final deliverables checklist.
 
 ## Architecture Removed
 
@@ -33,6 +34,8 @@ define the product architecture.
 - Mobile TypeScript validation passes.
 - Roadmap alignment tests pass.
 - Model-training scripts generate `metrics.json`, `evaluation_report.md`, and Gemma adapter metadata.
+- Mobile services include speech capture, multilingual symptom capture, OCR parsing, SQLite patient/consultation/diagnosis tables, and local sync queue.
+- Docker Compose uses the uploaded-plan services: PostgreSQL, backend, dashboard, and Ollama.
 
 Native device speech/OCR and GPU-hosted fine-tuning still require the local environment
 steps from `MEDISCRIBE_ENVIRONMENT_SETUP.md`, but the checked-in runtime architecture

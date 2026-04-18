@@ -20,6 +20,7 @@ This plan follows the uploaded roadmap architecture and technologies.
 ## Phase 3: User Interfaces
 
 - mobile patient form, voice capture demo flow, OCR chart capture flow, diagnosis view
+- local SQLite patient, consultation, diagnosis, and offline queue tables
 - dashboard analytics, patient list, reports, settings
 - API client integration through the Node backend
 

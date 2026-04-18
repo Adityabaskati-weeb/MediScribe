@@ -31,6 +31,8 @@ ROADMAP_PATHS = [
     "backend/src/services/gemmaService.ts",
     "backend/src/services/databaseService.ts",
     "backend/src/services/analysisService.ts",
+    "backend/openapi.yaml",
+    "backend/src/tests/integration.test.ts",
     "dashboard/package.json",
     "dashboard/src/App.tsx",
     "dashboard/src/pages/Dashboard.tsx",
@@ -98,6 +100,31 @@ def test_backend_submission_checklist_features_exist() -> None:
     sync_route = (ROOT / "backend/src/routes/sync.ts").read_text(encoding="utf-8")
     assert "router.post('/push'" in sync_route
     assert "router.post('/ack'" in sync_route
+    assert (ROOT / "backend/openapi.yaml").exists()
+
+
+def test_mobile_week_two_and_three_functions_exist() -> None:
+    speech = (ROOT / "mobile/src/services/speechService.ts").read_text(encoding="utf-8")
+    ocr = (ROOT / "mobile/src/services/ocrService.ts").read_text(encoding="utf-8")
+    database = (ROOT / "mobile/src/services/databaseService.ts").read_text(encoding="utf-8")
+    app = (ROOT / "mobile/src/App.tsx").read_text(encoding="utf-8")
+
+    assert "startSpeechRecognition" in speech
+    assert "captureSymptomInMultipleLanguages" in speech
+    assert "parseExtractedMedicalData" in ocr
+    assert "CREATE TABLE IF NOT EXISTS patients" in database
+    assert "CREATE TABLE IF NOT EXISTS consultations" in database
+    assert "CREATE TABLE IF NOT EXISTS diagnoses" in database
+    assert "createPatient" in database
+    assert "saveDiagnosis" in database
+    assert "ScreenName" in app
+
+
+def test_docker_compose_uses_roadmap_services_only() -> None:
+    compose = (ROOT / "docker/docker-compose.yml").read_text(encoding="utf-8")
+    for service in ["postgres:", "backend:", "dashboard:", "ollama:"]:
+        assert service in compose
+    assert "python-api" not in compose
 
 
 def test_model_training_outputs_are_benchmark_artifacts() -> None:

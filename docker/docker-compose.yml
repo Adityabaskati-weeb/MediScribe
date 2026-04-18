@@ -32,7 +32,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - python-api
+      - backend
 
   ollama:
     image: ollama/ollama:latest
