@@ -1,0 +1,29 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" fill="#f3f8fa"/>
+  <rect x="80" y="74" width="1440" height="752" rx="8" fill="#ffffff" stroke="#d7e5e9" stroke-width="3"/>
+  <rect x="110" y="104" width="560" height="692" rx="8" fill="#064b5f"/>
+  <text x="152" y="176" fill="#baf0de" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700">MediScribe</text>
+  <text x="152" y="250" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="800">Offline AI</text>
+  <text x="152" y="318" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="800">medical assistant</text>
+  <text x="152" y="378" fill="#d7eee8" font-family="Arial, Helvetica, sans-serif" font-size="26">Built for rural clinics with low connectivity.</text>
+  <rect x="152" y="445" width="390" height="84" rx="8" fill="#0f8f6b"/>
+  <text x="196" y="499" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="800">Start Consultation</text>
+  <rect x="152" y="580" width="160" height="94" rx="8" fill="#ffffff"/>
+  <text x="182" y="628" fill="#064b5f" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="800">24</text>
+  <text x="182" y="654" fill="#5d737c" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700">patients today</text>
+  <rect x="332" y="580" width="160" height="94" rx="8" fill="#ffffff"/>
+  <text x="362" y="628" fill="#c24132" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="800">3</text>
+  <text x="362" y="654" fill="#5d737c" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700">urgent alerts</text>
+  <rect x="735" y="134" width="690" height="164" rx="8" fill="#e7f6ef" stroke="#b9d1d8" stroke-width="2"/>
+  <text x="780" y="190" fill="#087a5a" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="800">Gemma 4 via Ollama</text>
+  <text x="780" y="238" fill="#132a32" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700">Local reasoning with safety guardrails</text>
+  <rect x="735" y="338" width="320" height="164" rx="8" fill="#e7f3f8" stroke="#b9d1d8" stroke-width="2"/>
+  <text x="780" y="402" fill="#064b5f" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="800">Voice + OCR</text>
+  <text x="780" y="446" fill="#132a32" font-family="Arial, Helvetica, sans-serif" font-size="24">Multimodal intake</text>
+  <rect x="1105" y="338" width="320" height="164" rx="8" fill="#fff3d8" stroke="#f0cf8f" stroke-width="2"/>
+  <text x="1150" y="402" fill="#ad6500" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="800">Red flags</text>
+  <text x="1150" y="446" fill="#132a32" font-family="Arial, Helvetica, sans-serif" font-size="24">Refer-now fallback</text>
+  <rect x="735" y="542" width="690" height="174" rx="8" fill="#fdebea" stroke="#efb2ac" stroke-width="2"/>
+  <text x="780" y="606" fill="#c24132" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="800">Built for impact</text>
+  <text x="780" y="654" fill="#132a32" font-family="Arial, Helvetica, sans-serif" font-size="26">Offline records, ranked diagnosis, treatment guidance, and clinic analytics.</text>
+</svg>

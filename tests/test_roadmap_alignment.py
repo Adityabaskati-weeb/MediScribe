@@ -195,10 +195,11 @@ def test_mobile_week_two_and_three_functions_exist() -> None:
     assert "ScreenName" in app
 
 
-def test_docker_compose_uses_roadmap_services_only() -> None:
+def test_docker_compose_uses_roadmap_and_hackathon_services() -> None:
     compose = (ROOT / "docker/docker-compose.yml").read_text(encoding="utf-8")
-    for service in ["postgres:", "backend:", "dashboard:", "ollama:"]:
+    for service in ["postgres:", "api-service:", "sync-service:", "ai-service:", "dashboard:", "api-gateway:"]:
         assert service in compose
+    assert "OLLAMA_API: http://ai-service:11434" in compose
     assert "python-api" not in compose
 
 

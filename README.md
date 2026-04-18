@@ -14,7 +14,7 @@ Offline AI medical assistant for rural clinics.
 ## Hackathon Differentiators
 
 - Offline-first: mobile SQLite, local history, offline triage fallback, and sync queue.
-- Gemma optimized: Ollama/Gemma prompting, medical response normalization, and fine-tuning artifact flow.
+- Gemma 4 optimized: `gemma4:e4b` through Ollama, medical response normalization, and fine-tuning artifact flow.
 - Production-ready: mobile app, backend API, dashboard, Docker, validation, logging, tests, and docs.
 - Agentic safety pipeline: diagnosis, reasoning, treatment, and safety agents with audit logs.
 - Measurable impact: 91% benchmark accuracy, 100% red-flag recall, 3.2 second inference target.
@@ -99,6 +99,9 @@ python model_training/evaluate.py
 - [API](docs/API.md)
 - [Deployment](docs/DEPLOYMENT.md)
 - [Demo Guide](docs/DEMO_GUIDE.md)
+- [Judge Alignment Matrix](docs/JUDGE_ALIGNMENT_MATRIX.md)
+- [Kaggle Submission Checklist](docs/KAGGLE_SUBMISSION_CHECKLIST.md)
+- [Live Demo Guide](docs/LIVE_DEMO.md)
 - [Master Guide](docs/MEDISCRIBE_MASTER_GUIDE.md)
 - [Implementation Roadmap](docs/MEDISCRIBE_IMPLEMENTATION_ROADMAP.md)
 - [Quick Reference](docs/MEDISCRIBE_QUICK_REFERENCE.md)
@@ -114,6 +117,24 @@ python model_training/evaluate.py
 - [Roadmap](ROADMAP.md)
 - [Video Script](docs/MEDISCRIBE_VIDEO_SCRIPT.md)
 - [Submission Writeup](docs/MEDISCRIBE_SUBMISSION_WRITEUP.md)
+
+## Judge Quick Review
+
+```bash
+npm test --prefix backend
+npm run build --prefix backend
+npm test --prefix mobile
+npm run build --prefix dashboard
+```
+
+```bash
+curl http://localhost:3001/api/system/demo-pack
+curl http://localhost:3001/api/system/architecture
+curl http://localhost:3001/api/diagnoses/evaluation
+```
+
+Recommended submission tracks: Health & Sciences, Safety & Trust, Digital Equity
+& Inclusivity, and the Ollama Special Technology Track.
 
 ## Docker
 

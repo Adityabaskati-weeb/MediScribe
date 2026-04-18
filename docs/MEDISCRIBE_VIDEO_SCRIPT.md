@@ -1,39 +1,78 @@
 # MediScribe 3-Minute Demo Script
 
-## 0:00-0:20 Problem
+## 0:00-0:18 Opening Hook
 
-Rural clinics need fast triage support, offline records, and clear escalation guidance.
+Visual: crowded rural clinic, paper notebook, unstable network icon.
 
-## 0:20-1:00 Mobile Workflow
+Voiceover:
 
-Show the React Native app scaffold:
+"In many rural clinics, one health worker may see more than 50 patients a day.
+The internet is unreliable, records are paper-based, and the most dangerous cases
+can look ordinary at first."
 
-- new patient form
-- voice symptom capture
-- OCR chart scan
-- diagnosis result view
-- patient history
+## 0:18-0:42 The App Starts Offline
 
-## 1:00-1:45 Backend Workflow
+Show mobile home screen.
 
-Show the Node/Express API:
+Voiceover:
 
-- `POST /api/diagnoses/generate`
-- `POST /api/offline/intake`
-- `POST /api/offline/queue/:draftId/analyze`
-- `GET /api/sync/pending`
+"This is MediScribe: an offline AI medical assistant built for low-resource
+clinics. It starts with the real workflow: register the patient, capture symptoms,
+and keep the visit saved locally."
 
-Explain that Gemma/Ollama is wrapped in the backend service and safety guardrails remain local.
+Show: Start Consultation, patient form, language indicator, offline-ready status.
 
-## 1:45-2:25 Dashboard
+## 0:42-1:18 Voice And OCR Intake
 
-Show dashboard metrics, patient list, reports, and sync status.
+Show voice screen and chart scan.
 
-## 2:25-2:50 Model Training
+Voiceover:
 
-Show `model_training/` with prepared data, Gemma adapter metadata, metrics output, and evaluation report.
+"The worker can speak symptoms, type notes, or scan a chart. MediScribe turns
+messy intake into structured vitals and symptoms before sending it to the
+clinical agents."
 
-## 2:50-3:00 Close
+Show: voice intake, waveform, chart OCR demo, patient summary risk banner.
 
-MediScribe is an offline-first medical assistant built with React Native, Node/Express,
-React dashboard, PostgreSQL/SQLite, Docker, and Gemma/Ollama.
+## 1:18-1:58 Gemma 4 Agentic Diagnosis
+
+Show AI diagnosis screen and backend `/api/diagnoses/agentic` response.
+
+Voiceover:
+
+"Gemma 4 runs locally through Ollama. A diagnosis agent ranks the differential, a
+reasoning agent explains why, a treatment agent gives next steps, and a safety
+agent checks red flags before anything is displayed."
+
+Show: top 3 diagnoses, confidence bars, why-this-diagnosis, red flags.
+
+## 1:58-2:24 Offline Safety Moment
+
+Show backend stopped or offline mode, then run diagnosis fallback.
+
+Voiceover:
+
+"If the model or internet is unavailable, MediScribe does not freeze. Local
+safety rules still catch low oxygen, shock blood pressure, postpartum danger
+signs, and pediatric emergencies."
+
+Show: emergency referral guidance and saved local visit.
+
+## 2:24-2:45 Dashboard And Metrics
+
+Show web dashboard and API metrics.
+
+Voiceover:
+
+"Clinic leads can review urgent cases, sync status, accuracy, latency,
+red-flag recall, and patient trends."
+
+Show: dashboard KPIs, `/api/diagnoses/evaluation`, `/metrics`.
+
+## 2:45-3:00 Closing
+
+Voiceover:
+
+"MediScribe brings Gemma 4 intelligence to the edge: private, explainable, and
+ready where healthcare needs it most. No cloud dependency. No waiting. Safer
+decisions in the clinic."

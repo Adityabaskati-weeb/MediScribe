@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const OLLAMA_API = process.env.OLLAMA_API || 'http://localhost:11434';
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'gemma2:2b';
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'gemma4:e4b';
 
 export interface MedicalPrompt {
   patientAge: number;
@@ -34,7 +34,7 @@ export async function getGemmaResponse(prompt: string, systemPrompt: string): Pr
     prompt,
     system: systemPrompt,
     stream: false,
-    options: { temperature: 0.1, num_predict: 700 }
+    options: { temperature: 0.2, top_p: 0.95, top_k: 64, num_predict: 700 }
   });
   return response.data.response;
 }

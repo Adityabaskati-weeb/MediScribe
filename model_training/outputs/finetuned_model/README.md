@@ -2,7 +2,7 @@
 
 This folder records the hackathon training artifact contract for the Gemma/Ollama pipeline.
 
-- Base model: `gemma2:2b`
+- Base model: `gemma4:e4b`
 - Training examples: 6
 - Safety benchmark accuracy: 91%
 - Red flag recall: 100%

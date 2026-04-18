@@ -159,7 +159,7 @@ npx expo start --lan --clear --max-workers 1 --port 8140
 
 ```bash
 curl http://localhost:11434/api/tags
-ollama pull gemma2:2b
+ollama pull gemma4:e4b
 ollama serve
 ```
 

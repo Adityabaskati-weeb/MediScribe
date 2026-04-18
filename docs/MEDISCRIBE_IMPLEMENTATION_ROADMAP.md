@@ -226,8 +226,8 @@ ollama --version
 
 2. **Pull Gemma 4 Model**
 ```bash
-ollama pull gemma2:2b  # Start with 2B variant (lightweight)
-# Alternative: gemma2:7b for more capability
+ollama pull gemma4:e4b  # Start with edge-friendly Gemma 4
+# Alternative: gemma4:26b for more capability on stronger hardware
 ```
 
 3. **Create Ollama Service Wrapper** (`backend/src/services/gemmaService.ts`)
@@ -255,7 +255,7 @@ export async function getGemmaResponse(
 ): Promise<string> {
   try {
     const response = await axios.post(`${OLLAMA_API}/generate`, {
-      model: 'gemma2:2b',
+      model: 'gemma4:e4b',
       prompt: prompt,
       system: systemPrompt,
       stream: false,

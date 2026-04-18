@@ -20,7 +20,7 @@ Windows:
 3. Pull Gemma:
 
 ```powershell
-ollama pull gemma2:2b
+ollama pull gemma4:e4b
 ollama list
 ```
 
@@ -28,7 +28,7 @@ macOS:
 
 ```bash
 brew install ollama
-ollama pull gemma2:2b
+ollama pull gemma4:e4b
 ```
 
 Linux:
@@ -36,7 +36,7 @@ Linux:
 ```bash
 curl https://ollama.ai/install.sh | sh
 sudo systemctl start ollama
-ollama pull gemma2:2b
+ollama pull gemma4:e4b
 ```
 
 Verify:
@@ -155,7 +155,7 @@ NODE_ENV=development
 PORT=3001
 DATABASE_URL=postgresql://mediscribe:password@localhost:5432/mediscribe
 OLLAMA_API=http://localhost:11434
-OLLAMA_MODEL=gemma2:2b
+OLLAMA_MODEL=gemma4:e4b
 API_KEY=
 RATE_LIMIT_WINDOW_MS=60000
 RATE_LIMIT_MAX=120

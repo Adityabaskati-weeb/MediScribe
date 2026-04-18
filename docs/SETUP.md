@@ -48,7 +48,7 @@ http://127.0.0.1:3000
 ## Ollama and Gemma
 
 ```powershell
-ollama pull gemma2:2b
+ollama pull gemma4:e4b
 ollama serve
 ```
 
@@ -56,7 +56,7 @@ Backend environment:
 
 ```text
 OLLAMA_API=http://localhost:11434
-OLLAMA_MODEL=gemma2:2b
+OLLAMA_MODEL=gemma4:e4b
 ```
 
 ## Model Training Scaffold

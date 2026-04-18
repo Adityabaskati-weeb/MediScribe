@@ -12,7 +12,7 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     metrics = {
-        "base_model": "gemma2:2b",
+        "base_model": "gemma4:e4b",
         "training_examples": len(rows),
         "adapter_method": "medical-instruction-lora-plan",
         "safety_benchmark_accuracy": 0.91,

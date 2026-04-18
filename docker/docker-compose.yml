@@ -32,6 +32,7 @@ services:
     environment:
       DATABASE_URL: postgres://mediscribe:${DB_PASSWORD:-mediscribe}@postgres:5432/mediscribe
       OLLAMA_API: http://ai-service:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-gemma4:e4b}
       API_KEY: ${API_KEY:-}
       JWT_SECRET: ${JWT_SECRET:-}
       PORT: 3001
@@ -56,6 +57,7 @@ services:
     environment:
       DATABASE_URL: postgres://mediscribe:${DB_PASSWORD:-mediscribe}@postgres:5432/mediscribe
       OLLAMA_API: http://ai-service:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-gemma4:e4b}
       SERVICE_ROLE: sync
       PORT: 3002
       NODE_ENV: production

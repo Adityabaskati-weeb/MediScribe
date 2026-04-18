@@ -251,7 +251,7 @@ Fastest demo path:
 npm install --prefix backend
 npm install --prefix mobile
 npm install --prefix dashboard
-ollama pull gemma2:2b
+ollama pull gemma4:e4b
 npm run dev --prefix backend
 npm start --prefix mobile
 ```
@@ -366,7 +366,7 @@ npx expo start --lan --clear --max-workers 1 --port 8130
 ### Diagnosis Taking Too Long
 
 ```bash
-ollama pull gemma2:2b
+ollama pull gemma4:e4b
 ```
 
 Use the smaller local model for demos and keep deterministic fallbacks available.
