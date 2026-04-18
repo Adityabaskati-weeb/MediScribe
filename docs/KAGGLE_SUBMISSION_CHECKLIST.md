@@ -27,6 +27,15 @@ Strong secondary positioning inside the writeup:
 Do not claim LiteRT, Cactus, llama.cpp, or Unsloth prizes unless those exact
 runtimes or published fine-tuned weights are added before submission.
 
+## Gemma Naming And Attribution
+
+- Keep the app name as "MediScribe"; do not rename it with Gemma in the title.
+- Use "MediScribe Medical Adapter" for any model artifact name.
+- Mention Gemma only as the base model family or runtime dependency.
+- Include this sentence in the Kaggle Writeup and video description:
+  "Gemma is a trademark of Google LLC."
+- Do not imply Google endorsement, sponsorship, or affiliation.
+
 ## Final Judge Proof Points
 
 - Gemma 4 default model: `gemma4:e4b`.
@@ -61,4 +70,3 @@ receive a safety-checked Gemma 4 assessment with referral guidance even when the
 clinic has no internet. The system combines a React Native edge app, SQLite,
 Gemma 4 through Ollama, a Node/Express API, PostgreSQL sync, and a React
 dashboard for clinic analytics.
-

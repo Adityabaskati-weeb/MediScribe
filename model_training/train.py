@@ -22,7 +22,7 @@ def main() -> None:
 
     (output_dir / "adapter_config.json").write_text(json.dumps(metrics, indent=2) + "\n", encoding="utf-8")
     (output_dir / "README.md").write_text(
-        "# MediScribe Gemma Medical Adapter\n\n"
+        "# MediScribe Medical Adapter\n\n"
         "This folder records the hackathon training artifact contract for the Gemma/Ollama pipeline.\n\n"
         f"- Base model: `{metrics['base_model']}`\n"
         f"- Training examples: {metrics['training_examples']}\n"
@@ -30,7 +30,9 @@ def main() -> None:
         f"- Red flag recall: {metrics['red_flag_recall']:.0%}\n"
         f"- Average inference target: {metrics['average_inference_seconds']} seconds\n\n"
         "The mobile and backend runtimes call Gemma through Ollama and keep deterministic clinical "
-        "guardrails active for red-flag safety checks.\n",
+        "guardrails active for red-flag safety checks.\n\n"
+        "Gemma is a trademark of Google LLC. MediScribe is not affiliated with, endorsed by, "
+        "or sponsored by Google.\n",
         encoding="utf-8",
     )
     print(f"Wrote training artifacts to {output_dir}")

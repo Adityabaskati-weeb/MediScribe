@@ -89,3 +89,12 @@ Judge-visible proof:
 - If claiming the Unsloth award, run real Unsloth fine-tuning and publish weights plus benchmarks.
 - If claiming LiteRT or Cactus, add a real runtime integration and document it.
 
+## Naming And Trademark Compliance
+
+- App name: MediScribe. The application branding does not use Gemma marks,
+  logos, or colors as its own brand identity.
+- Model artifact name: MediScribe Medical Adapter. Gemma is referenced only as
+  the base model family in descriptions and configuration.
+- Required attribution: Gemma is a trademark of Google LLC.
+- Affiliation statement: MediScribe is not affiliated with, endorsed by, or
+  sponsored by Google.

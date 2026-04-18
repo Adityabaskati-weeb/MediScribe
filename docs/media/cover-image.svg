@@ -26,4 +26,5 @@
   <rect x="735" y="542" width="690" height="174" rx="8" fill="#fdebea" stroke="#efb2ac" stroke-width="2"/>
   <text x="780" y="606" fill="#c24132" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="800">Built for impact</text>
   <text x="780" y="654" fill="#132a32" font-family="Arial, Helvetica, sans-serif" font-size="26">Offline records, ranked diagnosis, treatment guidance, and clinic analytics.</text>
+  <text x="780" y="762" fill="#5d737c" font-family="Arial, Helvetica, sans-serif" font-size="18">Gemma is a trademark of Google LLC. MediScribe is an independent application.</text>
 </svg>

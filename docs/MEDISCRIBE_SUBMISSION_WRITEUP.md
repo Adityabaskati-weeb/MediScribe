@@ -77,3 +77,12 @@ bandwidth, non-English workflows, paper records, and high pressure. The importan
 part is not that AI gives an answer. It is that the clinic gets a safer workflow:
 structured intake, explainable reasoning, offline records, and referral guardrails
 that keep working when the network disappears.
+
+## Attribution
+
+MediScribe is an independent application that uses Gemma 4 models through Ollama
+for AI-powered features.
+
+Gemma is a trademark of Google LLC.
+
+MediScribe is not affiliated with, endorsed by, or sponsored by Google.

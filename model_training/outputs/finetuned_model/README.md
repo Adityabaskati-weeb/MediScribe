@@ -1,4 +1,4 @@
-# MediScribe Gemma Medical Adapter
+# MediScribe Medical Adapter
 
 This folder records the hackathon training artifact contract for the Gemma/Ollama pipeline.
 
@@ -9,3 +9,5 @@ This folder records the hackathon training artifact contract for the Gemma/Ollam
 - Average inference target: 3.2 seconds
 
 The mobile and backend runtimes call Gemma through Ollama and keep deterministic clinical guardrails active for red-flag safety checks.
+
+Gemma is a trademark of Google LLC. MediScribe is not affiliated with, endorsed by, or sponsored by Google.

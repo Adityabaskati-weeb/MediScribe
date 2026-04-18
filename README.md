@@ -14,7 +14,7 @@ Offline AI medical assistant for rural clinics.
 ## Hackathon Differentiators
 
 - Offline-first: mobile SQLite, local history, offline triage fallback, and sync queue.
-- Gemma 4 optimized: `gemma4:e4b` through Ollama, medical response normalization, and fine-tuning artifact flow.
+- Uses Gemma 4: `gemma4:e4b` through Ollama, medical response normalization, and fine-tuning artifact flow.
 - Production-ready: mobile app, backend API, dashboard, Docker, validation, logging, tests, and docs.
 - Agentic safety pipeline: diagnosis, reasoning, treatment, and safety agents with audit logs.
 - Measurable impact: 91% benchmark accuracy, 100% red-flag recall, 3.2 second inference target.
@@ -135,6 +135,15 @@ curl http://localhost:3001/api/diagnoses/evaluation
 
 Recommended submission tracks: Health & Sciences, Safety & Trust, Digital Equity
 & Inclusivity, and the Ollama Special Technology Track.
+
+## Gemma Attribution
+
+MediScribe is an independent application that uses Gemma 4 models through
+Ollama for AI-powered clinical decision support features.
+
+Gemma is a trademark of Google LLC.
+
+MediScribe is not affiliated with, endorsed by, or sponsored by Google.
 
 ## Docker
 
