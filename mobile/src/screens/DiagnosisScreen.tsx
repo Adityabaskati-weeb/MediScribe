@@ -3,11 +3,13 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { DiagnosisResult } from '../components/DiagnosisResult';
+import { RedFlagGuardian } from '../components/RedFlagGuardian';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { StatusPill } from '../components/StatusPill';
 import { analyzeMedicalCase } from '../services/gemmaService';
 import { saveDiagnosis } from '../services/databaseService';
 import { colors, spacing } from '../styles/theme';
+import { evaluateGuardian } from '../utils/clinicalDecisionSupport';
 import { extractClinicalSymptoms, extractClinicalVitals } from '../utils/clinicalText';
 
 export function DiagnosisScreen({
@@ -66,8 +68,9 @@ export function DiagnosisScreen({
         eyebrow="Step 4 of 5"
         title="AI diagnosis"
         subtitle="Ranked diagnosis support with safety guardrails and offline fallback."
-        right={<StatusPill label="Gemma" tone="info" />}
+        right={<StatusPill label="Local AI" tone="info" />}
       />
+      <RedFlagGuardian text={draft.transcript || ''} patient={draft.patient} />
       <View style={styles.statusPanel}>
         <Text style={styles.statusLabel}>Assessment state</Text>
         <Text style={styles.status}>{status}</Text>
@@ -114,7 +117,8 @@ const styles = StyleSheet.create({
 
 function buildOfflineAssessment(symptoms: string) {
   const lower = symptoms.toLowerCase();
-  const urgent = /chest pain|shortness of breath|spo2\s*(8|7|6)|bp\s*8\d|unconscious|seizure/.test(lower);
+  const guardianFlags = evaluateGuardian(symptoms);
+  const urgent = guardianFlags.some((flag) => flag.level === 'red') || /chest pain|shortness of breath|spo2\s*(8|7|6)|bp\s*8\d|unconscious|seizure/.test(lower);
   const fever = /fever|temp\s*3[89]|temp\s*40/.test(lower);
   const assessment = {
     assessment_id: `offline-${Date.now()}`,
@@ -130,7 +134,7 @@ function buildOfflineAssessment(symptoms: string) {
       }
     ],
     red_flags: urgent
-      ? [{ level: 'red', message: 'Danger symptoms present. Refer urgently and reassess ABCs.' }]
+      ? guardianFlags.filter((flag) => flag.level === 'red').map((flag) => ({ level: 'red', message: `${flag.title}: ${flag.action}` })).concat([{ level: 'red', message: 'Danger symptoms present. Refer urgently and reassess ABCs.' }])
       : [{ level: fever ? 'amber' : 'green', message: fever ? 'Fever needs same-day review if persistent or worsening.' : 'No immediate red flag detected from transcript.' }],
     treatment: {
       immediate_actions: urgent ? ['Check airway, breathing, circulation.', 'Arrange urgent referral.'] : ['Record full vital signs.', 'Safety-net before discharge.'],

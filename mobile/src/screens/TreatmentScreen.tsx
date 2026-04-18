@@ -3,9 +3,12 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
+import { RedFlagGuardian } from '../components/RedFlagGuardian';
+import { ReferralLetter } from '../components/ReferralLetter';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { StatusPill } from '../components/StatusPill';
 import { colors, spacing } from '../styles/theme';
+import { medicineSafetyMessages } from '../utils/clinicalDecisionSupport';
 
 export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraft; onNavigate: (screen: ScreenName) => void }) {
   const assessment = draft.assessment;
@@ -21,6 +24,7 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
         subtitle="WHO-style safety checks, local medicine reminders, and referral guidance."
         right={<StatusPill label={urgent ? 'Refer now' : 'Guided care'} tone={urgent ? 'danger' : 'success'} />}
       />
+      <RedFlagGuardian text={draft.transcript || assessment?.clinical_summary || ''} patient={draft.patient} />
 
       {urgent && (
         <View style={styles.emergency}>
@@ -52,10 +56,19 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
       </Card>
 
       <Card>
+        <Text style={styles.sectionTitle}>Medicine safety guard</Text>
+        {medicineSafetyMessages(draft.patient).map((item) => (
+          <Text style={styles.safetyItem} key={item}>{item}</Text>
+        ))}
+      </Card>
+
+      <Card>
         <Text style={styles.sectionTitle}>Follow up</Text>
         <Text style={styles.item}>{treatment.follow_up || 'Review if symptoms worsen, fever persists, or new danger signs appear.'}</Text>
         <Text style={styles.referral}>Referral: {treatment.referral || 'Routine unless red flags develop'}</Text>
       </Card>
+
+      <ReferralLetter patient={draft.patient} transcript={draft.transcript} assessment={assessment} />
 
       <ActionButton title="Save and Return Home" onPress={() => onNavigate('home')} variant="success" />
     </ScrollView>
@@ -107,5 +120,16 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 12,
     lineHeight: 18
+  },
+  safetyItem: {
+    backgroundColor: colors.warningSoft,
+    borderColor: '#f0cf8f',
+    borderRadius: 8,
+    borderWidth: 1,
+    color: colors.ink,
+    fontSize: 14,
+    fontWeight: '800',
+    lineHeight: 20,
+    padding: 10
   }
 });

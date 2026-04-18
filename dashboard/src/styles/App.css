@@ -50,6 +50,93 @@ main {
   line-height: 1.4;
 }
 
+.eyebrow {
+  color: #087ea4;
+  font-size: 12px;
+  font-weight: 900;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.muted {
+  color: #587078;
+  line-height: 1.5;
+}
+
+.impact-panel,
+.review-queue {
+  background: white;
+  border: 1px solid #d8e1dd;
+  border-radius: 8px;
+  margin-top: 18px;
+  padding: 16px;
+}
+
+.impact-panel h2,
+.review-queue h2 {
+  margin: 0;
+}
+
+.section-heading {
+  align-items: flex-start;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.queue-count {
+  background: #e7f6ef;
+  border-radius: 8px;
+  color: #087a5a;
+  font-weight: 900;
+  padding: 8px 10px;
+}
+
+.review-row {
+  align-items: flex-start;
+  border-top: 1px solid #d8e1dd;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.review-row:first-of-type {
+  border-top: 0;
+}
+
+.review-row strong,
+.review-row span,
+.review-row small {
+  display: block;
+}
+
+.review-row span,
+.review-row small {
+  color: #587078;
+  line-height: 1.45;
+}
+
+.urgency {
+  background: #e7f3f8;
+  border-radius: 8px;
+  color: #064b5f;
+  font-weight: 900;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+.urgency.immediate,
+.urgency.emergent {
+  background: #fdebea;
+  color: #c24132;
+}
+
+.urgency.urgent {
+  background: #fff3d8;
+  color: #ad6500;
+}
+
 .highlight {
   margin-top: 18px;
 }

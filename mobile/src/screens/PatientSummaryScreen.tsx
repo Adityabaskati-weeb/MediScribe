@@ -3,7 +3,9 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
+import { RedFlagGuardian } from '../components/RedFlagGuardian';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { SmartFollowUpQuestions } from '../components/SmartFollowUpQuestions';
 import { StatusPill } from '../components/StatusPill';
 import { colors, spacing } from '../styles/theme';
 import { extractClinicalSymptoms, extractClinicalVitals } from '../utils/clinicalText';
@@ -37,6 +39,13 @@ export function PatientSummaryScreen({
         right={<StatusPill label={riskLabel(risk)} tone={riskTone(risk)} />}
       />
       <RiskBanner risk={risk} />
+      <RedFlagGuardian text={notes} patient={draft.patient} />
+
+      <SmartFollowUpQuestions
+        text={notes}
+        patient={draft.patient}
+        onAddQuestion={(question) => setNotes((current) => `${current.trim()}\nFollow-up needed: ${question}`.trim())}
+      />
 
       <Card>
         <Text style={styles.sectionTitle}>Patient</Text>

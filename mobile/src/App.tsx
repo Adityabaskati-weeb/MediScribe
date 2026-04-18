@@ -21,6 +21,7 @@ export type ConsultationDraft = {
   transcript?: string;
   chartText?: string;
   assessment?: any;
+  demoCaseId?: string;
   language: string;
 };
 
@@ -49,7 +50,7 @@ export default function App() {
     if (screen === 'treatment') return <TreatmentScreen draft={draft} onNavigate={setScreen} />;
     if (screen === 'history') return <HistoryScreen onNavigate={setScreen} />;
     if (screen === 'settings') return <SettingsScreen draft={draft} onDraftChange={setDraft} onNavigate={setScreen} />;
-    return <HomeScreen draft={draft} onNavigate={setScreen} />;
+    return <HomeScreen draft={draft} onDraftChange={setDraft} onNavigate={setScreen} />;
   };
 
   return (

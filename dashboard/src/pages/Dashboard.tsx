@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Analytics } from '../components/Analytics';
+import { DoctorReviewQueue } from '../components/DoctorReviewQueue';
+import { ImpactMetrics } from '../components/ImpactMetrics';
 import { fetchDashboard, fetchDemoPack, fetchEvaluationMetrics, fetchPerformanceMetrics, fetchSystemArchitecture } from '../services/api';
 
 export function DashboardPage() {
@@ -26,6 +28,8 @@ export function DashboardPage() {
     <main>
       <h1>Clinic Overview</h1>
       <Analytics metrics={dashboard?.metrics || []} />
+      <ImpactMetrics impact={dashboard?.impact || reports?.impact} />
+      <DoctorReviewQueue items={dashboard?.review_queue || reports?.review_queue || []} />
 
       <section className="metrics highlight">
         <article className="metric">
