@@ -14,15 +14,21 @@ export function DiagnosisScreen({ onNavigate }: { onNavigate?: (screen: ScreenNa
 
   const analyze = async (symptoms: string) => {
     setStatus('Analyzing with Gemma/Ollama guardrails...');
-    const response = await analyzeMedicalCase({
-      patient: { age_years: 35, gender: 'unknown' },
-      chief_complaint: symptoms,
-      symptoms: [symptoms]
-    });
+    let response: any;
+    try {
+      response = await analyzeMedicalCase({
+        patient: { age_years: 35, gender: 'unknown' },
+        chief_complaint: symptoms,
+        symptoms: [symptoms]
+      });
+      setStatus('Assessment saved locally and queued for sync');
+    } catch {
+      response = buildOfflineAssessment(symptoms);
+      setStatus('Backend unavailable. Offline triage result saved locally.');
+    }
     setResult(response);
-    const assessment = response?.data?.stored?.assessment || response?.data?.ai?.assessment || response?.assessment;
+    const assessment = response?.data?.stored?.assessment || response?.data?.ai?.assessment || response?.data?.assessment || response?.assessment;
     if (assessment) saveDiagnosis(`consultation-${Date.now()}`, assessment);
-    setStatus('Assessment saved locally and queued for sync');
   };
 
   return (
@@ -51,3 +57,36 @@ const styles = StyleSheet.create({
     color: '#42645b'
   }
 });
+
+function buildOfflineAssessment(symptoms: string) {
+  const lower = symptoms.toLowerCase();
+  const urgent = /chest pain|shortness of breath|spo2\s*(8|7|6)|bp\s*8\d|unconscious|seizure/.test(lower);
+  const fever = /fever|temp\s*3[89]|temp\s*40/.test(lower);
+  const assessment = {
+    assessment_id: `offline-${Date.now()}`,
+    patient_id: 'local-demo-patient',
+    urgency: urgent ? 'immediate' : fever ? 'urgent' : 'routine',
+    triage_category: urgent ? 1 : fever ? 3 : 4,
+    clinical_summary: `Offline assessment for symptoms: ${symptoms}`,
+    differential_diagnoses: [
+      {
+        name: urgent ? 'Possible emergency presentation' : fever ? 'Respiratory infection or febrile illness' : 'Undifferentiated primary-care presentation',
+        confidence: urgent ? 0.78 : fever ? 0.64 : 0.42,
+        reasoning: urgent ? 'Danger symptoms were present in the transcript.' : 'Offline rule-based triage used until backend sync is available.'
+      }
+    ],
+    red_flags: urgent
+      ? [{ level: 'red', message: 'Danger symptoms present. Refer urgently and reassess ABCs.' }]
+      : [{ level: fever ? 'amber' : 'green', message: fever ? 'Fever needs same-day review if persistent or worsening.' : 'No immediate red flag detected from transcript.' }],
+    treatment: {
+      immediate_actions: urgent ? ['Check airway, breathing, circulation.', 'Arrange urgent referral.'] : ['Record full vital signs.', 'Safety-net before discharge.'],
+      suggested_tests: ['Repeat vital signs', 'Focused history and examination'],
+      medications_to_consider: [],
+      referral: urgent ? 'Immediate emergency referral' : fever ? 'Same-day review if worsening' : 'Routine follow-up',
+      follow_up: urgent ? 'Reassess continuously until transfer.' : 'Review if symptoms worsen.'
+    },
+    model_source: 'mobile-offline-rules',
+    disclaimer: 'Offline decision support only. Confirm with clinical judgement and local protocols.'
+  };
+  return { success: true, data: { assessment }, assessment };
+}
