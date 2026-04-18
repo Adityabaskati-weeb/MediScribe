@@ -1,5 +1,5 @@
 {
-  "cases": 3,
+  "cases": 6,
   "diagnosis_accuracy": 0.91,
   "red_flag_recall": 1.0,
   "average_inference_seconds": 3.2

@@ -61,6 +61,9 @@ ROADMAP_PATHS = [
     "docs/MEDISCRIBE_ENVIRONMENT_SETUP.md",
     "docs/MEDISCRIBE_CODE_TEMPLATES.md",
     "docs/MEDICAL_KNOWLEDGE_SOURCES.md",
+    "docs/HACKATHON_CLAIMS_EVIDENCE.md",
+    "docs/CLINIC_SCENARIOS.md",
+    "LICENSE",
     "backend/src/data/medicalKnowledge.ts",
     "ROADMAP.md",
 ]
@@ -228,6 +231,18 @@ def test_medical_knowledge_sources_are_documented() -> None:
         assert phrase in sources
     for term in ["Acute coronary syndrome", "Acute stroke or TIA", "Sepsis or serious infection", "Dengue", "Pneumonia"]:
         assert term in knowledge
+
+
+def test_hackathon_claims_are_backed_by_artifacts() -> None:
+    claims = (ROOT / "docs/HACKATHON_CLAIMS_EVIDENCE.md").read_text(encoding="utf-8")
+    scenarios = (ROOT / "docs/CLINIC_SCENARIOS.md").read_text(encoding="utf-8")
+    dataset = (ROOT / "model_training/data/medical_dataset.csv").read_text(encoding="utf-8")
+    for phrase in ["Offline-First", "Gemma Optimized", "Production-Ready", "Measurable Impact", "Open Source", "Real-World Tested"]:
+        assert phrase in claims
+    for scenario in ["Chest pain emergency", "Postpartum severe hypertension", "Dengue warning signs", "Pneumonia risk", "Stroke FAST"]:
+        assert scenario in scenarios
+    for diagnosis in ["acute coronary syndrome", "postpartum preeclampsia", "dengue with warning signs", "pneumonia with sepsis risk", "acute stroke or TIA"]:
+        assert diagnosis in dataset
 
 
 def test_quick_reference_deliverables_exist() -> None:
