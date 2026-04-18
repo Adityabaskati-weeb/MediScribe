@@ -6,8 +6,10 @@ module, so real microphone speech-to-text requires a custom development build.
 
 ## Expo Go Behavior
 
-Expo Go uses the in-app demo/manual transcript fallback. This keeps the voice
-intake workflow usable during quick demos.
+Expo Go uses the in-app demo/manual transcript fallback. Tap **Use Demo Voice
+Dictation** and the app immediately sends a realistic symptom transcript to the
+triage flow. This keeps the voice intake workflow usable during quick demos, but
+it is not real microphone transcription.
 
 ## Native Android Build
 

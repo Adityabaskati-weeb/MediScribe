@@ -25,14 +25,25 @@ function getNativeVoiceModule() {
 
 export async function startSpeechRecognition(language = 'en-IN'): Promise<SpeechResult> {
   if (await isNativeSpeechAvailable()) {
-    const text = await captureNativeSpeechTranscript(language);
-    return {
-      text,
-      language,
-      confidence: 0.86,
-      source: 'native',
-      note: 'Captured from native device speech recognition.'
-    };
+    try {
+      const text = await captureNativeSpeechTranscript(language);
+      return {
+        text,
+        language,
+        confidence: 0.86,
+        source: 'native',
+        note: 'Captured from native device speech recognition.'
+      };
+    } catch {
+      const text = await captureSymptomTranscript(language);
+      return {
+        text,
+        language,
+        confidence: 0.68,
+        source: 'demo-fallback',
+        note: 'Native speech was available but did not return text. Demo dictation was used so intake can continue.'
+      };
+    }
   }
 
   const text = await captureSymptomTranscript(language);
@@ -125,5 +136,5 @@ export async function captureSymptomInMultipleLanguages(symptoms: string[]): Pro
 }
 
 export function getSpeechSupportMessage() {
-  return 'Native microphone speech works in a custom development build. Expo Go uses the demo transcript/manual dictation fallback.';
+  return 'Expo Go cannot access native speech recognition. Use demo dictation here, or install the custom dev build for real microphone speech.';
 }
