@@ -84,31 +84,31 @@ export function HomeScreen({
           </View>
         </View>
 
-        <Text style={styles.title}>Beautiful care flow. Emergency clarity.</Text>
-        <Text style={styles.copy}>A calm clinic interface that turns decisive when danger appears. Voice, scan, or type, then let local safety checks protect the workflow.</Text>
+        <Text style={styles.title}>Start calm. Act fast when risk appears.</Text>
+        <Text style={styles.copy}>Voice, scan, or type. MediScribe keeps the visit structured, watches for danger signs, and saves care offline.</Text>
 
         <View style={styles.heroStats}>
           <MiniStat label="Offline" value="100%" />
           <MiniStat label="Red flags" value="100%" />
-          <MiniStat label="Bench cases" value="26" />
+          <MiniStat label="Care paths" value="26" />
         </View>
 
         <ActionButton title={copy('startConsultation')} onPress={() => onNavigate('newPatient')} variant="success" />
         <Pressable style={styles.airplaneButton} onPress={loadAirplaneModeDemo}>
-          <Text style={styles.airplaneTitle}>Airplane Mode Emergency Demo</Text>
-          <Text style={styles.airplaneCopy}>Pregnancy bleeding case, local safety fallback, saved without internet.</Text>
+          <Text style={styles.airplaneTitle}>Offline Emergency Path</Text>
+          <Text style={styles.airplaneCopy}>Pregnancy bleeding case, local safety checks, saved without internet.</Text>
         </Pressable>
       </View>
 
       <Card>
         <View style={styles.storyHeader}>
           <View style={[styles.storyMark, { backgroundColor: c.dangerSoft, borderColor: c.accent }]}>
-            <Text style={[styles.storyMarkText, { color: c.accent }]}>WOW</Text>
+            <Text style={[styles.storyMarkText, { color: c.accent }]}>CARE</Text>
           </View>
           <View style={styles.storyText}>
-            <Text style={[styles.panelTitle, { color: c.ink }]}>The scene judges remember</Text>
+            <Text style={[styles.panelTitle, { color: c.ink }]}>Urgent care readiness</Text>
             <Text style={[styles.helper, { color: c.muted }]}>
-              No internet. Long queue. A 32-week pregnant patient arrives bleeding and dizzy. MediScribe catches the danger sign locally and creates the referral handoff.
+              When the clinic is offline and the queue is long, MediScribe keeps danger signs visible and prepares a clear referral handoff.
             </Text>
           </View>
         </View>
@@ -128,9 +128,9 @@ export function HomeScreen({
       <Card>
         <View style={styles.cardHeader}>
           <View>
-            <Text style={[styles.panelTitle, { color: c.ink }]}>Judge proof mode</Text>
+            <Text style={[styles.panelTitle, { color: c.ink }]}>Clinic safety layer</Text>
             <Text style={[styles.helper, { color: c.muted }]}>
-              Show the hackathon story with offline safety, local Gemma reasoning, and benchmark evidence.
+              Local records, red-flag checks, and AI-assisted reasoning stay aligned during every consultation.
             </Text>
           </View>
           <StatusPill label="Gemma + Ollama" tone="info" />
@@ -154,12 +154,12 @@ export function HomeScreen({
       <Card>
         <View style={styles.cardHeader}>
           <View>
-            <Text style={[styles.panelTitle, { color: c.ink }]}>One-tap clinic scenarios</Text>
+            <Text style={[styles.panelTitle, { color: c.ink }]}>Common clinic cases</Text>
             <Text style={[styles.helper, { color: c.muted }]}>
-              Demo emergency detection, offline flow, and explainable AI in seconds.
+              Quickly rehearse urgent, same-day, and routine workflows used in rural primary care.
             </Text>
           </View>
-          <StatusPill label="Pitch ready" tone="info" />
+          <StatusPill label="Ready" tone="info" />
         </View>
         <View style={styles.caseGrid}>
           {clinicDemoCases.map((demo) => (

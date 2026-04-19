@@ -297,7 +297,7 @@ function plainLanguageExplanation(assessment: MediScribeAssessment, transcript: 
     return `Treat this as urgent because ${redFlag || top} was detected. Stabilize first, repeat vitals, and start transfer before paperwork or sync.`;
   }
   return offlineDemo
-    ? 'The phone used local rules because the demo is offline. No danger sign was missed, and the visit can sync later.'
+    ? 'The phone used local rules because the clinic is offline. No danger sign was missed, and the visit can sync later.'
     : `The leading concern is ${top}. Confirm vitals, ask the follow-up questions, and use local protocol before treatment.`;
 }
 

@@ -41,7 +41,7 @@ export async function startSpeechRecognition(language = 'en-IN'): Promise<Speech
         language,
         confidence: 0.68,
         source: 'demo-fallback',
-        note: 'Native speech was available but did not return text. Demo dictation was used so intake can continue.'
+        note: 'Native speech was available but did not return text. Guided dictation was used so intake can continue.'
       };
     }
   }
@@ -52,7 +52,7 @@ export async function startSpeechRecognition(language = 'en-IN'): Promise<Speech
     language,
     confidence: 0.72,
     source: 'demo-fallback',
-    note: 'Native speech-to-text is not available. Demo dictation keeps the clinical voice workflow testable.'
+    note: 'Native speech-to-text is not available. Guided dictation keeps the clinical voice workflow testable.'
   };
 }
 
@@ -131,5 +131,5 @@ export async function captureSymptomInMultipleLanguages(symptoms: string[]): Pro
 }
 
 export function getSpeechSupportMessage() {
-  return 'Expo Go uses demo dictation. Use a custom dev build for real microphone speech.';
+  return 'Expo Go uses guided dictation. Use a custom dev build for real microphone speech.';
 }

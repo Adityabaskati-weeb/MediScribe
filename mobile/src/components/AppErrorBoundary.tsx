@@ -33,7 +33,7 @@ export class AppErrorBoundary extends React.Component<AppErrorBoundaryProps, App
       <View style={styles.container}>
         <Text style={styles.eyebrow}>MediScribe recovered</Text>
         <Text style={styles.title}>The consultation screen hit an error.</Text>
-        <Text style={styles.copy}>Your device is still usable. Return home and restart the demo without clearing the whole app.</Text>
+        <Text style={styles.copy}>Your device is still usable. Return home and restart the visit without clearing the whole app.</Text>
         {this.state.message ? <Text style={styles.detail}>{this.state.message}</Text> : null}
         <Pressable accessibilityRole="button" onPress={this.props.onReturnHome} style={styles.button}>
           <Text style={styles.buttonText}>Return home</Text>
@@ -94,4 +94,3 @@ const styles = StyleSheet.create({
     fontWeight: '900'
   }
 });
-

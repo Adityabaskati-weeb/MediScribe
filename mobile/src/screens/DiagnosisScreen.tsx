@@ -36,7 +36,7 @@ export function DiagnosisScreen({
     try {
       if (draft.forceOfflineDemo) {
         response = buildOfflineAssessment(symptoms, true);
-        setStatus('Airplane mode proof: emergency caught locally, saved offline, queued for sync.');
+        setStatus('Emergency caught locally, saved offline, queued for sync.');
       } else {
         response = await analyzeMedicalCase({
           patient: {
@@ -224,7 +224,7 @@ function buildOfflineAssessment(symptoms: string, forcedAirplaneMode = false) {
       follow_up: urgent ? 'Reassess continuously until transfer.' : 'Review if symptoms worsen.'
     },
     model_source: 'mobile-offline-rules',
-    disclaimer: 'Offline decision support only. Confirm with clinical judgement and local protocols.'
+    disclaimer: 'Offline decision support only. Confirm with clinical review and local protocols.'
   };
   return {
     success: true,

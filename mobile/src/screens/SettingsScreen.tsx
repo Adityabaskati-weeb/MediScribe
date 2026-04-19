@@ -25,7 +25,7 @@ export function SettingsScreen({
   const [resetState, setResetState] = useState<'idle' | 'done' | 'failed'>('idle');
   const c = theme.colors;
 
-  const resetDemoState = async () => {
+  const resetClinicState = async () => {
     try {
       resetLocalDemoData();
       await AsyncStorage.multiRemove(['mediscribe.language', 'mediscribe.theme']);
@@ -92,11 +92,11 @@ export function SettingsScreen({
       </Card>
 
       <Card>
-        <Text style={[styles.sectionTitle, { color: c.ink }]}>Safety and AI proof</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Safety and AI status</Text>
         <View style={styles.proofRows}>
           <ProofRow label="Runtime" value="Gemma 4 via local Ollama" />
           <ProofRow label="Fallback" value="Deterministic triage rules" />
-          <ProofRow label="Benchmark" value="26 rural clinic cases" />
+          <ProofRow label="Clinic paths" value="26 rural care scenarios" />
           <ProofRow label="Guardrail" value="Red flags override confidence" />
         </View>
         <Text style={[styles.meta, { color: c.muted }]}>
@@ -105,10 +105,10 @@ export function SettingsScreen({
       </Card>
 
       <Card>
-        <Text style={[styles.sectionTitle, { color: c.ink }]}>Demo reset</Text>
-        <Text style={[styles.meta, { color: c.muted }]}>Clear local SQLite records plus saved language and theme so the next pitch starts fresh.</Text>
-        <ActionButton title="Reset demo data" onPress={resetDemoState} variant="danger" />
-        {resetState === 'done' && <Text style={[styles.resetMessage, { color: c.success }]}>Demo state cleared. Start a new consultation from Home.</Text>}
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Reset clinic device</Text>
+        <Text style={[styles.meta, { color: c.muted }]}>Clear local SQLite records plus saved language and theme so the next clinic session starts fresh.</Text>
+        <ActionButton title="Reset local data" onPress={resetClinicState} variant="danger" />
+        {resetState === 'done' && <Text style={[styles.resetMessage, { color: c.success }]}>Local data cleared. Start a new consultation from Home.</Text>}
         {resetState === 'failed' && <Text style={[styles.resetMessage, { color: c.accent }]}>Reset failed. Close and reopen the app, then try again.</Text>}
       </Card>
 

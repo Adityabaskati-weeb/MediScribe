@@ -72,7 +72,7 @@ const translations: Record<AppLanguage, Record<TranslationKey, string>> = {
     syncSettings: 'Sync and settings',
     offlineStatus: 'Offline status',
     offlineStatusCopy: 'Clinic mode active. Patient data is saved on device.',
-    queuedRecords: 'Queued records: 4 - Last sync: demo clinic morning round',
+    queuedRecords: 'Queued records: 4 - Last sync: morning clinic round',
     language: 'Language',
     modelStatus: 'Model status',
     modelCached: 'Gemma medical assistant: cached for offline triage',
@@ -100,16 +100,16 @@ const translations: Record<AppLanguage, Record<TranslationKey, string>> = {
     describeSymptoms: 'Describe symptoms',
     voiceScreenCopy: 'Use voice first. Add chart scan or typed notes when the clinic is noisy.',
     dictateSymptoms: 'Dictate symptoms',
-    demoMode: 'Demo mode',
+    demoMode: 'Guided mode',
     nativeMic: 'Native mic',
-    useDemoOrType: 'Use demo voice capture or type the dictated symptoms.',
+    useDemoOrType: 'Use guided voice capture or type the dictated symptoms.',
     listening: 'Listening with native speech...',
-    demoDictation: 'Using demo dictation...',
+    demoDictation: 'Preparing guided dictation...',
     startSpeaking: 'Start speaking',
-    demoVoice: 'Demo voice',
+    demoVoice: 'Guided voice',
     transcriptPlaceholder: 'Dictated transcript appears here. You can edit it before analysis.',
     analyzeTyped: 'Analyze Typed Transcript',
-    speechSupport: 'Browser and Expo Go use demo dictation. Use the custom native build for real microphone speech recognition.'
+    speechSupport: 'Browser and Expo Go use guided dictation. Use the custom native build for real microphone speech recognition.'
   },
   Hindi: {
     offlineReady: 'ऑफलाइन तैयार',
@@ -155,16 +155,16 @@ const translations: Record<AppLanguage, Record<TranslationKey, string>> = {
     describeSymptoms: 'लक्षण बताएं',
     voiceScreenCopy: 'पहले आवाज का उपयोग करें. शोर हो तो स्कैन या टाइप करें.',
     dictateSymptoms: 'लक्षण बोलें',
-    demoMode: 'डेमो मोड',
+    demoMode: 'Guided mode',
     nativeMic: 'नेटिव माइक',
-    useDemoOrType: 'डेमो आवाज लें या लक्षण टाइप करें.',
+    useDemoOrType: 'Guided voice capture use karein ya symptoms type karein.',
     listening: 'नेटिव स्पीच सुन रहा है...',
-    demoDictation: 'डेमो dictation उपयोग हो रहा है...',
+    demoDictation: 'Guided dictation taiyar ho raha hai...',
     startSpeaking: 'बोलना शुरू करें',
-    demoVoice: 'डेमो आवाज',
+    demoVoice: 'Guided voice',
     transcriptPlaceholder: 'Dictation text यहां दिखेगा. जांच से पहले आप इसे सुधार सकते हैं.',
     analyzeTyped: 'लिखे हुए लक्षण जांचें',
-    speechSupport: 'Browser और Expo Go डेमो dictation इस्तेमाल करते हैं. असली microphone के लिए native dev build चाहिए.'
+    speechSupport: 'Browser aur Expo Go guided dictation istemal karte hain. Real microphone ke liye native dev build chahiye.'
   },
   Tamil: {
     offlineReady: 'ஆஃப்லைன் தயார்',
@@ -210,16 +210,16 @@ const translations: Record<AppLanguage, Record<TranslationKey, string>> = {
     describeSymptoms: 'அறிகுறிகளை சொல்லுங்கள்',
     voiceScreenCopy: 'முதலில் குரல் பயன்படுத்தவும். சத்தம் இருந்தால் scan அல்லது type செய்யவும்.',
     dictateSymptoms: 'அறிகுறிகள் பேசுங்கள்',
-    demoMode: 'Demo mode',
+    demoMode: 'Guided mode',
     nativeMic: 'Native mic',
-    useDemoOrType: 'Demo voice அல்லது symptoms type செய்யவும்.',
+    useDemoOrType: 'Guided voice or type symptoms.',
     listening: 'Native speech கேட்கிறது...',
-    demoDictation: 'Demo dictation பயன்படுத்துகிறது...',
+    demoDictation: 'Preparing guided dictation...',
     startSpeaking: 'பேச தொடங்கு',
-    demoVoice: 'Demo voice',
+    demoVoice: 'Guided voice',
     transcriptPlaceholder: 'Dictation text இங்கே வரும். Analysis முன் திருத்தலாம்.',
     analyzeTyped: 'Typed transcript analyze செய்',
-    speechSupport: 'Browser மற்றும் Expo Go demo dictation பயன்படுத்தும். Real microphone க்கு native dev build தேவை.'
+    speechSupport: 'Browser and Expo Go use guided dictation. Native dev build is needed for real microphone speech.'
   },
   Telugu: {
     offlineReady: 'ఆఫ్లైన్ సిద్ధం',
@@ -265,16 +265,16 @@ const translations: Record<AppLanguage, Record<TranslationKey, string>> = {
     describeSymptoms: 'లక్షణాలు చెప్పండి',
     voiceScreenCopy: 'ముందు voice ఉపయోగించండి. Noise ఉంటే scan లేదా type చేయండి.',
     dictateSymptoms: 'లక్షణాలు dictate చేయండి',
-    demoMode: 'Demo mode',
+    demoMode: 'Guided mode',
     nativeMic: 'Native mic',
-    useDemoOrType: 'Demo voice లేదా symptoms type చేయండి.',
+    useDemoOrType: 'Guided voice or type symptoms.',
     listening: 'Native speech listening...',
-    demoDictation: 'Demo dictation ఉపయోగిస్తోంది...',
+    demoDictation: 'Preparing guided dictation...',
     startSpeaking: 'మాట్లాడటం ప్రారంభించండి',
-    demoVoice: 'Demo voice',
+    demoVoice: 'Guided voice',
     transcriptPlaceholder: 'Dictated transcript ఇక్కడ కనిపిస్తుంది. Analysis ముందు edit చేయండి.',
     analyzeTyped: 'Typed transcript analyze',
-    speechSupport: 'Browser మరియు Expo Go demo dictation వాడతాయి. Real microphone కోసం native dev build అవసరం.'
+    speechSupport: 'Browser and Expo Go use guided dictation. Native dev build is needed for real microphone speech.'
   },
   Bengali: {
     offlineReady: 'অফলাইন প্রস্তুত',
@@ -320,16 +320,16 @@ const translations: Record<AppLanguage, Record<TranslationKey, string>> = {
     describeSymptoms: 'লক্ষণ বলুন',
     voiceScreenCopy: 'আগে voice ব্যবহার করুন. শব্দ হলে scan বা type করুন.',
     dictateSymptoms: 'লক্ষণ dictate করুন',
-    demoMode: 'Demo mode',
+    demoMode: 'Guided mode',
     nativeMic: 'Native mic',
-    useDemoOrType: 'Demo voice বা symptoms type করুন.',
+    useDemoOrType: 'Guided voice or type symptoms.',
     listening: 'Native speech listening...',
-    demoDictation: 'Demo dictation ব্যবহার হচ্ছে...',
+    demoDictation: 'Preparing guided dictation...',
     startSpeaking: 'কথা বলা শুরু করুন',
-    demoVoice: 'Demo voice',
+    demoVoice: 'Guided voice',
     transcriptPlaceholder: 'Dictated transcript এখানে আসবে. Analysis-এর আগে edit করুন.',
     analyzeTyped: 'Typed transcript analyze',
-    speechSupport: 'Browser এবং Expo Go demo dictation ব্যবহার করে. Real microphone-এর জন্য native dev build দরকার.'
+    speechSupport: 'Browser and Expo Go use guided dictation. Native dev build is needed for real microphone speech.'
   }
 };
 

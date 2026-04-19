@@ -41,10 +41,10 @@ export function ChartOCR({ onText }: { onText: (text: string) => void }) {
     onText(summary);
   };
 
-  const useDemoChart = () => {
+  const useSampleChart = () => {
     const text = 'Complaint: fever and cough. BP 120/80 HR 90 SpO2 96 temp 38.2. Meds: paracetamol.';
     setChartText(text);
-    setStatus('Demo chart loaded. Tap Analyze Chart Text to continue.');
+    setStatus('Sample chart loaded. Tap Analyze Chart Text to continue.');
   };
 
   return (
@@ -58,7 +58,7 @@ export function ChartOCR({ onText }: { onText: (text: string) => void }) {
       <View style={styles.actions}>
         <ActionButton title="Open Camera" variant="secondary" onPress={() => scan('camera')} />
         <ActionButton title="Choose Photo" variant="secondary" onPress={() => scan('library')} />
-        <ActionButton title="Use Demo Chart" variant="secondary" onPress={useDemoChart} />
+        <ActionButton title="Use Sample Chart" variant="secondary" onPress={useSampleChart} />
       </View>
       <TextInput
         multiline

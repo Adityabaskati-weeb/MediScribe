@@ -13,7 +13,7 @@ export async function startSpeechRecognition(language = 'en-IN'): Promise<Speech
     language,
     confidence: 0.72,
     source: 'demo-fallback',
-    note: 'Browser preview uses demo dictation. Install the native dev build for real microphone speech.'
+    note: 'Guided dictation is active here. Install the native dev build for real microphone speech.'
   };
 }
 
@@ -39,10 +39,10 @@ export async function captureSymptomInMultipleLanguages(symptoms: string[]): Pro
   return JSON.stringify({
     english: symptoms,
     hindi_transliteration: symptoms,
-    source: 'web-demo-speech'
+    source: 'web-guided-speech'
   });
 }
 
 export function getSpeechSupportMessage() {
-  return 'Browser and Expo Go use demo dictation. Use the custom native build for real microphone speech recognition.';
+  return 'Browser and Expo Go use guided dictation. Use the custom native build for real microphone speech recognition.';
 }
