@@ -34,11 +34,13 @@ type AppTheme = typeof lightTheme | typeof darkTheme;
 type ThemeContextValue = {
   theme: AppTheme;
   toggleTheme: () => void;
+  setThemeMode: (mode: ThemeMode) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue>({
   theme: lightTheme,
-  toggleTheme: () => undefined
+  toggleTheme: () => undefined,
+  setThemeMode: () => undefined
 });
 
 export function AppThemeProvider({ children }: { children: React.ReactNode }) {
@@ -58,7 +60,8 @@ export function AppThemeProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(() => ({
     theme: mode === 'dark' ? darkTheme : lightTheme,
-    toggleTheme: () => setMode((current) => current === 'dark' ? 'light' : 'dark')
+    toggleTheme: () => setMode((current) => current === 'dark' ? 'light' : 'dark'),
+    setThemeMode: setMode
   }), [mode]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

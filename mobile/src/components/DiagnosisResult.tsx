@@ -5,8 +5,9 @@ import { DiagnosisResultsCard } from './DiagnosisResultsCard';
 import { useToast } from '../context/ToastContext';
 import { colors } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
+import type { DiagnosisEnvelope, DifferentialDiagnosis, MediScribeAssessment, SafetySignal } from '../types/clinical';
 
-function getAssessment(result: any) {
+function getAssessment(result: DiagnosisEnvelope | null): MediScribeAssessment | undefined {
   return (
     result?.data?.agentic?.assessment ||
     result?.data?.agentic?.stored?.assessment ||
@@ -17,7 +18,7 @@ function getAssessment(result: any) {
   );
 }
 
-export function DiagnosisResult({ result }: { result: any }) {
+export function DiagnosisResult({ result }: { result: DiagnosisEnvelope | null }) {
   const assessment = getAssessment(result);
   const { theme } = useAppTheme();
   const { showToast } = useToast();
@@ -43,7 +44,7 @@ export function DiagnosisResult({ result }: { result: any }) {
       <Text style={[styles.summary, { color: c.ink }]}>{assessment.clinical_summary}</Text>
 
       <Text style={[styles.heading, { color: c.ink }]}>Top 3 possible diagnoses</Text>
-      {(assessment.differential_diagnoses || []).slice(0, 3).map((item: any, index: number) => (
+      {(assessment.differential_diagnoses || []).slice(0, 3).map((item: DifferentialDiagnosis, index: number) => (
         <View style={[styles.row, { backgroundColor: c.surfaceSoft, borderColor: c.border }]} key={item.name}>
           <View style={[styles.rank, { backgroundColor: c.primary }]}>
             <Text style={styles.rankText}>{index + 1}</Text>
@@ -60,7 +61,7 @@ export function DiagnosisResult({ result }: { result: any }) {
       ))}
 
       <Text style={[styles.heading, { color: c.ink }]}>Red flags</Text>
-      {(assessment.red_flags || []).map((item: any, index: number) => (
+      {(assessment.red_flags || []).map((item: SafetySignal, index: number) => (
         <View style={[styles.flag, { backgroundColor: c.warningSoft, borderColor: c.warning }]} key={`${item.message}-${index}`}>
           <Text style={[styles.flagLevel, { color: c.warning }]}>{item.level}</Text>
           <Text style={[styles.flagMessage, { color: c.ink }]}>{item.message}</Text>

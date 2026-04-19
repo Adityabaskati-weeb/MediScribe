@@ -14,8 +14,8 @@ import { medicineSafetyMessages } from '../utils/clinicalDecisionSupport';
 
 export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraft; onNavigate: (screen: ScreenName) => void }) {
   const assessment = draft.assessment;
-  const treatment = assessment?.treatment || {};
-  const urgent = ['immediate', 'emergent'].includes(assessment?.urgency);
+  const treatment = assessment?.treatment;
+  const urgent = assessment ? ['immediate', 'emergent'].includes(assessment.urgency) : false;
   const { theme } = useAppTheme();
   const c = theme.colors;
 
@@ -40,7 +40,7 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
 
       <Card>
         <Text style={[styles.sectionTitle, { color: c.ink }]}>Immediate actions</Text>
-        {(treatment.immediate_actions || ['Record vitals', 'Use local protocol', 'Give safety-net instructions']).map((item: string) => (
+        {(treatment?.immediate_actions || ['Record vitals', 'Use local protocol', 'Give safety-net instructions']).map((item: string) => (
           <Text style={[styles.item, { color: c.ink }]} key={item}>- {item}</Text>
         ))}
       </Card>
@@ -54,7 +54,7 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
 
       <Card>
         <Text style={[styles.sectionTitle, { color: c.ink }]}>Local medicines to consider</Text>
-        {(treatment.medications_to_consider?.length ? treatment.medications_to_consider : ['Oral rehydration salts if dehydrated', 'Paracetamol per local age/weight protocol', 'Antibiotics only when local guideline criteria are met']).map((item: string) => (
+        {(treatment?.medications_to_consider?.length ? treatment.medications_to_consider : ['Oral rehydration salts if dehydrated', 'Paracetamol per local age/weight protocol', 'Antibiotics only when local guideline criteria are met']).map((item: string) => (
           <Text style={[styles.item, { color: c.ink }]} key={item}>- {item}</Text>
         ))}
         <Text style={[styles.disclaimer, { color: c.muted }]}>Dosage must follow local protocol, weight, allergies, pregnancy status, and clinician approval.</Text>
@@ -69,8 +69,8 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
 
       <Card>
         <Text style={[styles.sectionTitle, { color: c.ink }]}>Follow up</Text>
-        <Text style={[styles.item, { color: c.ink }]}>{treatment.follow_up || 'Review if symptoms worsen, fever persists, or new danger signs appear.'}</Text>
-        <Text style={[styles.referral, { color: c.primaryDark }]}>Referral: {treatment.referral || 'Routine unless red flags develop'}</Text>
+        <Text style={[styles.item, { color: c.ink }]}>{treatment?.follow_up || 'Review if symptoms worsen, fever persists, or new danger signs appear.'}</Text>
+        <Text style={[styles.referral, { color: c.primaryDark }]}>Referral: {treatment?.referral || 'Routine unless red flags develop'}</Text>
       </Card>
 
       <ReferralLetter patient={draft.patient} transcript={draft.transcript} assessment={assessment} />

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, SafeAreaView, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
+import { AppErrorBoundary } from './components/AppErrorBoundary';
 import { BottomTabBar } from './components/BottomTabBar';
 import { ToastProvider } from './context/ToastContext';
 import { DiagnosisScreen } from './screens/DiagnosisScreen';
@@ -16,26 +17,23 @@ import { VoiceScreen } from './screens/VoiceScreen';
 import { initializeLocalDatabase } from './services/databaseService';
 import { colors } from './styles/theme';
 import { AppThemeProvider, useAppTheme } from './styles/ThemeContext';
+import type { ConsultationDraft } from './types/clinical';
 import { normalizeLanguage } from './utils/i18n';
 
 export type ScreenName = 'home' | 'newPatient' | 'voice' | 'summary' | 'diagnosis' | 'treatment' | 'history' | 'settings';
-
-export type ConsultationDraft = {
-  patient?: any;
-  transcript?: string;
-  chartText?: string;
-  assessment?: any;
-  demoCaseId?: string;
-  language: string;
-};
+export type { ConsultationDraft } from './types/clinical';
 
 export default function App() {
+  const [resetKey, setResetKey] = useState(0);
+
   return (
-    <AppThemeProvider>
-      <ToastProvider>
-        <MediScribeApp />
-      </ToastProvider>
-    </AppThemeProvider>
+    <AppErrorBoundary resetKey={resetKey} onReturnHome={() => setResetKey((key) => key + 1)}>
+      <AppThemeProvider key={resetKey}>
+        <ToastProvider>
+          <MediScribeApp />
+        </ToastProvider>
+      </AppThemeProvider>
+    </AppErrorBoundary>
   );
 }
 

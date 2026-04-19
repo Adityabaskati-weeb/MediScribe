@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { createHash, randomUUID } from 'crypto';
 import {
   ClinicalIntake,
   PatientProfile,
@@ -18,6 +18,8 @@ const assessments: StoredAssessment[] = [];
 const queue: QueuedIntake[] = [];
 const syncItems: SyncItem[] = [];
 const patients: Array<PatientProfile & { created_at: string; last_visit_at?: string; total_assessments: number }> = [];
+const syncState = new Map<string, { sync_id: string; operation: string; updatedAtMs: number; payloadHash: string; deviceId?: string; doctorReviewed?: boolean }>();
+const diagnosisPayloads = new Map<string, string>();
 
 function now() {
   return new Date().toISOString();
@@ -25,6 +27,21 @@ function now() {
 
 function id(prefix: string) {
   return `${prefix}-${randomUUID().replace(/-/g, '').slice(0, 12)}`;
+}
+
+function hashPayload(payload: unknown) {
+  return createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+}
+
+function payloadDeviceId(payload: unknown) {
+  if (!payload || typeof payload !== 'object') return undefined;
+  const candidate = payload as { device_id?: unknown; deviceId?: unknown; source_device_id?: unknown };
+  const value = candidate.device_id || candidate.deviceId || candidate.source_device_id;
+  return typeof value === 'string' ? value : undefined;
+}
+
+function isAssessmentOperation(operation: string) {
+  return operation === 'UPSERT_DIAGNOSIS' || operation === 'CREATE_ASSESSMENT' || operation === 'UPDATE_ASSESSMENT';
 }
 
 function textOf(intake: ClinicalIntake) {
@@ -352,16 +369,69 @@ export function receiveSyncItems(items: Array<Partial<SyncItem>>) {
   const accepted: SyncItem[] = [];
   for (const item of items) {
     if (!item.record_id || !item.operation || item.payload === undefined) continue;
+    const payloadHash = hashPayload(item.payload);
+    const deviceId = payloadDeviceId(item.payload);
+    const existing = syncState.get(item.record_id);
+    const createdAt = item.created_at || now();
+    const createdAtMs = Date.parse(createdAt) || Date.now();
+
     const syncItem: SyncItem = {
       sync_id: item.sync_id || id('sync'),
       record_id: item.record_id,
       operation: item.operation,
       payload: item.payload,
-      created_at: item.created_at || now(),
-      source: 'mobile'
+      created_at: createdAt,
+      source: 'mobile',
+      accepted: true
     };
+
+    if (item.operation === 'UPSERT_PATIENT' && existing && existing.deviceId && deviceId && existing.deviceId !== deviceId) {
+      syncItem.conflict = {
+        type: 'concurrent_patient_update',
+        resolution: 'last_write_wins_with_audit',
+        existing_sync_id: existing.sync_id,
+        message: 'Two devices edited the same patient. The latest payload is accepted and the conflict is retained for audit.'
+      };
+    }
+
+    if (item.operation === 'UPSERT_DIAGNOSIS') {
+      const previousDiagnosisSyncId = diagnosisPayloads.get(payloadHash);
+      if (previousDiagnosisSyncId) {
+        syncItem.accepted = false;
+        syncItem.conflict = {
+          type: 'duplicate_queued_diagnosis',
+          resolution: 'duplicate_ignored',
+          existing_sync_id: previousDiagnosisSyncId,
+          message: 'The same diagnosis payload was already queued, so the duplicate is acknowledged without adding another pending sync item.'
+        };
+        accepted.push(syncItem);
+        continue;
+      }
+    }
+
+    if (existing?.doctorReviewed && isAssessmentOperation(item.operation) && createdAtMs < existing.updatedAtMs) {
+      syncItem.accepted = false;
+      syncItem.conflict = {
+        type: 'stale_assessment_update',
+        resolution: 'rejected_after_doctor_review',
+        existing_sync_id: existing.sync_id,
+        message: 'A stale mobile assessment arrived after doctor review and was rejected to protect reviewed care decisions.'
+      };
+      accepted.push(syncItem);
+      continue;
+    }
+
     syncItems.push(syncItem);
     accepted.push(syncItem);
+    if (item.operation === 'UPSERT_DIAGNOSIS') diagnosisPayloads.set(payloadHash, syncItem.sync_id);
+    syncState.set(item.record_id, {
+      sync_id: syncItem.sync_id,
+      operation: item.operation,
+      updatedAtMs: createdAtMs,
+      payloadHash,
+      deviceId: deviceId || existing?.deviceId,
+      doctorReviewed: item.operation === 'DOCTOR_REVIEW' || existing?.doctorReviewed
+    });
   }
   return accepted;
 }

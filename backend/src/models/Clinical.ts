@@ -90,12 +90,23 @@ export interface QueuedIntake {
   raw_text: string;
 }
 
+export type SyncOperation = 'CREATE_INTAKE' | 'CREATE_ASSESSMENT' | 'UPSERT_PATIENT' | 'UPSERT_DIAGNOSIS' | 'UPDATE_ASSESSMENT' | 'DOCTOR_REVIEW';
+
+export interface SyncConflict {
+  type: 'concurrent_patient_update' | 'duplicate_queued_diagnosis' | 'stale_assessment_update';
+  resolution: 'last_write_wins_with_audit' | 'duplicate_ignored' | 'rejected_after_doctor_review';
+  message: string;
+  existing_sync_id?: string;
+}
+
 export interface SyncItem {
   sync_id: string;
   record_id: string;
-  operation: 'CREATE_INTAKE' | 'CREATE_ASSESSMENT' | 'UPSERT_PATIENT' | 'UPSERT_DIAGNOSIS';
+  operation: SyncOperation;
   payload: unknown;
   created_at: string;
   synced_at?: string;
   source?: 'mobile' | 'backend';
+  accepted?: boolean;
+  conflict?: SyncConflict;
 }

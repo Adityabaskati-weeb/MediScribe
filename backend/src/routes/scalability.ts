@@ -16,6 +16,7 @@ import {
   getModelDeliveryPlan,
   getRegionalContext,
   logComplianceAccess,
+  parsePricingTier,
   queueEHRShare,
   routeToSpecializedModel,
   scalabilityReadinessReport,
@@ -29,6 +30,7 @@ import {
   trackPrescription,
   requestSpecialistConsultation
 } from '../services/scalabilityService';
+import type { Specialty } from '../services/scalabilityShared';
 import { analyzeIntake, normalizeCapture } from '../services/clinicalEngine';
 import { successResponse } from '../utils/apiResponse';
 
@@ -73,7 +75,7 @@ router.post('/learning/outcome', asyncHandler(async (req, res) => {
 router.get('/learning/metrics', asyncHandler(async (req, res) => {
   res.json(successResponse(continuousLearning.getPerformanceMetrics({
     clinicId: req.query.clinicId ? String(req.query.clinicId) : undefined,
-    specialty: req.query.specialty as any
+    specialty: parseSpecialty(req.query.specialty)
   })));
 }));
 
@@ -150,7 +152,7 @@ router.get('/billing/:clinicId', asyncHandler(async (req, res) => {
   res.json(successResponse(billForService(
     req.params.clinicId,
     Number(req.query.diagnosesUsed || 0),
-    (req.query.tier || 'clinic') as any
+    parsePricingTier(req.query.tier)
   )));
 }));
 
@@ -175,3 +177,8 @@ router.post('/compliance/audit', asyncHandler(async (req, res) => {
 }));
 
 export default router;
+
+function parseSpecialty(value: unknown): Specialty | undefined {
+  const specialties: Specialty[] = ['general', 'classification', 'pediatrics', 'cardiology', 'obstetrics', 'orthopedics', 'neurology', 'dermatology'];
+  return specialties.find((specialty) => specialty === value);
+}

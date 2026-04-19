@@ -7,12 +7,14 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "npm run test:unit && npm run test:diagnosis && npm run test:agentic && npm run test:integration && npm run test:scalability",
+    "test": "npm run test:unit && npm run test:diagnosis && npm run test:agentic && npm run test:integration && npm run test:sync-conflicts && npm run test:scalability && npm run test:contract",
     "test:integration": "ts-node src/tests/integration.test.ts",
     "test:gemma": "ts-node src/tests/gemmaService.test.ts",
     "test:diagnosis": "ts-node src/tests/diagnosis.test.ts",
     "test:agentic": "ts-node src/tests/agentic.test.ts",
+    "test:contract": "ts-node src/tests/apiContract.test.ts",
     "test:unit": "ts-node src/tests/validators.test.ts",
+    "test:sync-conflicts": "ts-node src/tests/syncConflict.test.ts",
     "test:scalability": "ts-node src/tests/scalability.test.ts"
   },
   "dependencies": {

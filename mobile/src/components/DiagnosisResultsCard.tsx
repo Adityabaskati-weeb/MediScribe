@@ -2,10 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { MedicalPulseAnimation } from './MedicalPulseAnimation';
 import { useAppTheme } from '../styles/ThemeContext';
+import type { MediScribeAssessment, SafetySignal } from '../types/clinical';
 import { triggerHaptic } from '../utils/microInteractions';
 
 type DiagnosisResultsCardProps = {
-  assessment: any;
+  assessment: MediScribeAssessment;
   onSave?: () => void;
   onConsult?: () => void;
 };
@@ -48,7 +49,7 @@ export function DiagnosisResultsCard({ assessment, onSave, onConsult }: Diagnosi
       {assessment.red_flags?.length > 0 && (
         <View style={[styles.section, { backgroundColor: theme.colors.warningSoft, borderColor: theme.colors.warning }]}>
           <Text style={[styles.sectionTitle, { color: theme.colors.ink }]}>Important alerts</Text>
-          {assessment.red_flags.slice(0, 3).map((flag: any, index: number) => (
+          {assessment.red_flags.slice(0, 3).map((flag: SafetySignal, index: number) => (
             <Text style={[styles.alert, { color: theme.colors.ink }]} key={`${flag.message}-${index}`}>{flag.level.toUpperCase()}: {flag.message}</Text>
           ))}
         </View>

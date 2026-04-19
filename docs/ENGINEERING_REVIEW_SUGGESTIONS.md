@@ -1,22 +1,22 @@
 # Engineering Review Suggestions
 
-This review removed stale scaffolding and added stricter unused-code checks. These are the next high-value improvements to implement after the current hackathon build is stable.
+This review removed stale scaffolding and added stricter unused-code checks. The follow-up engineering suggestions below have now been implemented so they can be enforced by code and tests instead of staying as notes.
 
 ## 1. Add a Real Dashboard Typecheck
 
-The dashboard currently relies on Vite build behavior but does not have a dedicated `tsconfig.json` or `tsc --noEmit` test script. Add a dashboard TypeScript config and change `npm test --prefix dashboard` to run typechecking before build.
+Implemented: the dashboard now has a dedicated `tsconfig.json`, a `typecheck` script, and `npm test --prefix dashboard` runs typechecking before the production build.
 
 Why it matters: dashboard regressions will be caught before judges see broken analytics or reports.
 
 ## 2. Replace `any` in Mobile Consultation Draft
 
-`mobile/src/App.tsx` still uses `patient?: any` and `assessment?: any`. Replace those with shared mobile types based on the backend `Clinical.ts` model shape.
+Implemented: the mobile app now uses `mobile/src/types/clinical.ts` for `ConsultationDraft`, patient profiles, assessments, diagnosis envelopes, treatment recommendations, and safety signals.
 
 Why it matters: it will catch broken patient fields, missing assessment fields, and wrong treatment data at compile time.
 
 ## 3. Split Large Backend Scalability Service
 
-`backend/src/services/scalabilityService.ts` intentionally implements the full scalability guide in one place for speed. Once stable, split it into:
+Implemented: `backend/src/services/scalabilityService.ts` now acts as a small public aggregator over:
 
 - `modelRouterService.ts`
 - `federatedLearningService.ts`
@@ -29,7 +29,7 @@ Why it matters: smaller files are easier to test, review, and extend.
 
 ## 4. Add API Contract Tests
 
-Current backend tests call services directly. Add HTTP-level tests for:
+Implemented: `backend/src/tests/apiContract.test.ts` starts the real Express app and validates auth, middleware, response envelopes, and routing for:
 
 - `/api/diagnoses/agentic`
 - `/api/scalability/readiness`
@@ -40,13 +40,13 @@ Why it matters: this validates middleware, response envelopes, routing, and auth
 
 ## 5. Make Mobile Demo State Resettable
 
-Add a Settings action that clears local SQLite demo data and AsyncStorage language/theme state.
+Implemented: Settings now includes a Demo reset action that clears local SQLite demo records and resets saved language/theme state for repeatable hackathon demos.
 
 Why it matters: hackathon demos often need repeated clean runs. A reset button avoids manually clearing app data.
 
 ## 6. Add Offline Sync Conflict Tests
 
-The sync service accepts mobile payloads, but conflict behavior should be tested for:
+Implemented: `backend/src/tests/syncConflict.test.ts` validates conflict behavior for:
 
 - same patient edited on two devices
 - duplicate queued diagnosis
@@ -56,6 +56,6 @@ Why it matters: offline-first is one of MediScribe's strongest claims; conflict 
 
 ## 7. Add a Minimal Error Boundary in Mobile
 
-Wrap the app shell in a recoverable error boundary with a "Return home" action.
+Implemented: the app shell is wrapped in `AppErrorBoundary`, which shows a recoverable fallback and a "Return home" action that remounts the app.
 
 Why it matters: if one screen crashes during a demo, the whole app should not become unrecoverable.

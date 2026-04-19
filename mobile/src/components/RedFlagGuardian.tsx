@@ -3,9 +3,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
+import type { PatientProfile } from '../types/clinical';
 import { evaluateGuardian } from '../utils/clinicalDecisionSupport';
 
-export function RedFlagGuardian({ text, patient }: { text: string; patient?: any }) {
+export function RedFlagGuardian({ text, patient }: { text: string; patient?: PatientProfile }) {
   const flags = evaluateGuardian(text, patient);
   const hasRed = flags.some((flag) => flag.level === 'red');
   const { theme } = useAppTheme();

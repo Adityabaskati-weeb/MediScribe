@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
+import type { PatientProfile } from '../types/clinical';
 import { followUpQuestions } from '../utils/clinicalDecisionSupport';
 
 export function SmartFollowUpQuestions({
@@ -11,7 +12,7 @@ export function SmartFollowUpQuestions({
   onAddQuestion
 }: {
   text: string;
-  patient?: any;
+  patient?: PatientProfile;
   onAddQuestion?: (question: string) => void;
 }) {
   const questions = followUpQuestions(text, patient);

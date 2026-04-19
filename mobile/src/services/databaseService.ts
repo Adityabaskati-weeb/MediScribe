@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import type { MediScribeAssessment, PatientProfile, TreatmentRecommendation } from '../types/clinical';
 
 const db = SQLite.openDatabaseSync('mediscribe.db');
 
@@ -206,19 +207,9 @@ function ensureColumns(tableName: string, columns: Array<[string, string]>) {
   }
 }
 
-export function createPatient(patient: {
+export function createPatient(patient: PatientProfile & {
   id?: string;
   name: string;
-  age_years: number;
-  gender?: string;
-  phone?: string;
-  address?: string;
-  emergencyContact?: string;
-  known_conditions?: string[];
-  allergies?: string[];
-  medications?: string[];
-  pregnancy_weeks?: number;
-  postpartum_days?: number;
 }) {
   const id = patient.id || `patient-${Date.now()}`;
   db.runSync(
@@ -247,11 +238,11 @@ export function createPatient(patient: {
   return { ...patient, id };
 }
 
-export function getPatient(patientId: string): Promise<any | null> {
+export function getPatient(patientId: string): Promise<PatientProfile | null> {
   return db.getFirstAsync('SELECT * FROM patients WHERE id = ?;', [patientId]);
 }
 
-export function getAllPatients(): Promise<any[]> {
+export function getAllPatients(): Promise<Array<PatientProfile & { created_at: string }>> {
   return db.getAllAsync('SELECT id, name, age, gender, phone, address, emergencyContact, created_at FROM patients ORDER BY created_at DESC;');
 }
 
@@ -281,7 +272,7 @@ export function createConsultation(consultationData: {
   return id;
 }
 
-export function saveDiagnosis(consultationId: string, assessment: any) {
+export function saveDiagnosis(consultationId: string, assessment: MediScribeAssessment) {
   const id = assessment.assessment_id || `diagnosis-${Date.now()}`;
   const diagnoses = assessment.differential_diagnoses || [];
   db.runSync(
@@ -311,7 +302,7 @@ export function saveDiagnosis(consultationId: string, assessment: any) {
   return { id, consultationId, assessment };
 }
 
-export function saveTreatmentPlan(diagnosisId: string, treatment: any, referralRequired = false) {
+export function saveTreatmentPlan(diagnosisId: string, treatment: Partial<TreatmentRecommendation> & { medications?: string[]; nonPharmacological?: string[]; followUpInDays?: number }, referralRequired = false) {
   const id = `treatment-${Date.now()}`;
   const medications = treatment.medications_to_consider || treatment.medications || [];
   db.runSync(
@@ -345,7 +336,7 @@ export function saveChartImage(consultationId: string, imagePath: string, extrac
   return id;
 }
 
-export function getPatientHistory(patientId?: string): Promise<any[]> {
+export function getPatientHistory(patientId?: string): Promise<Array<Record<string, unknown>>> {
   if (!patientId) return db.getAllAsync('SELECT * FROM diagnoses ORDER BY created_at DESC;');
   return db.getAllAsync(
     `SELECT c.*, d.possibleDiagnosis1, d.possibleDiagnosis2, d.possibleDiagnosis3, d.urgency
@@ -394,4 +385,16 @@ export function markOfflinePayloadsSynced(ids: string[]): Promise<void> {
     db.runSync('UPDATE offline_queue SET synced = 1 WHERE id = ?;', [id]);
   }
   return Promise.resolve();
+}
+
+export function resetLocalDemoData() {
+  db.execSync(`
+    DELETE FROM chartImages;
+    DELETE FROM treatmentPlans;
+    DELETE FROM diagnoses;
+    DELETE FROM consultations;
+    DELETE FROM patients;
+    DELETE FROM syncQueue;
+    DELETE FROM offline_queue;
+  `);
 }

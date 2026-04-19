@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { StatusPill } from '../components/StatusPill';
+import { resetLocalDemoData } from '../services/databaseService';
 import { colors, spacing } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
 import { appLanguages, t } from '../utils/i18n';
@@ -19,8 +21,21 @@ export function SettingsScreen({
   onNavigate: (screen: ScreenName) => void;
 }) {
   const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
-  const { theme, toggleTheme } = useAppTheme();
+  const { theme, toggleTheme, setThemeMode } = useAppTheme();
+  const [resetState, setResetState] = useState<'idle' | 'done' | 'failed'>('idle');
   const c = theme.colors;
+
+  const resetDemoState = async () => {
+    try {
+      resetLocalDemoData();
+      await AsyncStorage.multiRemove(['mediscribe.language', 'mediscribe.theme']);
+      setThemeMode('light');
+      onDraftChange({ language: 'Hindi' });
+      setResetState('done');
+    } catch {
+      setResetState('failed');
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -74,6 +89,14 @@ export function SettingsScreen({
         <Text style={[styles.meta, { color: c.muted }]}>{copy('modelCached')}</Text>
         <Text style={[styles.meta, { color: c.muted }]}>{copy('guidelinesCached')}</Text>
         <Text style={[styles.meta, { color: c.muted }]}>{copy('sqliteReady')}</Text>
+      </Card>
+
+      <Card>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Demo reset</Text>
+        <Text style={[styles.meta, { color: c.muted }]}>Clear local SQLite records plus saved language and theme so the next pitch starts fresh.</Text>
+        <ActionButton title="Reset demo data" onPress={resetDemoState} variant="danger" />
+        {resetState === 'done' && <Text style={[styles.resetMessage, { color: c.success }]}>Demo state cleared. Start a new consultation from Home.</Text>}
+        {resetState === 'failed' && <Text style={[styles.resetMessage, { color: c.accent }]}>Reset failed. Close and reopen the app, then try again.</Text>}
       </Card>
 
       <ActionButton title={copy('returnHome')} onPress={() => onNavigate('home')} />
@@ -155,5 +178,10 @@ const styles = StyleSheet.create({
   themeChoiceMeta: {
     fontSize: 13,
     fontWeight: '700'
+  },
+  resetMessage: {
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 20
   }
 });

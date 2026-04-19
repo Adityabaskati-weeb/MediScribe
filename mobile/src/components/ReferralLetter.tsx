@@ -4,9 +4,10 @@ import { ActionButton } from './ActionButton';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
+import type { MediScribeAssessment, PatientProfile } from '../types/clinical';
 import { buildReferralLetter } from '../utils/clinicalDecisionSupport';
 
-export function ReferralLetter({ patient, transcript, assessment }: { patient?: any; transcript?: string; assessment?: any }) {
+export function ReferralLetter({ patient, transcript, assessment }: { patient?: PatientProfile; transcript?: string; assessment?: MediScribeAssessment }) {
   const letter = useMemo(() => buildReferralLetter({ patient, transcript, assessment }), [patient, transcript, assessment]);
   const [copied, setCopied] = useState(false);
   const { theme } = useAppTheme();

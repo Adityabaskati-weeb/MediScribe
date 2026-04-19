@@ -11,6 +11,7 @@ import { analyzeMedicalCase } from '../services/gemmaService';
 import { saveDiagnosis } from '../services/databaseService';
 import { colors, spacing } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
+import type { DiagnosisEnvelope, MediScribeAssessment } from '../types/clinical';
 import { evaluateGuardian } from '../utils/clinicalDecisionSupport';
 import { extractClinicalSymptoms, extractClinicalVitals } from '../utils/clinicalText';
 
@@ -23,13 +24,13 @@ export function DiagnosisScreen({
   onDraftChange: (draft: ConsultationDraft) => void;
   onNavigate?: (screen: ScreenName) => void;
 }) {
-  const [result, setResult] = useState<any>(draft.assessment ? { assessment: draft.assessment } : null);
+  const [result, setResult] = useState<DiagnosisEnvelope | null>(draft.assessment ? { assessment: draft.assessment } : null);
   const [status, setStatus] = useState('Ready for intake');
   const { theme } = useAppTheme();
 
   const analyze = async (symptoms: string) => {
     setStatus('Analyzing with Gemma/Ollama guardrails...');
-    let response: any;
+    let response: DiagnosisEnvelope;
     try {
       response = await analyzeMedicalCase({
         patient: {
@@ -51,7 +52,7 @@ export function DiagnosisScreen({
       setStatus('Backend unavailable. Offline triage result saved locally.');
     }
     setResult(response);
-    const assessment =
+    const assessment: MediScribeAssessment | undefined =
       response?.data?.agentic?.assessment ||
       response?.data?.agentic?.stored?.assessment ||
       response?.data?.stored?.assessment ||
@@ -124,7 +125,7 @@ function buildOfflineAssessment(symptoms: string) {
   const guardianFlags = evaluateGuardian(symptoms);
   const urgent = guardianFlags.some((flag) => flag.level === 'red') || /chest pain|shortness of breath|spo2\s*(8|7|6)|bp\s*8\d|unconscious|seizure/.test(lower);
   const fever = /fever|temp\s*3[89]|temp\s*40/.test(lower);
-  const assessment = {
+  const assessment: MediScribeAssessment = {
     assessment_id: `offline-${Date.now()}`,
     patient_id: 'local-demo-patient',
     urgency: urgent ? 'immediate' : fever ? 'urgent' : 'routine',
@@ -138,8 +139,8 @@ function buildOfflineAssessment(symptoms: string) {
       }
     ],
     red_flags: urgent
-      ? guardianFlags.filter((flag) => flag.level === 'red').map((flag) => ({ level: 'red', message: `${flag.title}: ${flag.action}` })).concat([{ level: 'red', message: 'Danger symptoms present. Refer urgently and reassess ABCs.' }])
-      : [{ level: fever ? 'amber' : 'green', message: fever ? 'Fever needs same-day review if persistent or worsening.' : 'No immediate red flag detected from transcript.' }],
+      ? guardianFlags.filter((flag) => flag.level === 'red').map((flag) => ({ level: 'red' as const, message: `${flag.title}: ${flag.action}` })).concat([{ level: 'red' as const, message: 'Danger symptoms present. Refer urgently and reassess ABCs.' }])
+      : [{ level: fever ? 'amber' as const : 'green' as const, message: fever ? 'Fever needs same-day review if persistent or worsening.' : 'No immediate red flag detected from transcript.' }],
     treatment: {
       immediate_actions: urgent ? ['Check airway, breathing, circulation.', 'Arrange urgent referral.'] : ['Record full vital signs.', 'Safety-net before discharge.'],
       suggested_tests: ['Repeat vital signs', 'Focused history and examination'],

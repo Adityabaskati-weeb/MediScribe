@@ -4,9 +4,10 @@ import { ActionButton } from './ActionButton';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
+import type { PatientProfile } from '../types/clinical';
 import { t } from '../utils/i18n';
 
-export function PatientForm({ language, onSubmit }: { language: string; onSubmit: (patient: any) => void }) {
+export function PatientForm({ language, onSubmit }: { language: string; onSubmit: (patient: PatientProfile & { name: string }) => void }) {
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('unknown');
