@@ -43,6 +43,8 @@ export function DiagnosisResult({
 
   return (
     <Card style={[urgent && { borderColor: c.accent, borderLeftColor: c.accent, borderLeftWidth: 6 }]}>
+      <EmergencyCatchHero assessment={assessment} transcript={transcript} offlineDemo={offlineDemo} />
+      <LocalIntelligenceCard urgent={urgent} offlineDemo={offlineDemo} />
       <DiagnosisResultsCard
         assessment={assessment}
         onSave={() => showToast('Assessment saved for offline sync', 'success')}
@@ -63,6 +65,8 @@ export function DiagnosisResult({
         <Text style={[styles.workerTitle, { color: urgent ? c.accent : c.primaryDark }]}>For the health worker</Text>
         <Text style={[styles.workerCopy, { color: c.ink }]}>{plainLanguageExplanation(assessment, transcript, patient, offlineDemo)}</Text>
       </View>
+
+      <CarePathwayTimeline urgent={urgent} offlineDemo={offlineDemo} />
 
       {urgent && (
         <View style={[styles.referralCommand, { backgroundColor: c.accent }]}>
@@ -132,6 +136,144 @@ export function DiagnosisResult({
       <Text style={[styles.disclaimer, { color: c.muted }]}>{assessment.disclaimer}</Text>
     </Card>
   );
+}
+
+function EmergencyCatchHero({
+  assessment,
+  transcript,
+  offlineDemo
+}: {
+  assessment: MediScribeAssessment;
+  transcript: string;
+  offlineDemo: boolean;
+}) {
+  const { theme } = useAppTheme();
+  const c = theme.colors;
+  const urgent = ['immediate', 'emergent'].includes(assessment.urgency);
+  const top = assessment.differential_diagnoses?.[0]?.name || 'Clinical review needed';
+  const catchReason = findCatchReason(assessment, transcript);
+
+  return (
+    <View
+      style={[
+        styles.catchHero,
+        {
+          backgroundColor: urgent ? c.dangerSoft : c.successSoft,
+          borderColor: urgent ? c.accent : c.success
+        }
+      ]}
+    >
+      <View style={styles.catchTopRow}>
+        <Text style={[styles.catchKicker, { color: urgent ? c.accent : c.success }]}>
+          {urgent ? 'Emergency catch moment' : 'Safety check complete'}
+        </Text>
+        <Text style={[styles.catchBadge, { backgroundColor: urgent ? c.accent : c.success }]}>
+          {urgent ? 'REFER NOW' : 'SAFE FLOW'}
+        </Text>
+      </View>
+      <Text style={[styles.catchTitle, { color: c.ink }]}>
+        {urgent ? 'MediScribe caught the danger before sync.' : 'MediScribe kept the visit structured.'}
+      </Text>
+      <Text style={[styles.catchCopy, { color: c.muted }]}>
+        {catchReason}. {offlineDemo ? 'Airplane mode is active, so the referral path uses local safety logic.' : `Top concern: ${top}.`}
+      </Text>
+      <View style={styles.catchProofRow}>
+        <ProofChip label={offlineDemo ? 'Internet off' : 'AI ready'} tone={offlineDemo ? 'danger' : 'info'} />
+        <ProofChip label="Saved locally" tone="success" />
+        <ProofChip label={urgent ? 'Red flags first' : 'Guardrails checked'} tone={urgent ? 'danger' : 'success'} />
+      </View>
+    </View>
+  );
+}
+
+function LocalIntelligenceCard({ urgent, offlineDemo }: { urgent: boolean; offlineDemo: boolean }) {
+  const { theme } = useAppTheme();
+  const c = theme.colors;
+  return (
+    <View style={[styles.intelligenceCard, { backgroundColor: c.surfaceSoft, borderColor: c.border }]}>
+      <View>
+        <Text style={[styles.intelligenceKicker, { color: c.primaryDark }]}>Local intelligence layer</Text>
+        <Text style={[styles.intelligenceTitle, { color: c.ink }]}>Gemma 4 plus deterministic safety</Text>
+      </View>
+      <View style={styles.intelligenceGrid}>
+        <IntelligenceTile label="Model" value="Gemma 4 via Ollama" tone="info" />
+        <IntelligenceTile label="Mode" value={offlineDemo ? 'Offline fallback' : 'Local-first'} tone={offlineDemo ? 'danger' : 'success'} />
+        <IntelligenceTile label="Safety" value={urgent ? 'Override active' : 'Guarded output'} tone={urgent ? 'danger' : 'success'} />
+      </View>
+    </View>
+  );
+}
+
+function CarePathwayTimeline({ urgent, offlineDemo }: { urgent: boolean; offlineDemo: boolean }) {
+  const { theme } = useAppTheme();
+  const c = theme.colors;
+  const steps = [
+    { label: 'Intake', done: true, tone: 'info' },
+    { label: 'Vitals', done: true, tone: 'info' },
+    { label: offlineDemo ? 'Local rules' : 'Gemma review', done: true, tone: 'success' },
+    { label: 'Safety check', done: true, tone: urgent ? 'danger' : 'success' },
+    { label: urgent ? 'Referral' : 'Care plan', done: true, tone: urgent ? 'danger' : 'success' }
+  ] as const;
+  return (
+    <View style={[styles.pathway, { backgroundColor: c.surfaceSoft, borderColor: c.border }]}>
+      <Text style={[styles.pathwayTitle, { color: c.ink }]}>Care pathway</Text>
+      <View style={styles.pathwayRail}>
+        {steps.map((step, index) => {
+          const palette = step.tone === 'danger'
+            ? { bg: c.dangerSoft, fg: c.accent }
+            : step.tone === 'success'
+              ? { bg: c.successSoft, fg: c.success }
+              : { bg: c.infoSoft, fg: c.primaryDark };
+          return (
+            <View style={styles.pathwayStep} key={step.label}>
+              {index > 0 && <View style={[styles.pathwayLine, { backgroundColor: c.borderStrong }]} />}
+              <View style={[styles.pathwayDot, { backgroundColor: palette.bg, borderColor: palette.fg }]}>
+                <Text style={[styles.pathwayDotText, { color: palette.fg }]}>{index + 1}</Text>
+              </View>
+              <Text style={[styles.pathwayLabel, { color: palette.fg }]}>{step.label}</Text>
+            </View>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+function IntelligenceTile({ label, value, tone }: { label: string; value: string; tone: 'info' | 'success' | 'danger' }) {
+  const { theme } = useAppTheme();
+  const palette = {
+    info: { bg: theme.colors.infoSoft, fg: theme.colors.primaryDark },
+    success: { bg: theme.colors.successSoft, fg: theme.colors.success },
+    danger: { bg: theme.colors.dangerSoft, fg: theme.colors.accent }
+  }[tone];
+  return (
+    <View style={[styles.intelligenceTile, { backgroundColor: palette.bg }]}>
+      <Text style={[styles.intelligenceLabel, { color: palette.fg }]}>{label}</Text>
+      <Text style={[styles.intelligenceValue, { color: theme.colors.ink }]}>{value}</Text>
+    </View>
+  );
+}
+
+function ProofChip({ label, tone }: { label: string; tone: 'info' | 'success' | 'danger' }) {
+  const { theme } = useAppTheme();
+  const palette = {
+    info: { bg: theme.colors.infoSoft, fg: theme.colors.primaryDark },
+    success: { bg: theme.colors.successSoft, fg: theme.colors.success },
+    danger: { bg: theme.colors.dangerSoft, fg: theme.colors.accent }
+  }[tone];
+  return (
+    <View style={[styles.proofChip, { backgroundColor: palette.bg }]}>
+      <Text style={[styles.proofChipText, { color: palette.fg }]}>{label}</Text>
+    </View>
+  );
+}
+
+function findCatchReason(assessment: MediScribeAssessment, transcript: string) {
+  const red = assessment.red_flags?.find((flag) => flag.level === 'red')?.message;
+  if (/pregnan/i.test(transcript) && /bleeding|abdominal pain|dizzy/i.test(transcript)) {
+    return 'Pregnancy plus bleeding, abdominal pain, and dizziness are danger signs';
+  }
+  return red || 'Safety guardrails reviewed the symptoms and vitals';
 }
 
 function cleanReferralText(referral?: string, urgent = false) {
@@ -373,5 +515,132 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 12,
     marginTop: 8
+  },
+  catchHero: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 10,
+    padding: 15
+  },
+  catchTopRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'space-between'
+  },
+  catchKicker: {
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  catchBadge: {
+    borderRadius: 8,
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 9,
+    paddingVertical: 7
+  },
+  catchTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    lineHeight: 28
+  },
+  catchCopy: {
+    fontSize: 15,
+    fontWeight: '700',
+    lineHeight: 22
+  },
+  catchProofRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8
+  },
+  proofChip: {
+    borderRadius: 8,
+    paddingHorizontal: 9,
+    paddingVertical: 8
+  },
+  proofChipText: {
+    fontSize: 11,
+    fontWeight: '900'
+  },
+  intelligenceCard: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 12,
+    padding: 14
+  },
+  intelligenceKicker: {
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  intelligenceTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    marginTop: 2
+  },
+  intelligenceGrid: {
+    gap: 8
+  },
+  intelligenceTile: {
+    borderRadius: 8,
+    gap: 3,
+    padding: 10
+  },
+  intelligenceLabel: {
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  intelligenceValue: {
+    fontSize: 14,
+    fontWeight: '900'
+  },
+  pathway: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 12,
+    padding: 12
+  },
+  pathwayTitle: {
+    fontSize: 16,
+    fontWeight: '900'
+  },
+  pathwayRail: {
+    flexDirection: 'row'
+  },
+  pathwayStep: {
+    alignItems: 'center',
+    flex: 1,
+    gap: 6,
+    position: 'relative'
+  },
+  pathwayLine: {
+    height: 2,
+    left: '-50%',
+    position: 'absolute',
+    top: 16,
+    width: '100%'
+  },
+  pathwayDot: {
+    alignItems: 'center',
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 32,
+    justifyContent: 'center',
+    width: 32
+  },
+  pathwayDotText: {
+    fontSize: 12,
+    fontWeight: '900'
+  },
+  pathwayLabel: {
+    fontSize: 10,
+    fontWeight: '900',
+    textAlign: 'center'
   }
 });

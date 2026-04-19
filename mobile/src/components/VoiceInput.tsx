@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ActionButton } from './ActionButton';
 import { Card } from './Card';
+import { StructuredIntakePreview } from './StructuredIntakePreview';
 import { colors } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
 import { getSpeechSupportMessage, isNativeSpeechAvailable, startSpeechRecognition } from '../services/speechService';
@@ -46,8 +47,7 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
     try {
       const result = await startSpeechRecognition(speechLocaleForLanguage(language));
       setTranscript(result.text);
-      setStatus(`${result.note || `Captured with ${Math.round(result.confidence * 100)}% confidence.`} Sending to triage...`);
-      onTranscript(result.text);
+      setStatus(`${result.note || `Captured with ${Math.round(result.confidence * 100)}% confidence.`} Review the structured extraction below.`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : getSpeechSupportMessage());
     } finally {
@@ -130,7 +130,8 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
         value={transcript}
         onChangeText={setTranscript}
       />
-      <ActionButton title={t(language, 'analyzeTyped')} onPress={submit} disabled={!transcript.trim() || loading} variant="secondary" />
+      <StructuredIntakePreview transcript={transcript} />
+      <ActionButton title="Use Structured Intake" onPress={submit} disabled={!transcript.trim() || loading} variant="success" />
       <Text style={[styles.note, { color: c.muted }]}>{t(language, 'speechSupport')}</Text>
     </Card>
   );

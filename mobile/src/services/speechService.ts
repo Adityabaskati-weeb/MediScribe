@@ -23,7 +23,7 @@ export async function isNativeSpeechAvailable(): Promise<boolean> {
 
 export async function captureSymptomTranscript(language = 'en-IN'): Promise<string> {
   await new Promise((resolve) => setTimeout(resolve, 300));
-  return `Patient reports fever and cough. BP 120/80 HR 90 temp 38.2. Language ${language}.`;
+  return `Pregnant woman 32 weeks with bleeding, abdominal pain and dizziness. BP 104/70 HR 112 SpO2 96. No internet in clinic. Language ${language}.`;
 }
 
 export async function textToSpeech(text: string): Promise<void> {

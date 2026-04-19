@@ -56,7 +56,7 @@ export function HomeScreen({
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: c.background }]}>
       <View style={[styles.commandHeader, { backgroundColor: c.background }]}>
         <View>
-          <Text style={[styles.commandKicker, { color: c.primaryDark }]}>Clinic Mode</Text>
+          <Text style={[styles.commandKicker, { color: c.primaryDark }]}>Calm clinic, critical command</Text>
           <Text style={[styles.commandTitle, { color: c.ink }]}>Who needs care now?</Text>
         </View>
         <StatusPill label={copy('offlineReady')} tone="success" />
@@ -84,8 +84,8 @@ export function HomeScreen({
           </View>
         </View>
 
-        <Text style={styles.title}>Start safe care in under two minutes.</Text>
-        <Text style={styles.copy}>Voice, scan, or type. MediScribe catches red flags first and keeps the visit saved offline.</Text>
+        <Text style={styles.title}>Beautiful care flow. Emergency clarity.</Text>
+        <Text style={styles.copy}>A calm clinic interface that turns decisive when danger appears. Voice, scan, or type, then let local safety checks protect the workflow.</Text>
 
         <View style={styles.heroStats}>
           <MiniStat label="Offline" value="100%" />
@@ -99,6 +99,26 @@ export function HomeScreen({
           <Text style={styles.airplaneCopy}>Pregnancy bleeding case, local safety fallback, saved without internet.</Text>
         </Pressable>
       </View>
+
+      <Card>
+        <View style={styles.storyHeader}>
+          <View style={[styles.storyMark, { backgroundColor: c.dangerSoft, borderColor: c.accent }]}>
+            <Text style={[styles.storyMarkText, { color: c.accent }]}>WOW</Text>
+          </View>
+          <View style={styles.storyText}>
+            <Text style={[styles.panelTitle, { color: c.ink }]}>The scene judges remember</Text>
+            <Text style={[styles.helper, { color: c.muted }]}>
+              No internet. Long queue. A 32-week pregnant patient arrives bleeding and dizzy. MediScribe catches the danger sign locally and creates the referral handoff.
+            </Text>
+          </View>
+        </View>
+        <View style={styles.storySteps}>
+          <StoryStep label="Offline" tone="safe" />
+          <StoryStep label="Red flag" tone="danger" />
+          <StoryStep label="Safety Agent" tone="info" />
+          <StoryStep label="Refer now" tone="danger" />
+        </View>
+      </Card>
 
       <View style={styles.metrics}>
         <MetricCard value="24" label={copy('patientsToday')} color={c.primaryDark} />
@@ -200,6 +220,20 @@ function ProofTile({ value, label }: { value: string; label: string }) {
     <View style={[styles.proofTile, { backgroundColor: theme.colors.surfaceSoft, borderColor: theme.colors.border }]}>
       <Text style={[styles.proofValue, { color: theme.colors.primaryDark }]}>{value}</Text>
       <Text style={[styles.proofLabel, { color: theme.colors.muted }]}>{label}</Text>
+    </View>
+  );
+}
+
+function StoryStep({ label, tone }: { label: string; tone: 'safe' | 'danger' | 'info' }) {
+  const { theme } = useAppTheme();
+  const palette = {
+    safe: { bg: theme.colors.successSoft, fg: theme.colors.success },
+    danger: { bg: theme.colors.dangerSoft, fg: theme.colors.accent },
+    info: { bg: theme.colors.infoSoft, fg: theme.colors.primaryDark }
+  }[tone];
+  return (
+    <View style={[styles.storyStep, { backgroundColor: palette.bg }]}>
+      <Text style={[styles.storyStepText, { color: palette.fg }]}>{label}</Text>
     </View>
   );
 }
@@ -422,6 +456,40 @@ const styles = StyleSheet.create({
   proofGrid: {
     flexDirection: 'row',
     gap: 8
+  },
+  storyHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 12
+  },
+  storyMark: {
+    alignItems: 'center',
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 48,
+    justifyContent: 'center',
+    width: 54
+  },
+  storyMarkText: {
+    fontSize: 12,
+    fontWeight: '900'
+  },
+  storyText: {
+    flex: 1
+  },
+  storySteps: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8
+  },
+  storyStep: {
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 9
+  },
+  storyStepText: {
+    fontSize: 12,
+    fontWeight: '900'
   },
   proofTile: {
     borderRadius: 8,

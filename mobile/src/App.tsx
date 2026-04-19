@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { AppErrorBoundary } from './components/AppErrorBoundary';
 import { BottomTabBar } from './components/BottomTabBar';
+import { OfflineProofBanner } from './components/OfflineProofBanner';
 import { ToastProvider } from './context/ToastContext';
 import { DiagnosisScreen } from './screens/DiagnosisScreen';
 import { HistoryScreen } from './screens/HistoryScreen';
@@ -75,8 +76,14 @@ function MediScribeApp() {
 
   if (!splashDone) return <SplashScreen onDone={() => setSplashDone(true)} />;
 
+  const emergencyActive = Boolean(
+    draft.forceOfflineDemo ||
+    (draft.assessment && ['immediate', 'emergent'].includes(draft.assessment.urgency))
+  );
+
   return (
     <SafeAreaView style={[styles.shell, { backgroundColor: theme.colors.background }]}>
+      <OfflineProofBanner emergency={emergencyActive} screen={screen} />
       <Animated.View style={[styles.content, { opacity: screenFade }]}>{renderScreen()}</Animated.View>
       <BottomTabBar active={screen} onNavigate={setScreen} />
       <StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />
