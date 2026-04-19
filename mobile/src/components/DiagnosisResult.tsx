@@ -87,16 +87,6 @@ const styles = StyleSheet.create({
     gap: 4,
     padding: 14
   },
-  alertDanger: {
-    backgroundColor: colors.dangerSoft,
-    borderColor: '#efb2ac',
-    borderWidth: 1
-  },
-  alertStable: {
-    backgroundColor: colors.successSoft,
-    borderColor: '#aadcc7',
-    borderWidth: 1
-  },
   alertTitle: {
     fontSize: 19,
     fontWeight: '900'
@@ -104,12 +94,6 @@ const styles = StyleSheet.create({
   alertCopy: {
     color: colors.ink,
     fontWeight: '900'
-  },
-  badgeDangerText: {
-    color: colors.accent
-  },
-  badgeStableText: {
-    color: colors.success
   },
   summary: {
     color: colors.ink,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
-import { colors, radii } from '../styles/theme';
+import { radii } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
 import { triggerHaptic } from '../utils/microInteractions';
 
@@ -61,20 +61,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8
   },
-  primary: {
-    backgroundColor: colors.primary
-  } as ViewStyle,
-  secondary: {
-    backgroundColor: colors.surface,
-    borderColor: colors.border,
-    borderWidth: 1
-  } as ViewStyle,
-  danger: {
-    backgroundColor: colors.accent
-  } as ViewStyle,
-  success: {
-    backgroundColor: colors.secondary
-  } as ViewStyle,
   disabled: {
     opacity: 0.45
   },
@@ -86,8 +72,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
     textAlign: 'center'
-  },
-  secondaryLabel: {
-    color: colors.primaryDark
   }
 });

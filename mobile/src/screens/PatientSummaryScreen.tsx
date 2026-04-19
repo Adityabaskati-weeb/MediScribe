@@ -152,21 +152,6 @@ const styles = StyleSheet.create({
     gap: 4,
     padding: 16
   },
-  redRisk: {
-    backgroundColor: colors.dangerSoft,
-    borderColor: '#f1b2b2',
-    borderWidth: 1
-  },
-  yellowRisk: {
-    backgroundColor: colors.warningSoft,
-    borderColor: '#f5d08a',
-    borderWidth: 1
-  },
-  greenRisk: {
-    backgroundColor: colors.successSoft,
-    borderColor: '#b8e7d1',
-    borderWidth: 1
-  },
   riskTitle: {
     color: colors.ink,
     fontSize: 18,
@@ -199,29 +184,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     paddingHorizontal: 10,
     paddingVertical: 8
-  },
-  vitalGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10
-  },
-  vital: {
-    backgroundColor: colors.surfaceSoft,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    minWidth: '47%',
-    padding: 12
-  },
-  vitalLabel: {
-    color: colors.muted,
-    fontSize: 12,
-    fontWeight: '900'
-  },
-  vitalValue: {
-    color: colors.ink,
-    fontSize: 22,
-    fontWeight: '900'
   },
   input: {
     backgroundColor: colors.surfaceSoft,

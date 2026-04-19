@@ -13,7 +13,6 @@ type DiagnosisResultsCardProps = {
 export function DiagnosisResultsCard({ assessment, onSave, onConsult }: DiagnosisResultsCardProps) {
   const slide = useRef(new Animated.Value(40)).current;
   const opacity = useRef(new Animated.Value(0)).current;
-  const confidence = useRef(new Animated.Value(0)).current;
   const { theme } = useAppTheme();
   const top = assessment?.differential_diagnoses?.[0];
   const topConfidence = Math.max(0.05, top?.confidence || 0.42);
@@ -21,15 +20,11 @@ export function DiagnosisResultsCard({ assessment, onSave, onConsult }: Diagnosi
   const color = urgent ? theme.colors.accent : topConfidence >= 0.75 ? theme.colors.success : theme.colors.warning;
 
   useEffect(() => {
-    confidence.setValue(0);
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(slide, { toValue: 0, duration: 420, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 1, duration: 420, useNativeDriver: true })
-      ]),
-      Animated.timing(confidence, { toValue: topConfidence, duration: 900, useNativeDriver: false })
+    Animated.parallel([
+      Animated.timing(slide, { toValue: 0, duration: 420, useNativeDriver: true }),
+      Animated.timing(opacity, { toValue: 1, duration: 420, useNativeDriver: true })
     ]).start();
-  }, [confidence, opacity, slide, topConfidence]);
+  }, [opacity, slide, topConfidence]);
 
   if (!assessment) return null;
 

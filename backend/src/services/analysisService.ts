@@ -30,8 +30,6 @@ export async function analyzeClinicalIntake(payload: ClinicalIntake) {
 }
 
 export async function generateDiagnosis(medicalData: MedicalPrompt): Promise<DiagnosisResult> {
-  buildDetailedPatientPrompt(medicalData);
-
   try {
     const gemmaResponse = await analyzeMedicalCase(medicalData);
     const diagnosis = validateDiagnosisResponse(gemmaResponse);
@@ -42,32 +40,6 @@ export async function generateDiagnosis(medicalData: MedicalPrompt): Promise<Dia
     addClinicalWarnings(fallback, medicalData);
     return fallback;
   }
-}
-
-function buildDetailedPatientPrompt(data: MedicalPrompt): string {
-  return `
-PATIENT PRESENTATION:
-
-Demographics:
-- Age: ${data.patientAge} years
-- Gender: ${data.gender}
-
-Chief Complaints & Symptoms:
-${data.symptoms.map((symptom) => `- ${symptom}`).join('\n')}
-
-Vital Signs:
-${Object.entries(data.vitals || {}).map(([key, value]) => `- ${key}: ${value}`).join('\n') || '- Not recorded'}
-
-Medical History:
-${data.medicalHistory?.map((item) => `- ${item}`).join('\n') || '- No known medical history'}
-
-Current Medications:
-${data.medications?.map((item) => `- ${item}`).join('\n') || '- Not on any medications'}
-
-TASK:
-Provide a differential diagnosis with supporting reasoning. Focus on conditions common in low-resource rural clinics.
-Recommend practical diagnostic tests and treatment using commonly available medications.
-`;
 }
 
 function validateDiagnosisResponse(response: any): DiagnosisResult {

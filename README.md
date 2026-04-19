@@ -131,6 +131,7 @@ python model_training/evaluate.py
 - [Production System Design](docs/PRODUCTION_SYSTEM_DESIGN.md)
 - [Hackathon Demo Outputs](docs/HACKATHON_DEMO_OUTPUTS.md)
 - [Scalability Enhancements Implemented](docs/SCALABILITY_ENHANCEMENTS_IMPLEMENTED.md)
+- [Engineering Review Suggestions](docs/ENGINEERING_REVIEW_SUGGESTIONS.md)
 - [Roadmap](ROADMAP.md)
 - [Video Script](docs/MEDISCRIBE_VIDEO_SCRIPT.md)
 - [Submission Writeup](docs/MEDISCRIBE_SUBMISSION_WRITEUP.md)
