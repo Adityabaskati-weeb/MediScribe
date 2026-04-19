@@ -90,7 +90,9 @@ npm run build --prefix dashboard
 - Safety & Trust: deterministic guardrails, audit logs, and explainable output.
 - Digital Equity & Inclusivity: offline-first, multilingual-friendly workflow.
 - Ollama Track: local Gemma 4 model serving via Ollama.
-- Unsloth Track path: training scaffold and model-card-ready naming guidance for
-  a future specialized adapter without misusing Gemma branding.
+- Unsloth Track path: real LoRA SFT pipeline in `model_training/train.py`,
+  dataset validation in `model_training/validate_dataset.py`, and model-card-ready
+  naming guidance. The prize claim still requires a completed GPU run with public
+  adapter weights and benchmarks.
 
 Attribution: Gemma is a trademark of Google LLC.

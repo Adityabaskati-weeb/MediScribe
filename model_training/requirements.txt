@@ -2,5 +2,13 @@ torch
 transformers
 datasets
 accelerate
+bitsandbytes
+huggingface_hub[hf_transfer]
+trl>=0.22.0
+peft
+unsloth
+unsloth_zoo
+trackio
+tensorboard
 pandas
 scikit-learn

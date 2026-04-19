@@ -69,6 +69,7 @@ Judge-visible proof:
 - Production design API: `backend/src/services/systemDesignService.ts`.
 - Docker services: `docker/docker-compose.yml`.
 - CI checks: `.github/workflows/ci.yml`.
+- Unsloth fine-tuning pipeline: `model_training/train.py` and `docs/UNSLOTH_FINE_TUNING.md`.
 - Evaluation artifacts: `model_training/outputs/metrics.json` and `docs/MEDISCRIBE_EVALUATION_REPORT.md`.
 
 ## Special Technology Track Fit
@@ -79,7 +80,7 @@ Judge-visible proof:
 | Cactus | Conceptual fit only unless a Cactus runtime is added later. |
 | LiteRT | Conceptual fit only unless a LiteRT on-device model path is added later. |
 | llama.cpp | Not currently implemented. |
-| Unsloth | Training scaffold exists, but full GPU fine-tuning weights are not published yet. |
+| Unsloth | Real Unsloth LoRA SFT pipeline exists. Claim the prize only after a GPU run publishes adapter weights and benchmarks. |
 
 ## Honest Remaining Work Before Final Submission
 

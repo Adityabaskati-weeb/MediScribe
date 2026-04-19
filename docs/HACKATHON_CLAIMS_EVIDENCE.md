@@ -16,8 +16,8 @@ Evidence:
 
 ## Gemma Optimized
 
-Claim: optimized for medical cases through Gemma/Ollama prompting and training
-artifacts.
+Claim: optimized for medical cases through Gemma/Ollama prompting and an
+Unsloth-ready adapter training pipeline.
 
 Evidence:
 
@@ -25,13 +25,16 @@ Evidence:
 - Runtime profile endpoint: `GET /api/system/architecture` returns the local
   Ollama endpoint, configured model, quantization guidance, and attribution.
 - Diagnosis prompt and response normalization: `backend/src/services/analysisService.ts`.
-- Training data: `model_training/data/medical_dataset.csv`.
-- Fine-tuning artifact script: `model_training/train.py`.
+- Training source data: `model_training/data/medical_dataset.csv`.
+- Gemma 4 chat SFT conversion: `model_training/prepare_data.py`.
+- Dataset validation before GPU spend: `model_training/validate_dataset.py`.
+- Unsloth LoRA SFT script: `model_training/train.py`.
+- Fine-tuning runbook: `docs/UNSLOTH_FINE_TUNING.md`.
 - Evaluation script and metrics: `model_training/evaluate.py`.
 
-Note: the checked-in path is a hackathon-safe fine-tuning scaffold that emits
-adapter metadata and evaluation artifacts. Full GPU training can be run later on
-Hugging Face Jobs or another GPU environment.
+Note: the repository now contains the real Unsloth training path. Do not claim a
+published Unsloth adapter until a GPU run completes and public adapter weights
+plus benchmarks are linked in the Kaggle writeup.
 
 ## Production-Ready
 

@@ -20,7 +20,7 @@ This is the daily operating checklist for the current repository. It mirrors the
 | 21 | Mobile testing | `npx tsc --noEmit` and Expo Android bundle pass | Done |
 | 22-23 | Backend API | Health, patient, diagnosis, dashboard, sync endpoints present | Done |
 | 24-25 | Dashboard | KPI cards, charts, patients, reports, settings present | Done |
-| 26 | Model training | Training/evaluation scripts emit adapter and metrics artifacts | Done |
+| 26 | Model training | Unsloth dataset, validation, dry-run, and GPU training path present | Done |
 | 27 | Docker | Compose includes PostgreSQL, backend, Ollama, dashboard, healthcheck | Done |
 | 28 | Submission docs | Demo guide, video script, writeup, deployment checklist present | Done |
 
@@ -76,13 +76,18 @@ npm run build
 
 ```bash
 python model_training/prepare_data.py
-python model_training/train.py
+python model_training/validate_dataset.py
+python model_training/train.py --dry-run
+# GPU or Hugging Face Jobs only:
+python model_training/train.py --base-model google/gemma-4-E4B-it --max-steps 100
 python model_training/evaluate.py
 ```
 
 Expected artifacts:
 
-- `model_training/outputs/finetuned_model/adapter_config.json`
+- `model_training/data/training_splits/train.jsonl`
+- `model_training/data/training_splits/eval.jsonl`
+- `model_training/outputs/mediscribe-medical-adapter/training_plan.json`
 - `model_training/outputs/metrics.json`
 - `model_training/outputs/evaluation_report.md`
 
@@ -104,7 +109,9 @@ npm run build --prefix backend
 npm run test:integration --prefix backend
 npm run build --prefix dashboard
 cd mobile && npx tsc --noEmit && cd ..
-python model_training/train.py
+python model_training/prepare_data.py
+python model_training/validate_dataset.py
+python model_training/train.py --dry-run
 python model_training/evaluate.py
 ```
 

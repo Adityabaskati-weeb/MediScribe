@@ -34,9 +34,15 @@ npm run preview
 
 ## Model Assets
 
-The `model_training/` folder contains the Gemma fine-tuning scaffold and evaluation
-outputs. Real GPU fine-tuning should write artifacts into:
+The `model_training/` folder contains the Gemma 4 Unsloth LoRA fine-tuning
+pipeline and evaluation outputs. Run the dry check before spending GPU time:
 
-```text
-model_training/outputs/finetuned_model/
+```powershell
+python model_training/prepare_data.py
+python model_training/validate_dataset.py
+python model_training/train.py --dry-run
 ```
+
+Real GPU fine-tuning writes adapter artifacts into
+`model_training/outputs/mediscribe-medical-adapter/`. See
+`docs/UNSLOTH_FINE_TUNING.md` for local CUDA and Hugging Face Jobs commands.

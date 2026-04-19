@@ -76,11 +76,14 @@ npm install
 npm start
 ```
 
-Model training scaffold:
+Model training and Unsloth fine-tuning:
 
 ```bash
 python model_training/prepare_data.py
-python model_training/train.py
+python model_training/validate_dataset.py
+python model_training/train.py --dry-run
+# On a CUDA GPU or Hugging Face Jobs:
+python model_training/train.py --base-model google/gemma-4-E4B-it --max-steps 100
 python model_training/evaluate.py
 ```
 
@@ -142,6 +145,7 @@ python model_training/evaluate.py
 - [Scalability Enhancements Implemented](docs/SCALABILITY_ENHANCEMENTS_IMPLEMENTED.md)
 - [Engineering Review Suggestions](docs/ENGINEERING_REVIEW_SUGGESTIONS.md)
 - [Winning Phase Implementation](docs/WINNING_PHASE_IMPLEMENTATION.md)
+- [Unsloth Fine-Tuning](docs/UNSLOTH_FINE_TUNING.md)
 - [Roadmap](ROADMAP.md)
 - [Video Script](docs/MEDISCRIBE_VIDEO_SCRIPT.md)
 - [Submission Writeup](docs/MEDISCRIBE_SUBMISSION_WRITEUP.md)

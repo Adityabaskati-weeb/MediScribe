@@ -24,8 +24,9 @@ Strong secondary positioning inside the writeup:
 - Safety & Trust: explainable outputs, red-flag guardrails, audit logs.
 - Special Technology Track: Ollama, because Gemma 4 runs locally through Ollama.
 
-Do not claim LiteRT, Cactus, llama.cpp, or Unsloth prizes unless those exact
-runtimes or published fine-tuned weights are added before submission.
+Do not claim LiteRT, Cactus, or llama.cpp prizes unless those exact runtimes are
+added before submission. Claim Unsloth only after the `model_training/train.py`
+GPU run completes and public adapter weights plus benchmark metrics are linked.
 
 ## Gemma Naming And Attribution
 
@@ -40,6 +41,7 @@ runtimes or published fine-tuned weights are added before submission.
 
 - Gemma 4 default model: `gemma4:e4b`.
 - Local model serving: Ollama.
+- Fine-tuning path: Unsloth LoRA SFT in `model_training/train.py`.
 - Offline-first storage: SQLite on mobile.
 - Cloud sync layer: Node/Express plus PostgreSQL.
 - Safety: deterministic guardrails override model confidence.

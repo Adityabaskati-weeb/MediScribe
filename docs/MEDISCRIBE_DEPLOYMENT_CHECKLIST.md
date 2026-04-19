@@ -37,9 +37,13 @@ docker compose up --build
 
 ```powershell
 python model_training\prepare_data.py
-python model_training\train.py
+python model_training\validate_dataset.py
+python model_training\train.py --dry-run
 python model_training\evaluate.py
 ```
+
+Run the real Unsloth command on CUDA or Hugging Face Jobs before claiming
+published fine-tuned weights.
 
 ## Verify
 

@@ -10,6 +10,14 @@ build/
 .logs/
 .runtime/
 outputs/models/*.joblib
+model_training/outputs/**/checkpoint-*/
+model_training/outputs/**/adapter_model.safetensors
+model_training/outputs/**/model.safetensors
+model_training/outputs/**/model-*.safetensors
+model_training/outputs/**/optimizer.pt
+model_training/outputs/**/scheduler.pt
+model_training/outputs/**/rng_state.pth
+model_training/outputs/**/gguf/
 *.sqlite
 *.sqlite-journal
 .hf-space-push/

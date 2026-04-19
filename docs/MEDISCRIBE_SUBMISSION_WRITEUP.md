@@ -76,10 +76,11 @@ structured rural-health prompt with low-resource constraints. The default model 
 `gemma4:e4b`; teams with stronger hardware can switch to `gemma4:26b` or
 `gemma4:31b` through `OLLAMA_MODEL`.
 
-MediScribe also includes a post-training scaffold in `model_training/`: curated
-medical cases, adapter metadata, and benchmark outputs. The scaffold records the
-training contract for a Gemma 4 medical adapter and can be extended to publish real
-weights if competing for the Unsloth prize.
+MediScribe also includes an Unsloth LoRA fine-tuning path in `model_training/`:
+curated medical cases, Gemma 4 chat SFT conversion, dataset validation, a GPU
+training script, adapter model-card generation, and optional Hugging Face Hub
+publishing. The Unsloth prize should be claimed only after the public adapter
+weights and benchmark metrics are linked.
 
 ## Agentic Safety
 

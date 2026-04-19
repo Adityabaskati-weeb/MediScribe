@@ -59,10 +59,14 @@ OLLAMA_API=http://localhost:11434
 OLLAMA_MODEL=gemma4:e4b
 ```
 
-## Model Training Scaffold
+## Model Training And Unsloth
 
 ```powershell
 python model_training\prepare_data.py
-python model_training\train.py
+python model_training\validate_dataset.py
+python model_training\train.py --dry-run
 python model_training\evaluate.py
 ```
+
+For the real GPU fine-tuning command and Hugging Face Jobs path, see
+`docs/UNSLOTH_FINE_TUNING.md`.

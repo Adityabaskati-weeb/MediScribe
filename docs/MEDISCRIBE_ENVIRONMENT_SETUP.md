@@ -90,13 +90,17 @@ python -m venv .venv
 pip install -r model_training/requirements.txt
 ```
 
-Run the training scaffold:
+Run the Unsloth dataset and dry-run checks:
 
 ```bash
 python model_training/prepare_data.py
-python model_training/train.py
+python model_training/validate_dataset.py
+python model_training/train.py --dry-run
 python model_training/evaluate.py
 ```
+
+Real Unsloth training requires a CUDA GPU or Hugging Face Jobs. See
+`docs/UNSLOTH_FINE_TUNING.md`.
 
 ## PostgreSQL And SQLite
 
