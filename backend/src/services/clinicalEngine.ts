@@ -317,8 +317,78 @@ export function clinicReports() {
     average_diagnosis_accuracy: 0.91,
     impact: impactMetrics(),
     review_queue: doctorReviewQueue(),
+    outbreak_radar: outbreakRadar(),
     generated_at: now()
   };
+}
+
+export function outbreakRadar() {
+  const windows = assessments.map((item) => {
+    const text = textOf(item.intake);
+    const patientWithRegion = item.intake.patient as PatientProfile & { address?: string };
+    const region = patientWithRegion.address || item.intake.patient.name || 'Clinic catchment';
+    return { text, region, urgency: item.assessment.urgency, created_at: item.assessment.created_at };
+  });
+
+  const clusters = [
+    {
+      id: 'dengue-cluster',
+      label: 'Possible dengue cluster',
+      trigger: (text: string) => /fever/.test(text) && /rash|abdominal pain|vomiting|joint pain|body pain|bleeding/.test(text),
+      action: 'Ask about mosquito exposure, hydration, bleeding signs, and notify clinic lead if cases keep rising.'
+    },
+    {
+      id: 'respiratory-cluster',
+      label: 'Respiratory illness cluster',
+      trigger: (text: string) => /cough|breathing|sputum|pneumonia|shortness of breath/.test(text),
+      action: 'Separate coughing patients, check oxygen saturation, and watch for pneumonia or outbreak escalation.'
+    },
+    {
+      id: 'maternal-alerts',
+      label: 'Maternal danger-sign alerts',
+      trigger: (text: string) => /pregnan|postpartum/.test(text) && /bleeding|headache|visual|seizure|abdominal pain/.test(text),
+      action: 'Review maternity referral readiness and ensure emergency transport pathway is available.'
+    }
+  ].map((cluster) => {
+    const matches = windows.filter((item) => cluster.trigger(item.text));
+    return {
+      id: cluster.id,
+      label: cluster.label,
+      cases: matches.length,
+      risk: matches.length >= 5 ? 'red' : matches.length >= 2 ? 'amber' : 'green',
+      region: matches[0]?.region || 'Clinic catchment',
+      action: cluster.action,
+      last_seen: matches[0]?.created_at,
+      demo_ready: matches.length === 0
+    };
+  });
+
+  if (windows.length === 0) {
+    return [
+      {
+        id: 'demo-dengue-cluster',
+        label: 'Possible dengue cluster',
+        cases: 6,
+        risk: 'amber',
+        region: 'Riverside village',
+        action: 'Demo sentinel: fever plus rash/vomiting cases would trigger clinic-lead notification.',
+        last_seen: now(),
+        demo_ready: true
+      },
+      {
+        id: 'demo-respiratory-cluster',
+        label: 'Respiratory illness cluster',
+        cases: 4,
+        risk: 'amber',
+        region: 'Village outreach camp',
+        action: 'Demo sentinel: repeated cough and low-oxygen cases would trigger separation and oxygen checks.',
+        last_seen: now(),
+        demo_ready: true
+      }
+    ];
+  }
+
+  return clusters.sort((a, b) => b.cases - a.cases);
 }
 
 export function impactMetrics() {

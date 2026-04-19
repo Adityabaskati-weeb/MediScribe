@@ -18,6 +18,22 @@ export type DemoCase = {
 
 export const clinicDemoCases: DemoCase[] = [
   {
+    id: 'airplane-maternal-emergency',
+    title: 'Airplane mode emergency',
+    risk: 'red',
+    patient: {
+      name: 'Kavita Rao',
+      age_years: 31,
+      gender: 'female',
+      address: 'No-network antenatal camp',
+      known_conditions: [],
+      medications: ['iron folate'],
+      allergies: [],
+      pregnancy_weeks: 32
+    },
+    transcript: 'Complaint: pregnant woman 32 weeks with bleeding, abdominal pain and dizziness. BP 104/70 HR 112 SpO2 96. No internet in clinic.'
+  },
+  {
     id: 'chest-pain-shock',
     title: 'Chest pain emergency',
     risk: 'red',

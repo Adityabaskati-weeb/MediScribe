@@ -8,6 +8,7 @@ dist/
 build/
 .expo/
 .logs/
+.runtime/
 outputs/models/*.joblib
 *.sqlite
 *.sqlite-journal

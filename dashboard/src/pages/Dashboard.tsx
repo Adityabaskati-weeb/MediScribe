@@ -23,6 +23,7 @@ export function DashboardPage() {
   const reports = dashboard?.reports || {};
   const topDiagnoses = (reports.top_diagnoses || []).map((item: any) => ({ diagnosis: item.name, count: item.count }));
   const dailyConsultations = reports.daily_consultations || [];
+  const outbreakRadar = reports.outbreak_radar || [];
   const gemma = architecture?.ai_system?.gemma;
   const judgeProof = demoPack?.judge_proof || [];
 
@@ -95,6 +96,30 @@ export function DashboardPage() {
           </div>
           <p className="story-beat">{gemma?.attribution || 'Gemma is a trademark of Google LLC.'}</p>
         </article>
+      </section>
+
+      <section className="chart outbreak-panel">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Public health wow moment</p>
+            <h2>Outbreak Radar</h2>
+            <p className="muted">Clusters symptoms across offline visits and flags clinic-lead actions before sync becomes perfect.</p>
+          </div>
+          <span className="queue-count">{outbreakRadar.length} signals</span>
+        </div>
+        <div className="outbreak-grid">
+          {outbreakRadar.map((item: any) => (
+            <article className={`outbreak-card ${item.risk}`} key={item.id}>
+              <div>
+                <strong>{item.label}</strong>
+                <span>{item.region}</span>
+              </div>
+              <b>{item.cases} cases</b>
+              <p>{item.action}</p>
+              {item.demo_ready && <small>Demo-ready sentinel</small>}
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="system-grid">

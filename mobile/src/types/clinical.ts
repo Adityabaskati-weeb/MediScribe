@@ -67,12 +67,35 @@ export type DiagnosisEnvelope = {
     assessment?: MediScribeAssessment;
     stored?: { assessment?: MediScribeAssessment };
     ai?: { assessment?: MediScribeAssessment };
+    agents?: AgentStep[];
+    metrics?: { latency_ms?: number; fallback_used?: boolean };
+    guardrails?: {
+      fallback_required?: boolean;
+      escalation_required?: boolean;
+      safety_messages?: SafetySignal[];
+    };
     agentic?: {
       assessment?: MediScribeAssessment;
       stored?: { assessment?: MediScribeAssessment };
+      agents?: AgentStep[];
+      metrics?: { latency_ms?: number; fallback_used?: boolean };
+      guardrails?: {
+        fallback_required?: boolean;
+        escalation_required?: boolean;
+        safety_messages?: SafetySignal[];
+      };
     };
   };
   assessment?: MediScribeAssessment;
+  agents?: AgentStep[];
+  metrics?: { latency_ms?: number; fallback_used?: boolean };
+};
+
+export type AgentStep = {
+  agent: 'diagnosis-agent' | 'reasoning-agent' | 'treatment-agent' | 'safety-agent' | string;
+  status: 'completed' | 'fallback' | string;
+  latency_ms?: number;
+  output?: unknown;
 };
 
 export type ConsultationDraft = {
@@ -81,6 +104,7 @@ export type ConsultationDraft = {
   chartText?: string;
   assessment?: MediScribeAssessment;
   demoCaseId?: string;
+  forceOfflineDemo?: boolean;
+  consultationStartedAt?: number;
   language: string;
 };
-

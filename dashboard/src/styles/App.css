@@ -206,6 +206,55 @@ main {
   padding: 12px;
 }
 
+.outbreak-panel {
+  margin-top: 18px;
+}
+
+.outbreak-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin-top: 14px;
+}
+
+.outbreak-card {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--success);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+}
+
+.outbreak-card.amber {
+  border-left-color: var(--warning);
+}
+
+.outbreak-card.red {
+  border-left-color: var(--danger);
+}
+
+.outbreak-card strong,
+.outbreak-card span,
+.outbreak-card b,
+.outbreak-card small {
+  display: block;
+}
+
+.outbreak-card span,
+.outbreak-card p,
+.outbreak-card small {
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.outbreak-card b {
+  color: var(--primary-dark);
+  font-size: 26px;
+}
+
 .service-row {
   border-top: 1px solid var(--border);
   display: grid;

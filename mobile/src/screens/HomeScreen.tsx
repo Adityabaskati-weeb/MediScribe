@@ -30,9 +30,26 @@ export function HomeScreen({
       patient: demo.patient,
       transcript: demo.transcript,
       assessment: undefined,
-      demoCaseId: demo.id
+      demoCaseId: demo.id,
+      forceOfflineDemo: false,
+      consultationStartedAt: Date.now()
     });
     onNavigate('summary');
+  };
+
+  const loadAirplaneModeDemo = () => {
+    const demo = clinicDemoCases.find((item) => item.id === 'airplane-maternal-emergency');
+    if (!demo) return;
+    onDraftChange({
+      ...draft,
+      patient: demo.patient,
+      transcript: demo.transcript,
+      assessment: undefined,
+      demoCaseId: demo.id,
+      forceOfflineDemo: true,
+      consultationStartedAt: Date.now()
+    });
+    onNavigate('diagnosis');
   };
 
   return (
@@ -70,6 +87,10 @@ export function HomeScreen({
         </View>
 
         <ActionButton title={copy('startConsultation')} onPress={() => onNavigate('newPatient')} variant="success" />
+        <Pressable style={styles.airplaneButton} onPress={loadAirplaneModeDemo}>
+          <Text style={styles.airplaneTitle}>Airplane Mode Emergency Demo</Text>
+          <Text style={styles.airplaneCopy}>Pregnancy bleeding case, local safety fallback, saved without internet.</Text>
+        </Pressable>
       </View>
 
       <View style={styles.metrics}>
@@ -285,6 +306,25 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '800',
     marginTop: 2
+  },
+  airplaneButton: {
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderColor: 'rgba(255,255,255,0.24)',
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 5,
+    padding: 13
+  },
+  airplaneTitle: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '900'
+  },
+  airplaneCopy: {
+    color: '#d7eee8',
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18
   },
   metrics: {
     flexDirection: 'row',

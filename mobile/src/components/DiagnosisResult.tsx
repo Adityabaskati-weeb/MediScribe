@@ -5,7 +5,7 @@ import { DiagnosisResultsCard } from './DiagnosisResultsCard';
 import { useToast } from '../context/ToastContext';
 import { colors } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
-import type { DiagnosisEnvelope, DifferentialDiagnosis, MediScribeAssessment, SafetySignal } from '../types/clinical';
+import type { AgentStep, DiagnosisEnvelope, DifferentialDiagnosis, MediScribeAssessment, PatientProfile, SafetySignal } from '../types/clinical';
 
 function getAssessment(result: DiagnosisEnvelope | null): MediScribeAssessment | undefined {
   return (
@@ -18,8 +18,23 @@ function getAssessment(result: DiagnosisEnvelope | null): MediScribeAssessment |
   );
 }
 
-export function DiagnosisResult({ result }: { result: DiagnosisEnvelope | null }) {
+function getAgents(result: DiagnosisEnvelope | null): AgentStep[] {
+  return result?.data?.agentic?.agents || result?.data?.agents || result?.agents || [];
+}
+
+export function DiagnosisResult({
+  result,
+  transcript = '',
+  patient,
+  offlineDemo = false
+}: {
+  result: DiagnosisEnvelope | null;
+  transcript?: string;
+  patient?: PatientProfile;
+  offlineDemo?: boolean;
+}) {
   const assessment = getAssessment(result);
+  const agents = getAgents(result);
   const { theme } = useAppTheme();
   const { showToast } = useToast();
   const c = theme.colors;
@@ -42,6 +57,24 @@ export function DiagnosisResult({ result }: { result: DiagnosisEnvelope | null }
         </Text>
       </View>
       <Text style={[styles.summary, { color: c.ink }]}>{assessment.clinical_summary}</Text>
+
+      <View style={[styles.workerPanel, { backgroundColor: urgent ? c.dangerSoft : c.infoSoft, borderColor: urgent ? c.accent : c.primary }]}>
+        <Text style={[styles.workerTitle, { color: urgent ? c.accent : c.primaryDark }]}>Explain like I am a health worker</Text>
+        <Text style={[styles.workerCopy, { color: c.ink }]}>{plainLanguageExplanation(assessment, transcript, patient, offlineDemo)}</Text>
+      </View>
+
+      <Text style={[styles.heading, { color: c.ink }]}>AI Safety Council</Text>
+      <View style={styles.agentGrid}>
+        {buildCouncilAgents(assessment, agents, offlineDemo).map((agent) => (
+          <View style={[styles.agentCard, { backgroundColor: c.surfaceSoft, borderColor: agent.status === 'fallback' ? c.warning : c.border }]} key={agent.agent}>
+            <Text style={[styles.agentName, { color: c.ink }]}>{agent.label}</Text>
+            <Text style={[styles.agentStatus, { color: agent.status === 'fallback' ? c.warning : c.success }]}>
+              {agent.status === 'fallback' ? 'Safety fallback' : 'Checked'}
+            </Text>
+            <Text style={[styles.agentOutput, { color: c.muted }]}>{agent.output}</Text>
+          </View>
+        ))}
+      </View>
 
       <Text style={[styles.heading, { color: c.ink }]}>Top 3 possible diagnoses</Text>
       {(assessment.differential_diagnoses || []).slice(0, 3).map((item: DifferentialDiagnosis, index: number) => (
@@ -82,6 +115,53 @@ export function DiagnosisResult({ result }: { result: DiagnosisEnvelope | null }
   );
 }
 
+function plainLanguageExplanation(assessment: MediScribeAssessment, transcript: string, patient?: PatientProfile, offlineDemo = false) {
+  const top = assessment.differential_diagnoses?.[0]?.name || 'this case';
+  const redFlag = assessment.red_flags?.find((flag) => flag.level === 'red')?.message;
+  const pregnancy = patient?.pregnancy_weeks || /pregnan/i.test(transcript);
+  if (pregnancy && /bleeding|abdominal pain|dizzy|headache|visual/i.test(transcript)) {
+    return 'This is dangerous because bleeding or severe pain during pregnancy can become life-threatening quickly. Do not wait for internet or model sync. Repeat vitals, keep the patient monitored, and refer now.';
+  }
+  if (assessment.urgency === 'immediate' || assessment.urgency === 'emergent') {
+    return `Treat this as urgent because ${redFlag || top} was detected. Stabilize first, repeat vitals, and start the referral pathway before paperwork or sync.`;
+  }
+  return offlineDemo
+    ? 'The phone used local rules because the demo is offline. No danger sign was missed, and the visit can sync later.'
+    : `The leading concern is ${top}. Confirm vitals, ask the follow-up questions, and use local protocol before treatment.`;
+}
+
+function buildCouncilAgents(assessment: MediScribeAssessment, agents: AgentStep[], offlineDemo: boolean) {
+  const agentMap = new Map(agents.map((agent) => [agent.agent, agent]));
+  const top = assessment.differential_diagnoses?.[0]?.name || 'Needs assessment';
+  const red = assessment.red_flags?.some((flag) => flag.level === 'red');
+  return [
+    {
+      agent: 'diagnosis-agent',
+      label: 'Diagnosis Agent',
+      status: agentMap.get('diagnosis-agent')?.status || (offlineDemo ? 'fallback' : 'completed'),
+      output: top
+    },
+    {
+      agent: 'reasoning-agent',
+      label: 'Reasoning Agent',
+      status: agentMap.get('reasoning-agent')?.status || 'completed',
+      output: red ? 'Danger signs explain the escalation.' : 'Symptoms and vitals support the ranked list.'
+    },
+    {
+      agent: 'treatment-agent',
+      label: 'Treatment Agent',
+      status: agentMap.get('treatment-agent')?.status || 'completed',
+      output: assessment.treatment?.referral || 'Follow local protocol.'
+    },
+    {
+      agent: 'safety-agent',
+      label: 'Safety Agent',
+      status: agentMap.get('safety-agent')?.status || (red ? 'fallback' : 'completed'),
+      output: red ? 'Blocked routine advice. Referral wins.' : 'No red flag override needed.'
+    }
+  ];
+}
+
 const styles = StyleSheet.create({
   alertPanel: {
     borderRadius: 8,
@@ -106,6 +186,45 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '900',
     marginTop: 8
+  },
+  workerPanel: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 6,
+    padding: 12
+  },
+  workerTitle: {
+    fontSize: 13,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  workerCopy: {
+    fontSize: 15,
+    fontWeight: '800',
+    lineHeight: 22
+  },
+  agentGrid: {
+    gap: 9
+  },
+  agentCard: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 4,
+    padding: 10
+  },
+  agentName: {
+    fontSize: 15,
+    fontWeight: '900'
+  },
+  agentStatus: {
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  agentOutput: {
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18
   },
   row: {
     alignItems: 'flex-start',
