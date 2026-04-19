@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import diagnosisRoutes from './routes/diagnoses';
 import patientRoutes from './routes/patients';
+import scalabilityRoutes from './routes/scalability';
 import syncRoutes from './routes/sync';
 import systemRoutes from './routes/system';
 import { queueCapture, analyzeQueued, dashboardSummary, clinicReports } from './services/clinicalEngine';
@@ -40,6 +41,7 @@ app.get('/metrics', (_req, res) => {
 app.use('/api/patients', patientRoutes);
 app.use('/api/diagnoses', diagnosisRoutes);
 app.use('/api/sync', syncRoutes);
+app.use('/api/scalability', scalabilityRoutes);
 app.use('/api/system', systemRoutes);
 
 app.post('/api/offline/intake', (req, res) => {

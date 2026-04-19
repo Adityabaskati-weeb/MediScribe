@@ -85,6 +85,22 @@ python model_training/evaluate.py
 - `GET /api/diagnoses/demo-output`
 - `GET /api/system/architecture`
 - `GET /api/system/demo-pack`
+- `GET /api/scalability/readiness`
+- `POST /api/scalability/ai/route`
+- `POST /api/scalability/ai/regional-diagnosis`
+- `POST /api/scalability/learning/federated/update`
+- `POST /api/scalability/learning/federated/aggregate`
+- `GET /api/scalability/data/shard/:patientId`
+- `POST /api/scalability/analytics/diagnosis-metric`
+- `GET /api/scalability/analytics/outbreak/:region`
+- `POST /api/scalability/integration/ehr/share`
+- `POST /api/scalability/integration/prescription`
+- `POST /api/scalability/integration/lab-order`
+- `POST /api/scalability/features/specialist-consultation`
+- `POST /api/scalability/features/teleconsultation`
+- `POST /api/scalability/features/preventive-health`
+- `GET /api/scalability/billing/:clinicId`
+- `POST /api/scalability/compliance/deidentify`
 - `GET /metrics`
 - `POST /api/patients`
 - `GET /api/patients/recent`
@@ -114,6 +130,7 @@ python model_training/evaluate.py
 - [Strict Alignment Report](docs/STRICT_ALIGNMENT_REPORT.md)
 - [Production System Design](docs/PRODUCTION_SYSTEM_DESIGN.md)
 - [Hackathon Demo Outputs](docs/HACKATHON_DEMO_OUTPUTS.md)
+- [Scalability Enhancements Implemented](docs/SCALABILITY_ENHANCEMENTS_IMPLEMENTED.md)
 - [Roadmap](ROADMAP.md)
 - [Video Script](docs/MEDISCRIBE_VIDEO_SCRIPT.md)
 - [Submission Writeup](docs/MEDISCRIBE_SUBMISSION_WRITEUP.md)
