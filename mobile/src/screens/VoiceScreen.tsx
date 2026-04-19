@@ -8,6 +8,7 @@ import { StatusPill } from '../components/StatusPill';
 import { SymptomChecker } from '../components/SymptomChecker';
 import { VoiceInput } from '../components/VoiceInput';
 import { colors, spacing } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 import { t } from '../utils/i18n';
 
 export function VoiceScreen({
@@ -20,6 +21,7 @@ export function VoiceScreen({
   onNavigate: (screen: ScreenName) => void;
 }) {
   const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
+  const { theme } = useAppTheme();
 
   const saveTranscript = (text: string) => {
     onDraftChange({ ...draft, transcript: text });
@@ -32,7 +34,7 @@ export function VoiceScreen({
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ActionButton compact title={copy('back')} onPress={() => onNavigate('newPatient')} variant="secondary" />
       <ScreenHeader
         eyebrow={copy('step2')}

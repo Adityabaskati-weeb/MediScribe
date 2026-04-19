@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 
 export function StatusPill({
   label,
@@ -9,23 +10,24 @@ export function StatusPill({
   label: string;
   tone?: 'info' | 'success' | 'warning' | 'danger';
 }) {
+  const { theme } = useAppTheme();
   const toneStyles = {
-    info: styles.info,
-    success: styles.success,
-    warning: styles.warning,
-    danger: styles.danger
+    info: { backgroundColor: theme.colors.infoSoft },
+    success: { backgroundColor: theme.colors.successSoft },
+    warning: { backgroundColor: theme.colors.warningSoft },
+    danger: { backgroundColor: theme.colors.dangerSoft }
   };
   const dotStyles = {
-    info: styles.infoDot,
-    success: styles.successDot,
-    warning: styles.warningDot,
-    danger: styles.dangerDot
+    info: { backgroundColor: theme.colors.primary },
+    success: { backgroundColor: theme.colors.success },
+    warning: { backgroundColor: theme.colors.warning },
+    danger: { backgroundColor: theme.colors.accent }
   };
   const textStyles = {
-    info: styles.infoText,
-    success: styles.successText,
-    warning: styles.warningText,
-    danger: styles.dangerText
+    info: { color: theme.colors.primaryDark },
+    success: { color: theme.colors.success },
+    warning: { color: theme.colors.warning },
+    danger: { color: theme.colors.accent }
   };
 
   return (

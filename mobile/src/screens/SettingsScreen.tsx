@@ -6,6 +6,7 @@ import { Card } from '../components/Card';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { StatusPill } from '../components/StatusPill';
 import { colors, spacing } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 import { appLanguages, t } from '../utils/i18n';
 
 export function SettingsScreen({
@@ -18,9 +19,10 @@ export function SettingsScreen({
   onNavigate: (screen: ScreenName) => void;
 }) {
   const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
+  const { theme, toggleTheme } = useAppTheme();
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ActionButton compact title={copy('back')} onPress={() => onNavigate('home')} variant="secondary" />
       <ScreenHeader
         eyebrow="Clinic device"
@@ -51,6 +53,15 @@ export function SettingsScreen({
             </Pressable>
           ))}
         </View>
+      </Card>
+
+      <Card>
+        <Text style={styles.sectionTitle}>Theme</Text>
+        <Text style={styles.meta}>Switch between bright clinic mode and low-light night clinic mode.</Text>
+        <Pressable style={[styles.themeChoice, { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceSoft }]} onPress={toggleTheme}>
+          <Text style={[styles.themeChoiceTitle, { color: theme.colors.ink }]}>{theme.mode === 'dark' ? 'Dark mode active' : 'Light mode active'}</Text>
+          <Text style={[styles.themeChoiceMeta, { color: theme.colors.muted }]}>{theme.mode === 'dark' ? 'Tap for light mode' : 'Tap for dark mode'}</Text>
+        </Pressable>
       </Card>
 
       <Card>
@@ -123,5 +134,21 @@ const styles = StyleSheet.create({
   },
   languageTextActive: {
     color: '#ffffff'
+  },
+  themeChoice: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 4,
+    minHeight: 58,
+    justifyContent: 'center',
+    padding: 12
+  },
+  themeChoiceTitle: {
+    fontSize: 16,
+    fontWeight: '900'
+  },
+  themeChoiceMeta: {
+    fontSize: 13,
+    fontWeight: '700'
   }
 });

@@ -1,8 +1,39 @@
 body {
+  --bg: #f7faf9;
+  --surface: #ffffff;
+  --surface-soft: #f7fbfc;
+  --ink: #17231f;
+  --muted: #587078;
+  --border: #d8e1dd;
+  --primary: #087ea4;
+  --primary-dark: #064b5f;
+  --success: #087a5a;
+  --success-soft: #e7f6ef;
+  --danger: #c24132;
+  --danger-soft: #fdebea;
+  --warning: #ad6500;
+  --warning-soft: #fff3d8;
   margin: 0;
   font-family: Inter, Segoe UI, Arial, sans-serif;
-  color: #17231f;
-  background: #f7faf9;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+body[data-theme='dark'] {
+  --bg: #09181d;
+  --surface: #10262d;
+  --surface-soft: #15323a;
+  --ink: #e7f3f5;
+  --muted: #a9c0c8;
+  --border: #28434c;
+  --primary: #54c7de;
+  --primary-dark: #9be7f4;
+  --success: #5bd3aa;
+  --success-soft: #15372f;
+  --danger: #ff8f82;
+  --danger-soft: #3a1f22;
+  --warning: #ffc267;
+  --warning-soft: #342816;
 }
 
 .navbar {
@@ -10,14 +41,18 @@ body {
   gap: 16px;
   align-items: center;
   padding: 14px 24px;
-  background: white;
-  border-bottom: 1px solid #d8e1dd;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
 }
 
 .navbar a {
-  color: #13795b;
+  color: var(--success);
   font-weight: 700;
   text-decoration: none;
+}
+
+.theme-toggle {
+  margin-left: auto;
 }
 
 main {
@@ -32,8 +67,8 @@ main {
 
 .metric,
 .row {
-  background: white;
-  border: 1px solid #d8e1dd;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
 }
@@ -45,13 +80,13 @@ main {
 
 .metric span,
 .metric small {
-  color: #587078;
+  color: var(--muted);
   display: block;
   line-height: 1.4;
 }
 
 .eyebrow {
-  color: #087ea4;
+  color: var(--primary);
   font-size: 12px;
   font-weight: 900;
   margin: 0 0 4px;
@@ -59,14 +94,14 @@ main {
 }
 
 .muted {
-  color: #587078;
+  color: var(--muted);
   line-height: 1.5;
 }
 
 .impact-panel,
 .review-queue {
-  background: white;
-  border: 1px solid #d8e1dd;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   margin-top: 18px;
   padding: 16px;
@@ -85,16 +120,16 @@ main {
 }
 
 .queue-count {
-  background: #e7f6ef;
+  background: var(--success-soft);
   border-radius: 8px;
-  color: #087a5a;
+  color: var(--success);
   font-weight: 900;
   padding: 8px 10px;
 }
 
 .review-row {
   align-items: flex-start;
-  border-top: 1px solid #d8e1dd;
+  border-top: 1px solid var(--border);
   display: flex;
   gap: 14px;
   justify-content: space-between;
@@ -113,14 +148,14 @@ main {
 
 .review-row span,
 .review-row small {
-  color: #587078;
+  color: var(--muted);
   line-height: 1.45;
 }
 
 .urgency {
-  background: #e7f3f8;
+  background: var(--surface-soft);
   border-radius: 8px;
-  color: #064b5f;
+  color: var(--primary-dark);
   font-weight: 900;
   padding: 8px 10px;
   white-space: nowrap;
@@ -128,13 +163,13 @@ main {
 
 .urgency.immediate,
 .urgency.emergent {
-  background: #fdebea;
-  color: #c24132;
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 .urgency.urgent {
-  background: #fff3d8;
-  color: #ad6500;
+  background: var(--warning-soft);
+  color: var(--warning);
 }
 
 .highlight {
@@ -149,7 +184,7 @@ main {
 }
 
 .service-row {
-  border-top: 1px solid #d8e1dd;
+  border-top: 1px solid var(--border);
   display: grid;
   gap: 4px;
   padding: 10px 0;
@@ -161,7 +196,7 @@ main {
 
 .service-row span,
 .story-beat {
-  color: #587078;
+  color: var(--muted);
   line-height: 1.5;
 }
 
@@ -173,8 +208,8 @@ main {
 }
 
 .chart {
-  background: white;
-  border: 1px solid #d8e1dd;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
 }
@@ -186,7 +221,7 @@ main {
 }
 
 .report-actions button {
-  background: #087ea4;
+  background: var(--primary);
   border: 0;
   border-radius: 8px;
   color: white;
@@ -194,4 +229,15 @@ main {
   font-weight: 800;
   min-height: 44px;
   padding: 10px 14px;
+}
+
+.theme-toggle {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 900;
+  min-height: 40px;
+  padding: 8px 12px;
 }

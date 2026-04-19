@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
 import { colors, radii } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 
 export function ActionButton({
   title,
@@ -15,6 +16,14 @@ export function ActionButton({
   compact?: boolean;
   variant?: 'primary' | 'secondary' | 'danger' | 'success';
 }) {
+  const { theme } = useAppTheme();
+  const variantStyle = {
+    primary: { backgroundColor: theme.colors.primary },
+    secondary: { backgroundColor: theme.mode === 'dark' ? theme.colors.surfaceSoft : theme.colors.surface, borderColor: theme.colors.border, borderWidth: 1 },
+    danger: { backgroundColor: theme.colors.accent },
+    success: { backgroundColor: theme.colors.secondary }
+  }[variant] as ViewStyle;
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -22,13 +31,13 @@ export function ActionButton({
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
-        styles[variant],
+        variantStyle,
         compact && styles.compact,
         disabled && styles.disabled,
         pressed && !disabled && styles.pressed
       ]}
     >
-      <Text style={[styles.label, variant === 'secondary' && styles.secondaryLabel]}>{title}</Text>
+      <Text style={[styles.label, variant === 'secondary' && { color: theme.colors.primaryDark }]}>{title}</Text>
     </Pressable>
   );
 }

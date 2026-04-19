@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { DashboardPage } from './pages/Dashboard';
@@ -8,9 +8,16 @@ import { SettingsPage } from './pages/Settings';
 import './styles/App.css';
 
 export default function App() {
+  const [theme, setTheme] = useState(() => localStorage.getItem('mediscribe.dashboard.theme') || 'light');
+
+  useEffect(() => {
+    document.body.dataset.theme = theme;
+    localStorage.setItem('mediscribe.dashboard.theme', theme);
+  }, [theme]);
+
   return (
     <BrowserRouter>
-      <Navbar />
+      <Navbar theme={theme} onThemeToggle={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')} />
       <Routes>
         <Route path="/" element={<DashboardPage />} />
         <Route path="/patients" element={<PatientsPage />} />

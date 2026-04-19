@@ -8,6 +8,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { SmartFollowUpQuestions } from '../components/SmartFollowUpQuestions';
 import { StatusPill } from '../components/StatusPill';
 import { colors, spacing } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 import { extractClinicalSymptoms, extractClinicalVitals } from '../utils/clinicalText';
 
 export function PatientSummaryScreen({
@@ -20,6 +21,7 @@ export function PatientSummaryScreen({
   onNavigate: (screen: ScreenName) => void;
 }) {
   const [notes, setNotes] = useState(draft.transcript || '');
+  const { theme } = useAppTheme();
   const risk = useMemo(() => getRisk(notes), [notes]);
   const vitals = useMemo(() => extractVitals(notes), [notes]);
   const symptoms = useMemo(() => extractSymptoms(notes), [notes]);
@@ -30,7 +32,7 @@ export function PatientSummaryScreen({
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ActionButton compact title="Back" onPress={() => onNavigate('voice')} variant="secondary" />
       <ScreenHeader
         eyebrow="Step 3 of 5"

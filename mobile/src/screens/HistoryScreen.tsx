@@ -7,16 +7,18 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { StatusPill } from '../components/StatusPill';
 import { getPatientHistory } from '../services/databaseService';
 import { colors, spacing } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 
 export function HistoryScreen({ onNavigate }: { onNavigate?: (screen: ScreenName) => void }) {
   const [items, setItems] = useState<any[]>([]);
+  const { theme } = useAppTheme();
 
   useEffect(() => {
     getPatientHistory().then(setItems).catch(console.error);
   }, []);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
       {onNavigate && <ActionButton compact title="Back" onPress={() => onNavigate('home')} variant="secondary" />}
       <ScreenHeader
         eyebrow="Records"

@@ -12,6 +12,7 @@ import { TreatmentScreen } from './screens/TreatmentScreen';
 import { VoiceScreen } from './screens/VoiceScreen';
 import { initializeLocalDatabase } from './services/databaseService';
 import { colors } from './styles/theme';
+import { AppThemeProvider, useAppTheme } from './styles/ThemeContext';
 import { normalizeLanguage } from './utils/i18n';
 
 export type ScreenName = 'home' | 'newPatient' | 'voice' | 'summary' | 'diagnosis' | 'treatment' | 'history' | 'settings';
@@ -26,8 +27,17 @@ export type ConsultationDraft = {
 };
 
 export default function App() {
+  return (
+    <AppThemeProvider>
+      <MediScribeApp />
+    </AppThemeProvider>
+  );
+}
+
+function MediScribeApp() {
   const [screen, setScreen] = useState<ScreenName>('home');
   const [draft, setDraft] = useState<ConsultationDraft>({ language: 'Hindi' });
+  const { theme } = useAppTheme();
 
   useEffect(() => {
     initializeLocalDatabase();
@@ -54,7 +64,7 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.shell}>
+    <SafeAreaView style={[styles.shell, { backgroundColor: theme.colors.background }]}>
       {renderScreen()}
       <StatusBar style="dark" />
     </SafeAreaView>

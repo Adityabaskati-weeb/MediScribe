@@ -8,15 +8,17 @@ import { ReferralLetter } from '../components/ReferralLetter';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { StatusPill } from '../components/StatusPill';
 import { colors, spacing } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 import { medicineSafetyMessages } from '../utils/clinicalDecisionSupport';
 
 export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraft; onNavigate: (screen: ScreenName) => void }) {
   const assessment = draft.assessment;
   const treatment = assessment?.treatment || {};
   const urgent = ['immediate', 'emergent'].includes(assessment?.urgency);
+  const { theme } = useAppTheme();
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ActionButton compact title="Back" onPress={() => onNavigate('diagnosis')} variant="secondary" />
       <ScreenHeader
         eyebrow="Step 5 of 5"

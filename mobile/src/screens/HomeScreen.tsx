@@ -5,6 +5,7 @@ import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
 import { StatusPill } from '../components/StatusPill';
 import { colors, spacing } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 import { clinicDemoCases } from '../utils/clinicalDecisionSupport';
 import { t } from '../utils/i18n';
 
@@ -18,6 +19,7 @@ export function HomeScreen({
   onNavigate: (screen: ScreenName) => void;
 }) {
   const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
+  const { theme } = useAppTheme();
   const loadCase = (caseId: string) => {
     const demo = clinicDemoCases.find((item) => item.id === caseId);
     if (!demo) return;
@@ -32,7 +34,7 @@ export function HomeScreen({
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.hero}>
         <View style={styles.topRow}>
           <StatusPill label={copy('offlineReady')} tone="success" />

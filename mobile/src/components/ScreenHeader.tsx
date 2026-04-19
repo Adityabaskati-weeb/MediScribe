@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 
 export function ScreenHeader({
   eyebrow,
@@ -13,12 +14,13 @@ export function ScreenHeader({
   subtitle?: string;
   right?: React.ReactNode;
 }) {
+  const { theme } = useAppTheme();
   return (
     <View style={styles.header}>
       <View style={styles.copy}>
-        {eyebrow && <Text style={styles.eyebrow}>{eyebrow}</Text>}
-        <Text style={styles.title}>{title}</Text>
-        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+        {eyebrow && <Text style={[styles.eyebrow, { color: theme.colors.primary }]}>{eyebrow}</Text>}
+        <Text style={[styles.title, { color: theme.colors.ink }]}>{title}</Text>
+        {subtitle && <Text style={[styles.subtitle, { color: theme.colors.muted }]}>{subtitle}</Text>}
       </View>
       {right && <View>{right}</View>}
     </View>

@@ -9,6 +9,7 @@ import { StatusPill } from '../components/StatusPill';
 import { analyzeMedicalCase } from '../services/gemmaService';
 import { saveDiagnosis } from '../services/databaseService';
 import { colors, spacing } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 import { evaluateGuardian } from '../utils/clinicalDecisionSupport';
 import { extractClinicalSymptoms, extractClinicalVitals } from '../utils/clinicalText';
 
@@ -23,6 +24,7 @@ export function DiagnosisScreen({
 }) {
   const [result, setResult] = useState<any>(draft.assessment ? { assessment: draft.assessment } : null);
   const [status, setStatus] = useState('Ready for intake');
+  const { theme } = useAppTheme();
 
   const analyze = async (symptoms: string) => {
     setStatus('Analyzing with Gemma/Ollama guardrails...');
@@ -62,7 +64,7 @@ export function DiagnosisScreen({
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
       {onNavigate && <ActionButton compact title="Back" onPress={() => onNavigate('summary')} variant="secondary" />}
       <ScreenHeader
         eyebrow="Step 4 of 5"
@@ -71,9 +73,9 @@ export function DiagnosisScreen({
         right={<StatusPill label="Local AI" tone="info" />}
       />
       <RedFlagGuardian text={draft.transcript || ''} patient={draft.patient} />
-      <View style={styles.statusPanel}>
-        <Text style={styles.statusLabel}>Assessment state</Text>
-        <Text style={styles.status}>{status}</Text>
+      <View style={[styles.statusPanel, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+        <Text style={[styles.statusLabel, { color: theme.colors.muted }]}>Assessment state</Text>
+        <Text style={[styles.status, { color: theme.colors.ink }]}>{status}</Text>
       </View>
       <View style={styles.actions}>
         <ActionButton title="Generate Diagnosis" onPress={() => analyze(draft.transcript || '')} disabled={!draft.transcript?.trim()} />

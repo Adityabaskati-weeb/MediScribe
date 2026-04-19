@@ -7,6 +7,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { StatusPill } from '../components/StatusPill';
 import { createPatient } from '../services/databaseService';
 import { colors, spacing } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 import { t } from '../utils/i18n';
 
 export function NewPatientScreen({
@@ -19,9 +20,10 @@ export function NewPatientScreen({
   onNavigate: (screen: ScreenName) => void;
 }) {
   const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
+  const { theme } = useAppTheme();
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ActionButton compact title={copy('back')} onPress={() => onNavigate('home')} variant="secondary" />
       <ScreenHeader
         eyebrow={copy('step1')}
