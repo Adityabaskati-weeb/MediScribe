@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, SafeAreaView, StyleSheet, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
+import { BottomTabBar } from './components/BottomTabBar';
+import { ToastProvider } from './context/ToastContext';
 import { DiagnosisScreen } from './screens/DiagnosisScreen';
 import { HistoryScreen } from './screens/HistoryScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { NewPatientScreen } from './screens/NewPatientScreen';
 import { PatientSummaryScreen } from './screens/PatientSummaryScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { SplashScreen } from './screens/SplashScreen';
 import { TreatmentScreen } from './screens/TreatmentScreen';
 import { VoiceScreen } from './screens/VoiceScreen';
 import { initializeLocalDatabase } from './services/databaseService';
@@ -29,7 +32,9 @@ export type ConsultationDraft = {
 export default function App() {
   return (
     <AppThemeProvider>
-      <MediScribeApp />
+      <ToastProvider>
+        <MediScribeApp />
+      </ToastProvider>
     </AppThemeProvider>
   );
 }
@@ -37,7 +42,9 @@ export default function App() {
 function MediScribeApp() {
   const [screen, setScreen] = useState<ScreenName>('home');
   const [draft, setDraft] = useState<ConsultationDraft>({ language: 'Hindi' });
+  const [splashDone, setSplashDone] = useState(false);
   const { theme } = useAppTheme();
+  const screenFade = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     initializeLocalDatabase();
@@ -52,6 +59,11 @@ function MediScribeApp() {
     AsyncStorage.setItem('mediscribe.language', draft.language).catch(() => undefined);
   }, [draft.language]);
 
+  useEffect(() => {
+    screenFade.setValue(0);
+    Animated.timing(screenFade, { toValue: 1, duration: 180, useNativeDriver: true }).start();
+  }, [screen, screenFade]);
+
   const renderScreen = () => {
     if (screen === 'newPatient') return <NewPatientScreen draft={draft} onDraftChange={setDraft} onNavigate={setScreen} />;
     if (screen === 'voice') return <VoiceScreen draft={draft} onDraftChange={setDraft} onNavigate={setScreen} />;
@@ -63,10 +75,13 @@ function MediScribeApp() {
     return <HomeScreen draft={draft} onDraftChange={setDraft} onNavigate={setScreen} />;
   };
 
+  if (!splashDone) return <SplashScreen onDone={() => setSplashDone(true)} />;
+
   return (
     <SafeAreaView style={[styles.shell, { backgroundColor: theme.colors.background }]}>
-      {renderScreen()}
-      <StatusBar style="dark" />
+      <Animated.View style={[styles.content, { opacity: screenFade }]}>{renderScreen()}</Animated.View>
+      <BottomTabBar active={screen} onNavigate={setScreen} />
+      <StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />
     </SafeAreaView>
   );
 }
@@ -75,5 +90,8 @@ const styles = StyleSheet.create({
   shell: {
     flex: 1,
     backgroundColor: colors.background
+  },
+  content: {
+    flex: 1
   }
 });

@@ -8,6 +8,7 @@ import { RedFlagGuardian } from '../components/RedFlagGuardian';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SmartFollowUpQuestions } from '../components/SmartFollowUpQuestions';
 import { StatusPill } from '../components/StatusPill';
+import { VitalSignsDisplay } from '../components/VitalSignsDisplay';
 import { colors, spacing } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
 import { extractClinicalSymptoms, extractClinicalVitals } from '../utils/clinicalText';
@@ -64,17 +65,7 @@ export function PatientSummaryScreen({
         </View>
       </Card>
 
-      <Card>
-        <Text style={[styles.sectionTitle, { color: theme.colors.ink }]}>Vitals</Text>
-        <View style={styles.vitalGrid}>
-          {Object.entries(vitals).map(([label, value]) => (
-            <View style={[styles.vital, { backgroundColor: theme.colors.surfaceSoft, borderColor: theme.colors.border }]} key={label}>
-              <Text style={[styles.vitalLabel, { color: theme.colors.muted }]}>{label}</Text>
-              <Text style={[styles.vitalValue, { color: theme.colors.ink }]}>{value}</Text>
-            </View>
-          ))}
-        </View>
-      </Card>
+      <VitalSignsDisplay vitals={vitals} />
 
       <Card>
         <Text style={[styles.sectionTitle, { color: theme.colors.ink }]}>Correct intake notes</Text>

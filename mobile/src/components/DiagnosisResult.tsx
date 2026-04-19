@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Card } from './Card';
+import { DiagnosisResultsCard } from './DiagnosisResultsCard';
+import { useToast } from '../context/ToastContext';
 import { colors } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
 
@@ -18,12 +20,18 @@ function getAssessment(result: any) {
 export function DiagnosisResult({ result }: { result: any }) {
   const assessment = getAssessment(result);
   const { theme } = useAppTheme();
+  const { showToast } = useToast();
   const c = theme.colors;
   if (!assessment) return null;
   const urgent = ['immediate', 'emergent'].includes(assessment.urgency);
 
   return (
     <Card>
+      <DiagnosisResultsCard
+        assessment={assessment}
+        onSave={() => showToast('Assessment saved for offline sync', 'success')}
+        onConsult={() => showToast('Doctor review request queued', urgent ? 'warning' : 'info')}
+      />
       <View style={[styles.alertPanel, { backgroundColor: urgent ? c.dangerSoft : c.successSoft, borderColor: urgent ? c.accent : c.success }]}>
         <Text style={[styles.alertTitle, { color: urgent ? c.accent : c.success }]}>
           {urgent ? 'Emergency alert' : 'Clinical decision support'}

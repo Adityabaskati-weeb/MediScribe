@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
 import { colors, radii } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
+import { triggerHaptic } from '../utils/microInteractions';
 
 export function ActionButton({
   title,
@@ -28,7 +29,10 @@ export function ActionButton({
     <Pressable
       accessibilityRole="button"
       disabled={disabled}
-      onPress={onPress}
+      onPress={() => {
+        triggerHaptic(variant === 'danger' ? 'warning' : 'light');
+        onPress();
+      }}
       style={({ pressed }) => [
         styles.button,
         variantStyle,

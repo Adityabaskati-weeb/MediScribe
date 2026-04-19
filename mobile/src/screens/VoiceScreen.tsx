@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { ChartOCR } from '../components/ChartOCR';
 import { ConsultationProgress } from '../components/ConsultationProgress';
+import { InteractiveSymptomSelector, SymptomOption } from '../components/InteractiveSymptomSelector';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { SeveritySelector } from '../components/SeveritySelector';
 import { StatusPill } from '../components/StatusPill';
 import { SymptomChecker } from '../components/SymptomChecker';
 import { VoiceInput } from '../components/VoiceInput';
+import { useToast } from '../context/ToastContext';
 import { colors, spacing } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
 import { t } from '../utils/i18n';
@@ -23,6 +26,9 @@ export function VoiceScreen({
 }) {
   const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
   const { theme } = useAppTheme();
+  const { showToast } = useToast();
+  const [selectedSymptom, setSelectedSymptom] = useState('');
+  const [quickNote, setQuickNote] = useState('');
 
   const saveTranscript = (text: string) => {
     onDraftChange({ ...draft, transcript: text });
@@ -32,6 +38,21 @@ export function VoiceScreen({
   const saveChartText = (text: string) => {
     onDraftChange({ ...draft, chartText: text, transcript: [draft.transcript, text].filter(Boolean).join('\n') });
     onNavigate('summary');
+  };
+
+  const saveSelectedSymptoms = (selected: SymptomOption[]) => {
+    const labels = selected.map((symptom) => symptom.label);
+    const note = `Symptoms selected: ${labels.join(', ')}.`;
+    setSelectedSymptom(labels[0] || '');
+    setQuickNote(note);
+    onDraftChange({ ...draft, transcript: [draft.transcript, note].filter(Boolean).join('\n') });
+    showToast(`${labels.length} symptoms added`, 'success');
+  };
+
+  const saveSeverity = (severity: number) => {
+    const note = `${quickNote || `Primary symptom: ${selectedSymptom || 'not specified'}.`} Severity: ${severity}/10 for ${selectedSymptom || 'main symptom'}.`;
+    showToast('Severity added to intake', severity >= 7 ? 'warning' : 'success');
+    saveTranscript(note);
   };
 
   return (
@@ -49,6 +70,8 @@ export function VoiceScreen({
         <StatusPill label="Chart scan" tone="info" />
         <StatusPill label="Manual backup" tone="warning" />
       </View>
+      <InteractiveSymptomSelector onContinue={saveSelectedSymptoms} />
+      <SeveritySelector symptom={selectedSymptom || 'main symptom'} onSubmit={saveSeverity} />
       <VoiceInput language={draft.language} onTranscript={saveTranscript} />
       <ChartOCR onText={saveChartText} />
       <SymptomChecker onAnalyze={saveTranscript} />
