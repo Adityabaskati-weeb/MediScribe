@@ -66,8 +66,8 @@ export function DiagnosisResult({
 
       {urgent && (
         <View style={[styles.referralCommand, { backgroundColor: c.accent }]}>
-          <Text style={styles.referralCommandTitle}>Do not wait for sync</Text>
-          <Text style={styles.referralCommandCopy}>Repeat vitals, keep the patient monitored, and arrange transfer now.</Text>
+          <Text style={styles.referralCommandTitle}>Refer now</Text>
+          <Text style={styles.referralCommandCopy}>Do not wait for sync. Repeat vitals, monitor the patient, and arrange transfer.</Text>
         </View>
       )}
 
@@ -127,11 +127,21 @@ export function DiagnosisResult({
           <Text style={[styles.step, { color: c.ink }]}>{action}</Text>
         </View>
       ))}
-      <Text style={[styles.referral, { color: c.primaryDark }]}>Referral: {assessment.treatment?.referral}</Text>
+      <Text style={[styles.referral, { color: urgent ? c.accent : c.primaryDark }]}>Referral plan: {cleanReferralText(assessment.treatment?.referral, urgent)}</Text>
       <Text style={[styles.step, { color: c.ink }]}>Follow-up: {assessment.treatment?.follow_up}</Text>
       <Text style={[styles.disclaimer, { color: c.muted }]}>{assessment.disclaimer}</Text>
     </Card>
   );
+}
+
+function cleanReferralText(referral?: string, urgent = false) {
+  if (urgent) return 'Emergency transfer now';
+  if (!referral) return 'Follow local clinic protocol';
+  return referral
+    .replace(/^Immediate emergency referral$/i, 'Emergency transfer now')
+    .replace(/^Urgent clinician review$/i, 'Urgent clinician review today')
+    .replace(/^Same-day review$/i, 'Same-day clinical review')
+    .replace(/^Routine follow-up$/i, 'Routine follow-up');
 }
 
 function plainLanguageExplanation(assessment: MediScribeAssessment, transcript: string, patient?: PatientProfile, offlineDemo = false) {
@@ -139,10 +149,10 @@ function plainLanguageExplanation(assessment: MediScribeAssessment, transcript: 
   const redFlag = assessment.red_flags?.find((flag) => flag.level === 'red')?.message;
   const pregnancy = patient?.pregnancy_weeks || /pregnan/i.test(transcript);
   if (pregnancy && /bleeding|abdominal pain|dizzy|headache|visual/i.test(transcript)) {
-    return 'This is dangerous because bleeding or severe pain during pregnancy can become life-threatening quickly. Do not wait for internet or model sync. Repeat vitals, keep the patient monitored, and refer now.';
+    return 'Bleeding or severe pain during pregnancy can become life-threatening. Refer now, repeat vitals, and keep the patient monitored during transfer.';
   }
   if (assessment.urgency === 'immediate' || assessment.urgency === 'emergent') {
-    return `Treat this as urgent because ${redFlag || top} was detected. Stabilize first, repeat vitals, and start the referral pathway before paperwork or sync.`;
+    return `Treat this as urgent because ${redFlag || top} was detected. Stabilize first, repeat vitals, and start transfer before paperwork or sync.`;
   }
   return offlineDemo
     ? 'The phone used local rules because the demo is offline. No danger sign was missed, and the visit can sync later.'
@@ -170,7 +180,7 @@ function buildCouncilAgents(assessment: MediScribeAssessment, agents: AgentStep[
       agent: 'treatment-agent',
       label: 'Treatment Agent',
       status: agentMap.get('treatment-agent')?.status || 'completed',
-      output: assessment.treatment?.referral || 'Follow local protocol.'
+      output: cleanReferralText(assessment.treatment?.referral, Boolean(red))
     },
     {
       agent: 'safety-agent',

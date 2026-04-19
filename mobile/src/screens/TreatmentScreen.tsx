@@ -33,8 +33,8 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
 
       {urgent && (
         <View style={[styles.emergency, { backgroundColor: c.dangerSoft, borderColor: c.accent }]}>
-          <Text style={[styles.emergencyTitle, { color: c.accent }]}>Refer to hospital now</Text>
-          <Text style={[styles.emergencyCopy, { color: theme.mode === 'dark' ? '#ffd7d2' : '#7f1d1d' }]}>Keep airway, breathing, circulation under observation until transfer.</Text>
+          <Text style={[styles.emergencyTitle, { color: c.accent }]}>Refer now</Text>
+          <Text style={[styles.emergencyCopy, { color: theme.mode === 'dark' ? '#ffd7d2' : '#7f1d1d' }]}>Do not wait for sync. Repeat vitals, monitor ABCs, and arrange transfer.</Text>
         </View>
       )}
 
@@ -70,7 +70,7 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
       <Card>
         <Text style={[styles.sectionTitle, { color: c.ink }]}>Follow up</Text>
         <Text style={[styles.item, { color: c.ink }]}>{treatment?.follow_up || 'Review if symptoms worsen, fever persists, or new danger signs appear.'}</Text>
-        <Text style={[styles.referral, { color: c.primaryDark }]}>Referral: {treatment?.referral || 'Routine unless red flags develop'}</Text>
+        <Text style={[styles.referral, { color: urgent ? c.accent : c.primaryDark }]}>Referral plan: {cleanReferralText(treatment?.referral, urgent)}</Text>
       </Card>
 
       <ReferralLetter patient={draft.patient} transcript={draft.transcript} assessment={assessment} />
@@ -78,6 +78,16 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
       <ActionButton title="Save and Return Home" onPress={() => onNavigate('home')} variant="success" />
     </ScrollView>
   );
+}
+
+function cleanReferralText(referral?: string, urgent = false) {
+  if (urgent) return 'Emergency transfer now';
+  if (!referral) return 'Routine follow-up unless red flags develop';
+  return referral
+    .replace(/^Immediate emergency referral$/i, 'Emergency transfer now')
+    .replace(/^Urgent clinician review$/i, 'Urgent clinician review today')
+    .replace(/^Same-day review$/i, 'Same-day clinical review')
+    .replace(/^Routine follow-up$/i, 'Routine follow-up');
 }
 
 const styles = StyleSheet.create({

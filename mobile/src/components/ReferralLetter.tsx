@@ -24,8 +24,8 @@ export function ReferralLetter({ patient, transcript, assessment }: { patient?: 
 
   return (
     <Card>
-      <Text style={[styles.eyebrow, { color: c.primary }]}>Referral letter</Text>
-      <Text style={[styles.heading, { color: c.ink }]}>Ready for hospital handoff</Text>
+      <Text style={[styles.eyebrow, { color: c.primary }]}>Referral handoff</Text>
+      <Text style={[styles.heading, { color: c.ink }]}>Clean summary for transfer</Text>
       <TextInput multiline editable={false} value={letter} style={[styles.letter, { backgroundColor: c.surfaceSoft, borderColor: c.border, color: c.ink }]} />
       <ActionButton title="Share Referral Summary" onPress={share} variant="secondary" />
       {copied && <Text style={[styles.note, { color: c.muted }]}>Sharing is not available on this device. Use the text above for handoff.</Text>}
