@@ -59,6 +59,63 @@ main {
   padding: 24px;
 }
 
+.dashboard-hero {
+  align-items: stretch;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 6px solid var(--primary);
+  border-radius: 8px;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding: 22px;
+}
+
+.dashboard-hero h1 {
+  font-size: 34px;
+  line-height: 1.05;
+  margin: 0 0 8px;
+}
+
+.dashboard-hero p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.hero-stamp {
+  background: var(--success-soft);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--success);
+  display: grid;
+  min-width: 210px;
+  padding: 14px;
+}
+
+.hero-stamp strong {
+  font-size: 22px;
+}
+
+.hero-stamp span {
+  color: var(--muted);
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.dashboard-zone {
+  margin-top: 18px;
+}
+
+.zone-heading {
+  margin-bottom: 10px;
+}
+
+.zone-heading h2 {
+  margin: 0;
+}
+
 .metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -69,6 +126,7 @@ main {
 .row {
   background: var(--surface);
   border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
   border-radius: 8px;
   padding: 16px;
 }
@@ -76,6 +134,11 @@ main {
 .metric strong {
   display: block;
   font-size: 30px;
+}
+
+.metric p {
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .metric span,
@@ -287,6 +350,10 @@ main {
 }
 
 @media (max-width: 760px) {
+  .dashboard-hero {
+    display: grid;
+  }
+
   .proof-grid {
     grid-template-columns: 1fr;
   }

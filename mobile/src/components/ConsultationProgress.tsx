@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useAppTheme } from '../styles/ThemeContext';
 
-const steps = ['Patient', 'Voice', 'Summary', 'AI', 'Care'];
+const steps = ['Patient', 'Voice', 'Summary', 'Diagnosis', 'Treatment', 'Sync'];
 
 export function ConsultationProgress({ current }: { current: number }) {
   const { theme } = useAppTheme();
@@ -15,6 +15,16 @@ export function ConsultationProgress({ current }: { current: number }) {
         const complete = stepNumber < current;
         return (
           <View style={styles.step} key={step}>
+            {index > 0 && (
+              <View
+                style={[
+                  styles.connector,
+                  {
+                    backgroundColor: complete || active ? theme.colors.primary : theme.colors.border
+                  }
+                ]}
+              />
+            )}
             <View
               style={[
                 styles.dot,
@@ -40,16 +50,26 @@ export function ConsultationProgress({ current }: { current: number }) {
 
 const styles = StyleSheet.create({
   wrap: {
+    alignItems: 'flex-start',
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
-    gap: 6,
-    padding: 10
+    gap: 0,
+    paddingHorizontal: 8,
+    paddingVertical: 12
   },
   step: {
     alignItems: 'center',
     flex: 1,
-    gap: 6
+    gap: 6,
+    position: 'relative'
+  },
+  connector: {
+    height: 3,
+    left: '-50%',
+    position: 'absolute',
+    top: 15,
+    width: '100%'
   },
   dot: {
     alignItems: 'center',

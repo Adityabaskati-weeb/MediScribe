@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ActionButton } from './ActionButton';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
@@ -12,6 +12,7 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
   const [status, setStatus] = useState(t(language, 'useDemoOrType'));
   const [loading, setLoading] = useState(false);
   const [nativeAvailable, setNativeAvailable] = useState(false);
+  const pulse = React.useRef(new Animated.Value(0)).current;
   const { theme } = useAppTheme();
   const c = theme.colors;
 
@@ -24,6 +25,20 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
       .then(setNativeAvailable)
       .catch(() => setNativeAvailable(false));
   }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      pulse.stopAnimation();
+      pulse.setValue(0);
+      return;
+    }
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 1, duration: 650, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 0, duration: 650, useNativeDriver: true })
+      ])
+    ).start();
+  }, [loading, pulse]);
 
   const capture = async () => {
     setLoading(true);
@@ -59,7 +74,7 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
         </View>
       </View>
 
-      <View style={[styles.statusPanel, { backgroundColor: c.surfaceMuted, borderColor: c.border }]}>
+      <View style={[styles.statusPanel, { backgroundColor: loading ? c.successSoft : c.surfaceMuted, borderColor: loading ? c.success : c.border }]}>
         <Text style={[styles.statusLabel, { color: c.muted }]}>Live capture state</Text>
         <Text style={[styles.help, { color: c.ink }]}>{status}</Text>
       </View>
@@ -70,15 +85,24 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
         onPress={capture}
         style={({ pressed }) => [
           styles.micButton,
-          { backgroundColor: theme.mode === 'dark' ? '#114653' : c.primaryDark, borderColor: c.secondary },
+          { backgroundColor: loading ? c.secondary : theme.mode === 'dark' ? '#114653' : c.primaryDark, borderColor: loading ? c.success : c.secondary },
           pressed && styles.micPressed,
           loading && styles.micDisabled
         ]}
       >
+        <Animated.View
+          style={[
+            styles.pulseHalo,
+            {
+              opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [0.18, 0.42] }),
+              transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.22] }) }]
+            }
+          ]}
+        />
         <View style={styles.ringOuter}>
           <View style={styles.ringMiddle}>
             <View style={[styles.ringCore, { backgroundColor: c.secondary }]}>
-              <Text style={styles.ringText}>MIC</Text>
+              <Text style={styles.ringText}>{loading ? 'LIVE' : 'MIC'}</Text>
             </View>
           </View>
         </View>
@@ -170,6 +194,7 @@ const styles = StyleSheet.create({
     minHeight: 220,
     justifyContent: 'center',
     padding: 18,
+    position: 'relative',
     width: '100%'
   },
   micPressed: {
@@ -185,6 +210,14 @@ const styles = StyleSheet.create({
     height: 104,
     justifyContent: 'center',
     width: 104
+  },
+  pulseHalo: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    height: 122,
+    position: 'absolute',
+    top: 26,
+    width: 122
   },
   ringMiddle: {
     alignItems: 'center',

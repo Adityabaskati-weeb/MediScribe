@@ -42,13 +42,14 @@ export function DiagnosisResult({
   const urgent = ['immediate', 'emergent'].includes(assessment.urgency);
 
   return (
-    <Card>
+    <Card style={[urgent && { borderColor: c.accent, borderLeftColor: c.accent, borderLeftWidth: 6 }]}>
       <DiagnosisResultsCard
         assessment={assessment}
         onSave={() => showToast('Assessment saved for offline sync', 'success')}
         onConsult={() => showToast('Doctor review request queued', urgent ? 'warning' : 'info')}
       />
       <View style={[styles.alertPanel, { backgroundColor: urgent ? c.dangerSoft : c.successSoft, borderColor: urgent ? c.accent : c.success }]}>
+        {urgent && <Text style={[styles.commandText, { color: c.accent }]}>REFER NOW</Text>}
         <Text style={[styles.alertTitle, { color: urgent ? c.accent : c.success }]}>
           {urgent ? 'Emergency alert' : 'Clinical decision support'}
         </Text>
@@ -59,14 +60,32 @@ export function DiagnosisResult({
       <Text style={[styles.summary, { color: c.ink }]}>{assessment.clinical_summary}</Text>
 
       <View style={[styles.workerPanel, { backgroundColor: urgent ? c.dangerSoft : c.infoSoft, borderColor: urgent ? c.accent : c.primary }]}>
-        <Text style={[styles.workerTitle, { color: urgent ? c.accent : c.primaryDark }]}>Explain like I am a health worker</Text>
+        <Text style={[styles.workerTitle, { color: urgent ? c.accent : c.primaryDark }]}>For the health worker</Text>
         <Text style={[styles.workerCopy, { color: c.ink }]}>{plainLanguageExplanation(assessment, transcript, patient, offlineDemo)}</Text>
       </View>
+
+      {urgent && (
+        <View style={[styles.referralCommand, { backgroundColor: c.accent }]}>
+          <Text style={styles.referralCommandTitle}>Do not wait for sync</Text>
+          <Text style={styles.referralCommandCopy}>Repeat vitals, keep the patient monitored, and arrange transfer now.</Text>
+        </View>
+      )}
 
       <Text style={[styles.heading, { color: c.ink }]}>AI Safety Council</Text>
       <View style={styles.agentGrid}>
         {buildCouncilAgents(assessment, agents, offlineDemo).map((agent) => (
-          <View style={[styles.agentCard, { backgroundColor: c.surfaceSoft, borderColor: agent.status === 'fallback' ? c.warning : c.border }]} key={agent.agent}>
+          <View
+            style={[
+              styles.agentCard,
+              {
+                backgroundColor: agent.agent === 'safety-agent' && urgent ? c.dangerSoft : c.surfaceSoft,
+                borderColor: agent.status === 'fallback' ? c.warning : agent.agent === 'safety-agent' && urgent ? c.accent : c.border,
+                borderLeftColor: agent.agent === 'safety-agent' && urgent ? c.accent : agent.status === 'fallback' ? c.warning : c.primary,
+                borderLeftWidth: 4
+              }
+            ]}
+            key={agent.agent}
+          >
             <Text style={[styles.agentName, { color: c.ink }]}>{agent.label}</Text>
             <Text style={[styles.agentStatus, { color: agent.status === 'fallback' ? c.warning : c.success }]}>
               {agent.status === 'fallback' ? 'Safety fallback' : 'Checked'}
@@ -164,9 +183,15 @@ function buildCouncilAgents(assessment: MediScribeAssessment, agents: AgentStep[
 
 const styles = StyleSheet.create({
   alertPanel: {
+    borderWidth: 1,
     borderRadius: 8,
     gap: 4,
     padding: 14
+  },
+  commandText: {
+    fontSize: 28,
+    fontWeight: '900',
+    letterSpacing: 0
   },
   alertTitle: {
     fontSize: 19,
@@ -202,6 +227,22 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
     lineHeight: 22
+  },
+  referralCommand: {
+    borderRadius: 8,
+    gap: 4,
+    padding: 14
+  },
+  referralCommandTitle: {
+    color: '#ffffff',
+    fontSize: 21,
+    fontWeight: '900'
+  },
+  referralCommandCopy: {
+    color: '#fdebea',
+    fontSize: 15,
+    fontWeight: '800',
+    lineHeight: 21
   },
   agentGrid: {
     gap: 9

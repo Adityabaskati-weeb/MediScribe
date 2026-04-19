@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { ChartOCR } from '../components/ChartOCR';
@@ -65,10 +65,19 @@ export function VoiceScreen({
         right={<StatusPill label={draft.language} tone="info" />}
       />
       <ConsultationProgress current={2} />
-      <View style={styles.intakeRail}>
-        <StatusPill label="Voice" tone="success" />
-        <StatusPill label="Chart scan" tone="info" />
-        <StatusPill label="Manual backup" tone="warning" />
+      <View style={[styles.focusPanel, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+        <View style={styles.focusHeader}>
+          <View>
+            <Text style={[styles.focusKicker, { color: theme.colors.primaryDark }]}>Focused capture</Text>
+            <Text style={[styles.focusTitle, { color: theme.colors.ink }]}>Speak symptoms first. Edit later.</Text>
+          </View>
+          <StatusPill label="Offline save" tone="success" />
+        </View>
+        <View style={styles.intakeRail}>
+          <StatusPill label="Voice" tone="success" />
+          <StatusPill label="Chart scan" tone="info" />
+          <StatusPill label="Manual backup" tone="warning" />
+        </View>
       </View>
       <InteractiveSymptomSelector onContinue={saveSelectedSymptoms} />
       <SeveritySelector symptom={selectedSymptom || 'main symptom'} onSubmit={saveSeverity} />
@@ -84,6 +93,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     gap: 14,
     padding: spacing.lg
+  },
+  focusPanel: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 12,
+    padding: 14
+  },
+  focusHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'space-between'
+  },
+  focusKicker: {
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  focusTitle: {
+    fontSize: 20,
+    fontWeight: '900',
+    lineHeight: 25
   },
   intakeRail: {
     alignItems: 'center',

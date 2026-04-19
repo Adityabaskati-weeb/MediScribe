@@ -29,11 +29,40 @@ export function DashboardPage() {
 
   return (
     <main>
-      <h1>Clinic Overview</h1>
-      <Analytics metrics={dashboard?.metrics || []} />
-      <ImpactMetrics impact={dashboard?.impact || reports?.impact} />
-      <DoctorReviewQueue items={dashboard?.review_queue || reports?.review_queue || []} />
+      <section className="dashboard-hero">
+        <div>
+          <p className="eyebrow">Field Clinic OS</p>
+          <h1>Clinic Overview</h1>
+          <p>Operational pressure, safety intelligence, and model readiness in one screen.</p>
+        </div>
+        <div className="hero-stamp">
+          <strong>Offline Ready</strong>
+          <span>Sync can wait. Red flags cannot.</span>
+        </div>
+      </section>
 
+      <section className="dashboard-zone">
+        <div className="zone-heading">
+          <p className="eyebrow">Today's clinic pressure</p>
+          <h2>Live Workload</h2>
+        </div>
+        <Analytics metrics={dashboard?.metrics || []} />
+        <ImpactMetrics impact={dashboard?.impact || reports?.impact} />
+      </section>
+
+      <section className="dashboard-zone">
+        <div className="zone-heading">
+          <p className="eyebrow">Safety intelligence</p>
+          <h2>Cases That Need Eyes</h2>
+        </div>
+        <DoctorReviewQueue items={dashboard?.review_queue || reports?.review_queue || []} />
+      </section>
+
+      <section className="dashboard-zone">
+        <div className="zone-heading">
+          <p className="eyebrow">Operations</p>
+          <h2>Model And Demo Proof</h2>
+        </div>
       <section className="metrics highlight">
         <article className="metric">
           <span>Benchmark Cases</span>
@@ -75,6 +104,7 @@ export function DashboardPage() {
           <strong>{architecture?.performance?.cache?.entries ?? '--'}</strong>
           <small>Frequent medical query cache entries</small>
         </article>
+      </section>
       </section>
 
       <section className="proof-grid">

@@ -54,9 +54,16 @@ export function HomeScreen({
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: c.background }]}>
+      <View style={[styles.commandHeader, { backgroundColor: c.background }]}>
+        <View>
+          <Text style={[styles.commandKicker, { color: c.primaryDark }]}>Clinic Mode</Text>
+          <Text style={[styles.commandTitle, { color: c.ink }]}>Who needs care now?</Text>
+        </View>
+        <StatusPill label={copy('offlineReady')} tone="success" />
+      </View>
+
       <View style={[styles.hero, { backgroundColor: theme.mode === 'dark' ? '#0d2f38' : c.primaryDark }]}>
         <View style={styles.topRow}>
-          <StatusPill label={copy('offlineReady')} tone="success" />
           <Pressable
             style={[styles.languagePill, { backgroundColor: theme.mode === 'dark' ? '#173c45' : '#ffffff' }]}
             onPress={() => onNavigate('settings')}
@@ -77,8 +84,8 @@ export function HomeScreen({
           </View>
         </View>
 
-        <Text style={styles.title}>{copy('heroTitle')}</Text>
-        <Text style={styles.copy}>{copy('heroCopy')}</Text>
+        <Text style={styles.title}>Start safe care in under two minutes.</Text>
+        <Text style={styles.copy}>Voice, scan, or type. MediScribe catches red flags first and keeps the visit saved offline.</Text>
 
         <View style={styles.heroStats}>
           <MiniStat label="Offline" value="100%" />
@@ -160,9 +167,9 @@ export function HomeScreen({
       </Card>
 
       <View style={styles.quickGrid}>
-        <QuickTile index="1" label={copy('voiceIntake')} onPress={() => onNavigate('voice')} />
-        <QuickTile index="2" label={copy('records')} onPress={() => onNavigate('history')} />
-        <QuickTile index="3" label={copy('settings')} onPress={() => onNavigate('settings')} />
+        <QuickTile index="Voice" label={copy('voiceIntake')} onPress={() => onNavigate('voice')} />
+        <QuickTile index="Scan" label="Scan chart" onPress={() => onNavigate('voice')} />
+        <QuickTile index="History" label={copy('records')} onPress={() => onNavigate('history')} />
       </View>
     </ScrollView>
   );
@@ -219,8 +226,24 @@ function QuickTile({ index, label, onPress }: { index: string; label: string; on
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.background,
-    gap: 16,
+    gap: 14,
     padding: spacing.lg
+  },
+  commandHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'space-between'
+  },
+  commandKicker: {
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  commandTitle: {
+    fontSize: 30,
+    fontWeight: '900',
+    lineHeight: 35
   },
   hero: {
     borderRadius: 8,
@@ -439,7 +462,7 @@ const styles = StyleSheet.create({
     width: 36
   },
   quickMarkText: {
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: '900'
   },
   quickText: {
