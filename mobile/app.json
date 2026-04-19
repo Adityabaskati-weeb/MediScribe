@@ -3,7 +3,7 @@
     "name": "MediScribe",
     "slug": "mediscribe",
     "scheme": "mediscribe",
-    "platforms": ["ios", "android"],
+    "platforms": ["ios", "android", "web"],
     "version": "0.1.0",
     "orientation": "portrait",
     "plugins": [
