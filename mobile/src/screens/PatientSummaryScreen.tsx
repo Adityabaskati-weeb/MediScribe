@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
+import { ConsultationProgress } from '../components/ConsultationProgress';
 import { RedFlagGuardian } from '../components/RedFlagGuardian';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SmartFollowUpQuestions } from '../components/SmartFollowUpQuestions';
@@ -40,6 +41,7 @@ export function PatientSummaryScreen({
         subtitle="Confirm the intake before AI review. Correct anything that looks incomplete."
         right={<StatusPill label={riskLabel(risk)} tone={riskTone(risk)} />}
       />
+      <ConsultationProgress current={3} />
       <RiskBanner risk={risk} />
       <RedFlagGuardian text={notes} patient={draft.patient} />
 
@@ -50,40 +52,43 @@ export function PatientSummaryScreen({
       />
 
       <Card>
-        <Text style={styles.sectionTitle}>Patient</Text>
-        <Text style={styles.line}>{draft.patient?.name || 'Unnamed patient'} - {draft.patient?.age_years || '--'} yrs - {draft.patient?.gender || 'unknown'}</Text>
-        <Text style={styles.line}>{draft.patient?.address || 'Village not added'}</Text>
+        <Text style={[styles.sectionTitle, { color: theme.colors.ink }]}>Patient</Text>
+        <Text style={[styles.line, { color: theme.colors.muted }]}>{draft.patient?.name || 'Unnamed patient'} - {draft.patient?.age_years || '--'} yrs - {draft.patient?.gender || 'unknown'}</Text>
+        <Text style={[styles.line, { color: theme.colors.muted }]}>{draft.patient?.address || 'Village not added'}</Text>
       </Card>
 
       <Card>
-        <Text style={styles.sectionTitle}>Symptoms found</Text>
+        <Text style={[styles.sectionTitle, { color: theme.colors.ink }]}>Symptoms found</Text>
         <View style={styles.chips}>
-          {symptoms.map((item) => <Text style={styles.chip} key={item}>{item}</Text>)}
+          {symptoms.map((item) => <Text style={[styles.chip, { backgroundColor: theme.colors.infoSoft, color: theme.colors.primaryDark }]} key={item}>{item}</Text>)}
         </View>
       </Card>
 
       <Card>
-        <Text style={styles.sectionTitle}>Vitals</Text>
+        <Text style={[styles.sectionTitle, { color: theme.colors.ink }]}>Vitals</Text>
         <View style={styles.vitalGrid}>
           {Object.entries(vitals).map(([label, value]) => (
-            <View style={styles.vital} key={label}>
-              <Text style={styles.vitalLabel}>{label}</Text>
-              <Text style={styles.vitalValue}>{value}</Text>
+            <View style={[styles.vital, { backgroundColor: theme.colors.surfaceSoft, borderColor: theme.colors.border }]} key={label}>
+              <Text style={[styles.vitalLabel, { color: theme.colors.muted }]}>{label}</Text>
+              <Text style={[styles.vitalValue, { color: theme.colors.ink }]}>{value}</Text>
             </View>
           ))}
         </View>
       </Card>
 
       <Card>
-        <Text style={styles.sectionTitle}>Correct intake notes</Text>
+        <Text style={[styles.sectionTitle, { color: theme.colors.ink }]}>Correct intake notes</Text>
         <TextInput
           multiline
           numberOfLines={7}
-          style={styles.input}
           value={notes}
           onChangeText={setNotes}
-          placeholderTextColor={colors.quiet}
+          placeholderTextColor={theme.colors.quiet}
           placeholder="Edit symptoms, vitals, medicine, pregnancy status, or danger signs."
+          style={[
+            styles.input,
+            { backgroundColor: theme.colors.surfaceSoft, borderColor: theme.colors.border, color: theme.colors.ink }
+          ]}
         />
       </Card>
 
@@ -105,15 +110,21 @@ function riskTone(risk: 'red' | 'yellow' | 'green') {
 }
 
 function RiskBanner({ risk }: { risk: 'red' | 'yellow' | 'green' }) {
+  const { theme } = useAppTheme();
   const copy = {
     red: ['Emergency risk', 'Stabilize and prepare referral now.'],
     yellow: ['Needs same-day review', 'Check vitals again and watch danger signs.'],
     green: ['Routine risk', 'Continue assessment and safety-net advice.']
   }[risk];
+  const palette = {
+    red: { backgroundColor: theme.colors.dangerSoft, borderColor: theme.colors.accent },
+    yellow: { backgroundColor: theme.colors.warningSoft, borderColor: theme.colors.warning },
+    green: { backgroundColor: theme.colors.successSoft, borderColor: theme.colors.success }
+  }[risk];
   return (
-    <View style={[styles.riskBanner, risk === 'red' && styles.redRisk, risk === 'yellow' && styles.yellowRisk, risk === 'green' && styles.greenRisk]}>
-      <Text style={styles.riskTitle}>{copy[0]}</Text>
-      <Text style={styles.riskCopy}>{copy[1]}</Text>
+    <View style={[styles.riskBanner, palette]}>
+      <Text style={[styles.riskTitle, { color: theme.colors.ink }]}>{copy[0]}</Text>
+      <Text style={[styles.riskCopy, { color: theme.colors.muted }]}>{copy[1]}</Text>
     </View>
   );
 }

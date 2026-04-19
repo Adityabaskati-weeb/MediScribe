@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
+import { ConsultationProgress } from '../components/ConsultationProgress';
 import { RedFlagGuardian } from '../components/RedFlagGuardian';
 import { ReferralLetter } from '../components/ReferralLetter';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -16,6 +17,7 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
   const treatment = assessment?.treatment || {};
   const urgent = ['immediate', 'emergent'].includes(assessment?.urgency);
   const { theme } = useAppTheme();
+  const c = theme.colors;
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -26,48 +28,49 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
         subtitle="WHO-style safety checks, local medicine reminders, and referral guidance."
         right={<StatusPill label={urgent ? 'Refer now' : 'Guided care'} tone={urgent ? 'danger' : 'success'} />}
       />
+      <ConsultationProgress current={5} />
       <RedFlagGuardian text={draft.transcript || assessment?.clinical_summary || ''} patient={draft.patient} />
 
       {urgent && (
-        <View style={styles.emergency}>
-          <Text style={styles.emergencyTitle}>Refer to hospital now</Text>
-          <Text style={styles.emergencyCopy}>Keep airway, breathing, circulation under observation until transfer.</Text>
+        <View style={[styles.emergency, { backgroundColor: c.dangerSoft, borderColor: c.accent }]}>
+          <Text style={[styles.emergencyTitle, { color: c.accent }]}>Refer to hospital now</Text>
+          <Text style={[styles.emergencyCopy, { color: theme.mode === 'dark' ? '#ffd7d2' : '#7f1d1d' }]}>Keep airway, breathing, circulation under observation until transfer.</Text>
         </View>
       )}
 
       <Card>
-        <Text style={styles.sectionTitle}>Immediate actions</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Immediate actions</Text>
         {(treatment.immediate_actions || ['Record vitals', 'Use local protocol', 'Give safety-net instructions']).map((item: string) => (
-          <Text style={styles.item} key={item}>- {item}</Text>
+          <Text style={[styles.item, { color: c.ink }]} key={item}>- {item}</Text>
         ))}
       </Card>
 
       <Card>
-        <Text style={styles.sectionTitle}>WHO-style offline guidance</Text>
-        <Text style={styles.item}>- Check danger signs before medicine advice.</Text>
-        <Text style={styles.item}>- Repeat abnormal vitals and document trend.</Text>
-        <Text style={styles.item}>- Refer immediately for red flags, pregnancy danger signs, low oxygen, altered consciousness, or severe dehydration.</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>WHO-style offline guidance</Text>
+        <Text style={[styles.item, { color: c.ink }]}>- Check danger signs before medicine advice.</Text>
+        <Text style={[styles.item, { color: c.ink }]}>- Repeat abnormal vitals and document trend.</Text>
+        <Text style={[styles.item, { color: c.ink }]}>- Refer immediately for red flags, pregnancy danger signs, low oxygen, altered consciousness, or severe dehydration.</Text>
       </Card>
 
       <Card>
-        <Text style={styles.sectionTitle}>Local medicines to consider</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Local medicines to consider</Text>
         {(treatment.medications_to_consider?.length ? treatment.medications_to_consider : ['Oral rehydration salts if dehydrated', 'Paracetamol per local age/weight protocol', 'Antibiotics only when local guideline criteria are met']).map((item: string) => (
-          <Text style={styles.item} key={item}>- {item}</Text>
+          <Text style={[styles.item, { color: c.ink }]} key={item}>- {item}</Text>
         ))}
-        <Text style={styles.disclaimer}>Dosage must follow local protocol, weight, allergies, pregnancy status, and clinician approval.</Text>
+        <Text style={[styles.disclaimer, { color: c.muted }]}>Dosage must follow local protocol, weight, allergies, pregnancy status, and clinician approval.</Text>
       </Card>
 
       <Card>
-        <Text style={styles.sectionTitle}>Medicine safety guard</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Medicine safety guard</Text>
         {medicineSafetyMessages(draft.patient).map((item) => (
-          <Text style={styles.safetyItem} key={item}>{item}</Text>
+          <Text style={[styles.safetyItem, { backgroundColor: c.warningSoft, borderColor: c.warning, color: c.ink }]} key={item}>{item}</Text>
         ))}
       </Card>
 
       <Card>
-        <Text style={styles.sectionTitle}>Follow up</Text>
-        <Text style={styles.item}>{treatment.follow_up || 'Review if symptoms worsen, fever persists, or new danger signs appear.'}</Text>
-        <Text style={styles.referral}>Referral: {treatment.referral || 'Routine unless red flags develop'}</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Follow up</Text>
+        <Text style={[styles.item, { color: c.ink }]}>{treatment.follow_up || 'Review if symptoms worsen, fever persists, or new danger signs appear.'}</Text>
+        <Text style={[styles.referral, { color: c.primaryDark }]}>Referral: {treatment.referral || 'Routine unless red flags develop'}</Text>
       </Card>
 
       <ReferralLetter patient={draft.patient} transcript={draft.transcript} assessment={assessment} />

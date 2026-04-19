@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
+import { ConsultationProgress } from '../components/ConsultationProgress';
 import { DiagnosisResult } from '../components/DiagnosisResult';
 import { RedFlagGuardian } from '../components/RedFlagGuardian';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -72,6 +73,7 @@ export function DiagnosisScreen({
         subtitle="Ranked diagnosis support with safety guardrails and offline fallback."
         right={<StatusPill label="Local AI" tone="info" />}
       />
+      <ConsultationProgress current={4} />
       <RedFlagGuardian text={draft.transcript || ''} patient={draft.patient} />
       <View style={[styles.statusPanel, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
         <Text style={[styles.statusLabel, { color: theme.colors.muted }]}>Assessment state</Text>

@@ -3,11 +3,14 @@ import { Share, StyleSheet, Text, TextInput } from 'react-native';
 import { ActionButton } from './ActionButton';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 import { buildReferralLetter } from '../utils/clinicalDecisionSupport';
 
 export function ReferralLetter({ patient, transcript, assessment }: { patient?: any; transcript?: string; assessment?: any }) {
   const letter = useMemo(() => buildReferralLetter({ patient, transcript, assessment }), [patient, transcript, assessment]);
   const [copied, setCopied] = useState(false);
+  const { theme } = useAppTheme();
+  const c = theme.colors;
 
   const share = async () => {
     setCopied(false);
@@ -20,11 +23,11 @@ export function ReferralLetter({ patient, transcript, assessment }: { patient?: 
 
   return (
     <Card>
-      <Text style={styles.eyebrow}>Referral letter</Text>
-      <Text style={styles.heading}>Ready for hospital handoff</Text>
-      <TextInput multiline editable={false} value={letter} style={styles.letter} />
+      <Text style={[styles.eyebrow, { color: c.primary }]}>Referral letter</Text>
+      <Text style={[styles.heading, { color: c.ink }]}>Ready for hospital handoff</Text>
+      <TextInput multiline editable={false} value={letter} style={[styles.letter, { backgroundColor: c.surfaceSoft, borderColor: c.border, color: c.ink }]} />
       <ActionButton title="Share Referral Summary" onPress={share} variant="secondary" />
-      {copied && <Text style={styles.note}>Sharing is not available on this device. Use the text above for handoff.</Text>}
+      {copied && <Text style={[styles.note, { color: c.muted }]}>Sharing is not available on this device. Use the text above for handoff.</Text>}
     </Card>
   );
 }

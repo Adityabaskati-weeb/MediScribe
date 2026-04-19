@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 
 function getAssessment(result: any) {
   return (
@@ -16,56 +17,58 @@ function getAssessment(result: any) {
 
 export function DiagnosisResult({ result }: { result: any }) {
   const assessment = getAssessment(result);
+  const { theme } = useAppTheme();
+  const c = theme.colors;
   if (!assessment) return null;
   const urgent = ['immediate', 'emergent'].includes(assessment.urgency);
 
   return (
     <Card>
-      <View style={[styles.alertPanel, urgent ? styles.alertDanger : styles.alertStable]}>
-        <Text style={[styles.alertTitle, urgent ? styles.badgeDangerText : styles.badgeStableText]}>
+      <View style={[styles.alertPanel, { backgroundColor: urgent ? c.dangerSoft : c.successSoft, borderColor: urgent ? c.accent : c.success }]}>
+        <Text style={[styles.alertTitle, { color: urgent ? c.accent : c.success }]}>
           {urgent ? 'Emergency alert' : 'Clinical decision support'}
         </Text>
-        <Text style={styles.alertCopy}>
+        <Text style={[styles.alertCopy, { color: c.ink }]}>
           {assessment.urgency?.toUpperCase()} - Triage category {assessment.triage_category}
         </Text>
       </View>
-      <Text style={styles.summary}>{assessment.clinical_summary}</Text>
+      <Text style={[styles.summary, { color: c.ink }]}>{assessment.clinical_summary}</Text>
 
-      <Text style={styles.heading}>Top 3 possible diagnoses</Text>
+      <Text style={[styles.heading, { color: c.ink }]}>Top 3 possible diagnoses</Text>
       {(assessment.differential_diagnoses || []).slice(0, 3).map((item: any, index: number) => (
-        <View style={styles.row} key={item.name}>
-          <View style={styles.rank}>
+        <View style={[styles.row, { backgroundColor: c.surfaceSoft, borderColor: c.border }]} key={item.name}>
+          <View style={[styles.rank, { backgroundColor: c.primary }]}>
             <Text style={styles.rankText}>{index + 1}</Text>
           </View>
           <View style={styles.rowBody}>
-            <Text style={styles.rowTitle}>{item.name}</Text>
-            <View style={styles.confidenceTrack}>
-              <View style={[styles.confidenceFill, { width: `${Math.max(8, Math.round((item.confidence || 0) * 100))}%` }]} />
+            <Text style={[styles.rowTitle, { color: c.ink }]}>{item.name}</Text>
+            <View style={[styles.confidenceTrack, { backgroundColor: c.surfaceMuted }]}>
+              <View style={[styles.confidenceFill, { backgroundColor: c.secondary, width: `${Math.max(8, Math.round((item.confidence || 0) * 100))}%` }]} />
             </View>
-            <Text style={styles.reason}>Confidence {Math.round((item.confidence || 0) * 100)}%</Text>
-            <Text style={styles.reason}>Why: {item.reasoning}</Text>
+            <Text style={[styles.reason, { color: c.muted }]}>Confidence {Math.round((item.confidence || 0) * 100)}%</Text>
+            <Text style={[styles.reason, { color: c.muted }]}>Why: {item.reasoning}</Text>
           </View>
         </View>
       ))}
 
-      <Text style={styles.heading}>Red flags</Text>
+      <Text style={[styles.heading, { color: c.ink }]}>Red flags</Text>
       {(assessment.red_flags || []).map((item: any, index: number) => (
-        <View style={styles.flag} key={`${item.message}-${index}`}>
-          <Text style={styles.flagLevel}>{item.level}</Text>
-          <Text style={styles.flagMessage}>{item.message}</Text>
+        <View style={[styles.flag, { backgroundColor: c.warningSoft, borderColor: c.warning }]} key={`${item.message}-${index}`}>
+          <Text style={[styles.flagLevel, { color: c.warning }]}>{item.level}</Text>
+          <Text style={[styles.flagMessage, { color: c.ink }]}>{item.message}</Text>
         </View>
       ))}
 
-      <Text style={styles.heading}>Recommended next steps</Text>
+      <Text style={[styles.heading, { color: c.ink }]}>Recommended next steps</Text>
       {(assessment.treatment?.immediate_actions || []).map((action: string, index: number) => (
         <View style={styles.stepRow} key={action}>
-          <Text style={styles.stepIndex}>{index + 1}</Text>
-          <Text style={styles.step}>{action}</Text>
+          <Text style={[styles.stepIndex, { backgroundColor: c.surfaceMuted, color: c.primaryDark }]}>{index + 1}</Text>
+          <Text style={[styles.step, { color: c.ink }]}>{action}</Text>
         </View>
       ))}
-      <Text style={styles.referral}>Referral: {assessment.treatment?.referral}</Text>
-      <Text style={styles.step}>Follow-up: {assessment.treatment?.follow_up}</Text>
-      <Text style={styles.disclaimer}>{assessment.disclaimer}</Text>
+      <Text style={[styles.referral, { color: c.primaryDark }]}>Referral: {assessment.treatment?.referral}</Text>
+      <Text style={[styles.step, { color: c.ink }]}>Follow-up: {assessment.treatment?.follow_up}</Text>
+      <Text style={[styles.disclaimer, { color: c.muted }]}>{assessment.disclaimer}</Text>
     </Card>
   );
 }

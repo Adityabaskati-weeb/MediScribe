@@ -4,11 +4,14 @@ import { ActionButton } from './ActionButton';
 import { Card } from './Card';
 import { captureMedicalChartImage, parseExtractedMedicalData } from '../services/ocrService';
 import { colors } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 
 export function ChartOCR({ onText }: { onText: (text: string) => void }) {
   const [imageUri, setImageUri] = useState<string | undefined>();
   const [chartText, setChartText] = useState('');
   const [status, setStatus] = useState('Capture a chart photo, then confirm the extracted text.');
+  const { theme } = useAppTheme();
+  const c = theme.colors;
 
   const scan = async (source: 'camera' | 'library') => {
     setStatus(source === 'camera' ? 'Opening camera...' : 'Opening gallery...');
@@ -46,10 +49,10 @@ export function ChartOCR({ onText }: { onText: (text: string) => void }) {
 
   return (
     <Card>
-      <Text style={styles.eyebrow}>Chart OCR</Text>
-      <Text style={styles.heading}>Scan vitals and notes</Text>
-      <View style={styles.statusBox}>
-        <Text style={styles.copy}>{status}</Text>
+      <Text style={[styles.eyebrow, { color: c.primary }]}>Chart OCR</Text>
+      <Text style={[styles.heading, { color: c.ink }]}>Scan vitals and notes</Text>
+      <View style={[styles.statusBox, { backgroundColor: c.surfaceMuted, borderColor: c.border }]}>
+        <Text style={[styles.copy, { color: c.ink }]}>{status}</Text>
       </View>
       {imageUri && <Image source={{ uri: imageUri }} style={styles.preview} />}
       <View style={styles.actions}>
@@ -61,8 +64,8 @@ export function ChartOCR({ onText }: { onText: (text: string) => void }) {
         multiline
         numberOfLines={5}
         placeholder="Example: Complaint: fever and cough. BP 120/80 HR 90 SpO2 96 temp 38.2. Meds: paracetamol."
-        placeholderTextColor={colors.quiet}
-        style={styles.input}
+        placeholderTextColor={c.quiet}
+        style={[styles.input, { backgroundColor: c.surfaceSoft, borderColor: c.border, color: c.ink }]}
         value={chartText}
         onChangeText={setChartText}
       />

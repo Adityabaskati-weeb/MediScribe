@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ActionButton } from './ActionButton';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 import { t } from '../utils/i18n';
 
 export function PatientForm({ language, onSubmit }: { language: string; onSubmit: (patient: any) => void }) {
@@ -17,6 +18,8 @@ export function PatientForm({ language, onSubmit }: { language: string; onSubmit
   const [medications, setMedications] = useState('');
   const [pregnancyWeeks, setPregnancyWeeks] = useState('');
   const [postpartumDays, setPostpartumDays] = useState('');
+  const { theme } = useAppTheme();
+  const c = theme.colors;
 
   const canSubmit = name.trim().length > 1 && Number(age) > 0;
   const genderOptions = ['female', 'male', 'other'];
@@ -29,14 +32,18 @@ export function PatientForm({ language, onSubmit }: { language: string; onSubmit
     options?: { keyboardType?: 'default' | 'number-pad' | 'phone-pad'; multiline?: boolean }
   ) => (
     <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, { color: c.muted }]}>{label}</Text>
       <TextInput
         multiline={options?.multiline}
         numberOfLines={options?.multiline ? 3 : 1}
         keyboardType={options?.keyboardType || 'default'}
         placeholder={placeholder}
-        placeholderTextColor={colors.quiet}
-        style={[styles.input, options?.multiline && styles.multilineInput]}
+        placeholderTextColor={c.quiet}
+        style={[
+          styles.input,
+          { backgroundColor: c.surfaceSoft, borderColor: c.border, color: c.ink },
+          options?.multiline && styles.multilineInput
+        ]}
         value={value}
         onChangeText={onChangeText}
       />
@@ -45,35 +52,43 @@ export function PatientForm({ language, onSubmit }: { language: string; onSubmit
 
   return (
     <Card>
-      <Text style={styles.eyebrow}>{t(language, 'patientProfile')}</Text>
-      <Text style={styles.heading}>Required details</Text>
+      <View style={[styles.formHeader, { backgroundColor: c.infoSoft, borderColor: c.border }]}>
+        <Text style={[styles.eyebrow, { color: c.primary }]}>{t(language, 'patientProfile')}</Text>
+        <Text style={[styles.heading, { color: c.ink }]}>Fast registration for clinic queues</Text>
+        <Text style={[styles.helper, { color: c.muted }]}>Name and age are required. Everything else improves safety checks.</Text>
+      </View>
+      <Text style={[styles.heading, { color: c.ink }]}>Required details</Text>
       {field(t(language, 'patientName'), name, setName, 'Full name')}
       <View style={styles.row}>
         <View style={styles.rowItem}>{field(t(language, 'age'), age, setAge, 'Years', { keyboardType: 'number-pad' })}</View>
         <View style={styles.rowItem}>
-          <Text style={styles.label}>{t(language, 'gender')}</Text>
+          <Text style={[styles.label, { color: c.muted }]}>{t(language, 'gender')}</Text>
           <View style={styles.genderRow}>
             {genderOptions.map((option) => (
               <Pressable
                 key={option}
                 onPress={() => setGender(option)}
-                style={[styles.genderChip, gender === option && styles.genderChipActive]}
+                style={[
+                  styles.genderChip,
+                  { backgroundColor: c.surfaceSoft, borderColor: c.border },
+                  gender === option && { backgroundColor: c.primaryDark, borderColor: c.primaryDark }
+                ]}
               >
-                <Text style={[styles.genderText, gender === option && styles.genderTextActive]}>{option}</Text>
+                <Text style={[styles.genderText, { color: gender === option ? '#ffffff' : c.ink }]}>{option}</Text>
               </Pressable>
             ))}
           </View>
         </View>
       </View>
 
-      <View style={styles.sectionDivider} />
-      <Text style={styles.heading}>Contact and location</Text>
+      <View style={[styles.sectionDivider, { backgroundColor: c.border }]} />
+      <Text style={[styles.heading, { color: c.ink }]}>Contact and location</Text>
       {field(t(language, 'phone'), phone, setPhone, 'Mobile number', { keyboardType: 'phone-pad' })}
       {field(t(language, 'address'), address, setAddress, 'Village / clinic / block', { multiline: true })}
       {field(t(language, 'emergencyContact'), emergencyContact, setEmergencyContact, 'Family contact or ASHA worker', { keyboardType: 'phone-pad' })}
 
-      <View style={styles.sectionDivider} />
-      <Text style={styles.heading}>Clinical risk notes</Text>
+      <View style={[styles.sectionDivider, { backgroundColor: c.border }]} />
+      <Text style={[styles.heading, { color: c.ink }]}>Clinical risk notes</Text>
       {field(t(language, 'conditions'), conditions, setConditions, 'Diabetes, asthma, hypertension', { multiline: true })}
       {field(t(language, 'allergies'), allergies, setAllergies, 'Medicine or food allergies', { multiline: true })}
       {field(t(language, 'medications'), medications, setMedications, 'Current medicines, comma separated', { multiline: true })}
@@ -107,6 +122,12 @@ function splitList(value: string) {
 }
 
 const styles = StyleSheet.create({
+  formHeader: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 5,
+    padding: 12
+  },
   eyebrow: {
     color: colors.primary,
     fontSize: 12,
@@ -117,6 +138,11 @@ const styles = StyleSheet.create({
     color: colors.ink,
     fontSize: 18,
     fontWeight: '900'
+  },
+  helper: {
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 19
   },
   field: {
     gap: 7
@@ -173,9 +199,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '900',
     textTransform: 'capitalize'
-  },
-  genderTextActive: {
-    color: '#ffffff'
   },
   sectionDivider: {
     backgroundColor: colors.border,

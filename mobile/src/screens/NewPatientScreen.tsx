@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
+import { ConsultationProgress } from '../components/ConsultationProgress';
 import { PatientForm } from '../components/PatientForm';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { StatusPill } from '../components/StatusPill';
@@ -31,6 +32,7 @@ export function NewPatientScreen({
         subtitle={copy('registerCopy')}
         right={<StatusPill label="Local save" tone="success" />}
       />
+      <ConsultationProgress current={1} />
       <PatientForm onSubmit={(patient) => {
         createPatient(patient);
         onDraftChange({ ...draft, patient });

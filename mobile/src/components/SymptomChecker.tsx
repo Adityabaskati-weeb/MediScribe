@@ -3,19 +3,22 @@ import { StyleSheet, Text, TextInput } from 'react-native';
 import { ActionButton } from './ActionButton';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 
 export function SymptomChecker({ onAnalyze }: { onAnalyze: (symptoms: string) => void }) {
   const [symptoms, setSymptoms] = useState('');
+  const { theme } = useAppTheme();
+  const c = theme.colors;
   return (
     <Card>
-      <Text style={styles.eyebrow}>Manual intake</Text>
-      <Text style={styles.heading}>Symptom intake</Text>
+      <Text style={[styles.eyebrow, { color: c.primary }]}>Manual intake</Text>
+      <Text style={[styles.heading, { color: c.ink }]}>Symptom intake</Text>
       <TextInput
         multiline
         numberOfLines={5}
         placeholder="Example: fever, cough, BP 120/80, HR 90, temp 38.2"
-        placeholderTextColor={colors.quiet}
-        style={styles.input}
+        placeholderTextColor={c.quiet}
+        style={[styles.input, { backgroundColor: c.surfaceSoft, borderColor: c.border, color: c.ink }]}
         value={symptoms}
         onChangeText={setSymptoms}
       />

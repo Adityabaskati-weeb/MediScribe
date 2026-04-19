@@ -29,9 +29,10 @@ const darkColors = {
 
 const lightTheme = { mode: 'light' as ThemeMode, colors };
 const darkTheme = { mode: 'dark' as ThemeMode, colors: darkColors };
+type AppTheme = typeof lightTheme | typeof darkTheme;
 
 type ThemeContextValue = {
-  theme: typeof lightTheme;
+  theme: AppTheme;
   toggleTheme: () => void;
 };
 

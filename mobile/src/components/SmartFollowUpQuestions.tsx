@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Card } from './Card';
 import { colors } from '../styles/theme';
+import { useAppTheme } from '../styles/ThemeContext';
 import { followUpQuestions } from '../utils/clinicalDecisionSupport';
 
 export function SmartFollowUpQuestions({
@@ -14,21 +15,23 @@ export function SmartFollowUpQuestions({
   onAddQuestion?: (question: string) => void;
 }) {
   const questions = followUpQuestions(text, patient);
+  const { theme } = useAppTheme();
+  const c = theme.colors;
   if (!questions.length) return null;
 
   return (
     <Card>
-      <Text style={styles.eyebrow}>Next-question agent</Text>
-      <Text style={styles.heading}>Ask before diagnosis</Text>
+      <Text style={[styles.eyebrow, { color: c.primary }]}>Next-question agent</Text>
+      <Text style={[styles.heading, { color: c.ink }]}>Ask before diagnosis</Text>
       {questions.map((question, index) => (
         <Pressable
           accessibilityRole="button"
           key={question}
           onPress={() => onAddQuestion?.(question)}
-          style={styles.question}
+          style={[styles.question, { backgroundColor: c.surfaceSoft, borderColor: c.border }]}
         >
-          <View style={styles.index}><Text style={styles.indexText}>{index + 1}</Text></View>
-          <Text style={styles.questionText}>{question}</Text>
+          <View style={[styles.index, { backgroundColor: c.infoSoft }]}><Text style={[styles.indexText, { color: c.primaryDark }]}>{index + 1}</Text></View>
+          <Text style={[styles.questionText, { color: c.ink }]}>{question}</Text>
         </Pressable>
       ))}
     </Card>

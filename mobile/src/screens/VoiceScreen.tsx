@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { ChartOCR } from '../components/ChartOCR';
+import { ConsultationProgress } from '../components/ConsultationProgress';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { StatusPill } from '../components/StatusPill';
 import { SymptomChecker } from '../components/SymptomChecker';
@@ -42,6 +43,7 @@ export function VoiceScreen({
         subtitle={copy('voiceScreenCopy')}
         right={<StatusPill label={draft.language} tone="info" />}
       />
+      <ConsultationProgress current={2} />
       <View style={styles.intakeRail}>
         <StatusPill label="Voice" tone="success" />
         <StatusPill label="Chart scan" tone="info" />

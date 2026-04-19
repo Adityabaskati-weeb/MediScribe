@@ -20,6 +20,7 @@ export function SettingsScreen({
 }) {
   const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
   const { theme, toggleTheme } = useAppTheme();
+  const c = theme.colors;
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -32,43 +33,47 @@ export function SettingsScreen({
       />
 
       <Card>
-        <Text style={styles.sectionTitle}>{copy('offlineStatus')}</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>{copy('offlineStatus')}</Text>
         <View style={styles.statusRow}>
-          <View style={styles.dot} />
-          <Text style={styles.statusText}>{copy('offlineStatusCopy')}</Text>
+          <View style={[styles.dot, { backgroundColor: c.success }]} />
+          <Text style={[styles.statusText, { color: c.ink }]}>{copy('offlineStatusCopy')}</Text>
         </View>
-        <Text style={styles.meta}>{copy('queuedRecords')}</Text>
+        <Text style={[styles.meta, { color: c.muted }]}>{copy('queuedRecords')}</Text>
       </Card>
 
       <Card>
-        <Text style={styles.sectionTitle}>{copy('language')}</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>{copy('language')}</Text>
         <View style={styles.languageGrid}>
           {appLanguages.map((language) => (
             <Pressable
               key={language}
-              style={[styles.languageChip, draft.language === language && styles.languageChipActive]}
+              style={[
+                styles.languageChip,
+                { backgroundColor: c.surfaceSoft, borderColor: c.border },
+                draft.language === language && { backgroundColor: c.primary, borderColor: c.primary }
+              ]}
               onPress={() => onDraftChange({ ...draft, language })}
             >
-              <Text style={[styles.languageText, draft.language === language && styles.languageTextActive]}>{language}</Text>
+              <Text style={[styles.languageText, { color: draft.language === language ? '#ffffff' : c.ink }]}>{language}</Text>
             </Pressable>
           ))}
         </View>
       </Card>
 
       <Card>
-        <Text style={styles.sectionTitle}>Theme</Text>
-        <Text style={styles.meta}>Switch between bright clinic mode and low-light night clinic mode.</Text>
-        <Pressable style={[styles.themeChoice, { borderColor: theme.colors.border, backgroundColor: theme.colors.surfaceSoft }]} onPress={toggleTheme}>
-          <Text style={[styles.themeChoiceTitle, { color: theme.colors.ink }]}>{theme.mode === 'dark' ? 'Dark mode active' : 'Light mode active'}</Text>
-          <Text style={[styles.themeChoiceMeta, { color: theme.colors.muted }]}>{theme.mode === 'dark' ? 'Tap for light mode' : 'Tap for dark mode'}</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Theme</Text>
+        <Text style={[styles.meta, { color: c.muted }]}>Switch between bright clinic mode and low-light night clinic mode.</Text>
+        <Pressable style={[styles.themeChoice, { borderColor: c.border, backgroundColor: c.surfaceSoft }]} onPress={toggleTheme}>
+          <Text style={[styles.themeChoiceTitle, { color: c.ink }]}>{theme.mode === 'dark' ? 'Dark mode active' : 'Light mode active'}</Text>
+          <Text style={[styles.themeChoiceMeta, { color: c.muted }]}>{theme.mode === 'dark' ? 'Tap for light mode' : 'Tap for dark mode'}</Text>
         </Pressable>
       </Card>
 
       <Card>
-        <Text style={styles.sectionTitle}>{copy('modelStatus')}</Text>
-        <Text style={styles.meta}>{copy('modelCached')}</Text>
-        <Text style={styles.meta}>{copy('guidelinesCached')}</Text>
-        <Text style={styles.meta}>{copy('sqliteReady')}</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>{copy('modelStatus')}</Text>
+        <Text style={[styles.meta, { color: c.muted }]}>{copy('modelCached')}</Text>
+        <Text style={[styles.meta, { color: c.muted }]}>{copy('guidelinesCached')}</Text>
+        <Text style={[styles.meta, { color: c.muted }]}>{copy('sqliteReady')}</Text>
       </Card>
 
       <ActionButton title={copy('returnHome')} onPress={() => onNavigate('home')} />
