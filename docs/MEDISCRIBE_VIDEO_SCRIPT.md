@@ -1,85 +1,163 @@
-# MediScribe 3-Minute Demo Script
+# MediScribe 3-Minute Story-First Demo Script
 
-## 0:00-0:18 Opening Hook
+Goal: make judges feel the problem before they see the architecture.
 
-Visual: crowded rural clinic, paper notebook, unstable network icon.
+## Core Story
 
-Voiceover:
+A rural health worker is alone in a busy clinic. The internet is down. A pregnant
+patient arrives with bleeding and abdominal pain. The dangerous part is not that
+the clinic lacks AI. The dangerous part is that a subtle emergency can look like
+one more patient in a long queue.
 
-"In many rural clinics, one health worker may see more than 50 patients a day.
-The internet is unreliable, records are paper-based, and the most dangerous cases
-can look ordinary at first."
+MediScribe turns that moment into a safer workflow: speak symptoms, catch the red
+flag, explain why, refer now, save offline, and sync later.
 
-## 0:18-0:42 The App Starts Offline
+## 0:00-0:20 Problem Hook
 
-Show mobile home screen.
+Visual:
 
-Voiceover:
-
-"This is MediScribe: an offline AI medical assistant built for low-resource
-clinics. It starts with the real workflow: register the patient, capture symptoms,
-and keep the visit saved locally."
-
-Show: Start Consultation, patient form, language indicator, offline-ready status.
-
-## 0:42-1:18 Voice And OCR Intake
-
-Show voice screen and chart scan.
+- Busy rural clinic.
+- Paper register.
+- No-network icon.
+- Health worker looking at a line of waiting patients.
 
 Voiceover:
 
-"The worker can speak symptoms, type notes, or scan a chart. MediScribe turns
-messy intake into structured vitals and symptoms before sending it to the
-clinical agents."
+"In rural clinics, one health worker may see 50 patients a day. The internet is
+unreliable, records are paper-based, and the most dangerous patients do not
+always look dramatic at first."
 
-Show: voice intake, waveform, chart OCR demo, patient summary risk banner.
+On screen:
 
-## 1:18-1:58 Gemma 4 Agentic Diagnosis
+- 50+ patients per day.
+- Low or no internet.
+- Dangerous cases can be missed.
 
-Show AI diagnosis screen and backend `/api/diagnoses/agentic` response.
+## 0:20-0:45 The Human Moment
 
-Voiceover:
+Visual:
 
-"Gemma 4 runs locally through Ollama. A diagnosis agent ranks the differential, a
-reasoning agent explains why, a treatment agent gives next steps, and a safety
-agent checks red flags before anything is displayed."
-
-Show: top 3 diagnoses, confidence bars, why-this-diagnosis, red flags.
-
-## 1:58-2:24 Offline Safety Moment
-
-Show backend stopped or offline mode, then run diagnosis fallback.
+- Open MediScribe Home.
+- Tap Airplane Mode Emergency Demo.
+- Show patient: 32 weeks pregnant, bleeding, abdominal pain, dizziness.
 
 Voiceover:
 
-"If the model or internet is unavailable, MediScribe does not freeze. Local
-safety rules still catch low oxygen, shock blood pressure, postpartum danger
-signs, and pediatric emergencies."
+"Now imagine this patient arrives during a network outage: 32 weeks pregnant,
+bleeding, abdominal pain, dizzy. The worker cannot wait for the cloud."
 
-Show: emergency referral guidance and saved local visit.
+On screen:
 
-## 2:24-2:45 Dashboard And Metrics
+- Airplane Mode Emergency Demo.
+- Offline Ready.
+- Pregnancy danger signs.
 
-Show web dashboard and API metrics.
+## 0:45-1:20 Wow Moment: Offline Emergency Catch
+
+Visual:
+
+- Diagnosis screen.
+- Red REFER NOW banner.
+- Before vs After timer.
+- Referral command: Do not wait for sync.
 
 Voiceover:
 
-"Clinic leads can review urgent cases, sync status, accuracy, latency,
-red-flag recall, and patient trends."
+"MediScribe does not freeze. Local safety rules catch the emergency, explain the
+risk in simple language, and create a referral plan before anything syncs."
 
-Show: dashboard KPIs, `/api/diagnoses/evaluation`, `/metrics`.
+On screen:
 
-On-screen proof text:
+- REFER NOW.
+- Emergency transfer now.
+- Saved offline.
+- Sync can wait. Red flags cannot.
 
-- 26 rural clinic benchmark cases.
-- 100% red-flag recall on emergency cases.
+## 1:20-1:55 Gemma 4 Intelligence Made Visible
+
+Visual:
+
+- AI Safety Council cards.
+- Diagnosis Agent, Reasoning Agent, Treatment Agent, Safety Agent.
+- Safety Agent highlighted.
+
+Voiceover:
+
+"When Gemma 4 is available through Ollama, it helps rank diagnoses and explain
+the reasoning. But MediScribe never lets the model act alone. A safety agent
+checks red flags and overrides routine advice."
+
+On screen:
+
+- Diagnosis Agent: ranked concern.
+- Reasoning Agent: why it matters.
+- Treatment Agent: next steps.
+- Safety Agent: escalated.
+
+## 1:55-2:25 Real Clinic Workflow
+
+Visual:
+
+- Voice intake.
+- Chart scan.
+- Patient summary.
+- Treatment handoff.
+
+Voiceover:
+
+"The workflow matches the clinic: speak symptoms, scan a chart, review the
+summary, refer if needed, and keep the record on the phone until the network
+returns."
+
+On screen:
+
+- Voice plus text plus chart scan.
+- Offline SQLite record.
+- Clean handoff summary.
+
+## 2:25-2:45 Public Health Angle
+
+Visual:
+
+- Dashboard.
+- Outbreak Radar.
+- Possible dengue cluster.
+
+Voiceover:
+
+"One patient is the first layer. Across many offline visits, MediScribe can flag
+patterns: dengue-like cases, respiratory clusters, and maternal danger-sign
+alerts."
+
+On screen:
+
+- Outbreak Radar.
+- Possible dengue cluster.
+- Clinic-lead action.
+
+## 2:45-3:00 Proof And Close
+
+Visual:
+
+- Dashboard metrics.
+- Evaluation endpoint.
+- GitHub repo.
+
+Voiceover:
+
+"This is not a concept video. MediScribe is a working Gemma 4 application with
+offline fallback, agentic safety, local storage, and a 26-case rural clinic
+benchmark. Medical AI should work where the internet does not."
+
+On screen:
+
+- 26 benchmark cases.
+- 100% red-flag recall.
 - 100% offline intake success.
-- Local Gemma 4 via Ollama with safety fallback.
+- Local Gemma 4 via Ollama.
+- GitHub repository link.
 
-## 2:45-3:00 Closing
+## Final One-Line Pitch
 
-Voiceover:
-
-"MediScribe brings Gemma 4 intelligence to the edge: private, explainable, and
-ready where healthcare needs it most. No cloud dependency. No waiting. Safer
-decisions in the clinic."
+MediScribe: local Gemma 4 intelligence for the clinic moments where waiting is
+dangerous.

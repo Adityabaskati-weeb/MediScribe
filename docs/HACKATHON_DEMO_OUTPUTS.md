@@ -1,5 +1,19 @@
 # MediScribe Demo-Ready Outputs
 
+## Hero Story Runbook
+
+Do not start the pitch with architecture. Start with pressure.
+
+1. Show a rural clinic where the network is down and the queue is long.
+2. Introduce one patient: 32 weeks pregnant with bleeding, abdominal pain, and dizziness.
+3. Open MediScribe and run Airplane Mode Emergency Demo.
+4. Pause on the red REFER NOW state.
+5. Show the AI Safety Council: Diagnosis, Reasoning, Treatment, and Safety agents.
+6. Show the referral handoff summary in clean, readable language.
+7. Switch to the dashboard and show how offline visits become clinic intelligence.
+
+The sentence judges should remember: sync can wait, red flags cannot.
+
 ## Agent Architecture
 
 MediScribe now runs the clinical assessment through four explicit agents:
@@ -59,9 +73,11 @@ The `/api/diagnoses/evaluation` endpoint reports:
 
 ## Video Talking Points
 
-1. Open on a rural clinic with no internet and a long patient queue.
-2. Health worker taps Start Consultation and speaks symptoms.
-3. Agentic diagnosis identifies a high-risk presentation.
-4. Safety guardrails escalate urgent referral even if the AI is uncertain.
-5. Treatment screen gives practical next steps and cached guideline advice.
-6. Performance screen proves latency, reliability, fallback rate, and accuracy.
+1. Open on the problem, not the app: one health worker, no internet, 50 patients waiting.
+2. Show the phone offline so the viewer immediately understands the constraint.
+3. Run the Airplane Mode Emergency Demo with the maternal danger-sign case.
+4. Let the REFER NOW screen land before explaining the model.
+5. Show the Safety Agent overriding routine advice because red flags are present.
+6. Show the clean referral handoff as the practical output a real worker can use.
+7. Use the dashboard Outbreak Radar and benchmark metrics as proof that this is a system, not a mockup.
+8. Close with the GitHub repo, local Gemma 4 via Ollama, and the core line: local medical AI for the places the cloud cannot reach.

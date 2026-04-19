@@ -11,6 +11,15 @@ app_port: 3001
 
 Offline AI medical assistant for rural clinics.
 
+## Story Judges Should Remember
+
+A rural health worker is offline, the waiting line is long, and a 32-week
+pregnant patient arrives with bleeding, abdominal pain, and dizziness.
+MediScribe catches the red flag locally, explains the risk in simple language,
+creates a referral handoff, saves the visit on-device, and syncs later.
+
+Core demo line: sync can wait, red flags cannot.
+
 ## Hackathon Differentiators
 
 - Offline-first: mobile SQLite, local history, offline triage fallback, and sync queue.

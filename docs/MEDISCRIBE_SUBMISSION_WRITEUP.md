@@ -4,12 +4,27 @@ Subtitle: Gemma 4 clinical reasoning for health workers who cannot depend on the
 
 Track: Health & Sciences. Secondary fit: Safety & Trust, Digital Equity & Inclusivity, and the Ollama Special Technology Track.
 
+## Story First Summary
+
+MediScribe is built around one clinic moment: a rural health worker has no
+internet, a long queue, and a pregnant patient with bleeding and abdominal pain.
+The app's job is not to look clever. It is to catch the danger sign, explain it
+in plain language, create a referral plan, save the visit offline, and sync
+later.
+
+The demo's "wow" moment is the Airplane Mode Emergency Demo: the phone is
+offline, but MediScribe still shows REFER NOW, highlights the Safety Agent
+escalation, and creates a clean handoff summary for the receiving hospital.
+
 ## Problem
 
 Rural health workers often see 50+ patients per day with limited connectivity,
 limited diagnostic support, and incomplete paper records. The dangerous cases are
 not always obvious: low oxygen, postpartum headache, shock-range blood pressure,
-and pediatric danger signs can be missed when the queue is long.
+and pediatric danger signs can be missed when the queue is long. In the story we
+show judges, the failure mode is delay: a life-threatening maternal emergency can
+look like one more routine abdominal pain case unless the workflow forces the red
+flag to the front.
 
 ## Solution
 
@@ -18,6 +33,22 @@ structured, safety-checked assessment. A worker registers a patient, speaks or
 types symptoms, scans chart notes, reviews extracted vitals, and receives ranked
 diagnosis support with next steps. If internet or AI serving fails, the mobile app
 still saves the visit locally and returns referral-safe guidance.
+
+The solution is intentionally safety-led: red flags outrank confidence scores,
+plain-language reasoning outranks technical jargon, and urgent referral can be
+triggered before any network sync happens.
+
+## Demo Wow Moment
+
+The video should feel like a real clinic scene, not a feature tour:
+
+1. The phone is offline.
+2. A pregnant patient reports bleeding, abdominal pain, and dizziness.
+3. The worker taps Airplane Mode Emergency Demo.
+4. MediScribe shows REFER NOW and "Sync can wait. Red flags cannot."
+5. The AI Safety Council shows Diagnosis, Reasoning, Treatment, and Safety agents.
+6. The referral handoff is clean enough to read aloud or send with the patient.
+7. The dashboard turns many offline visits into outbreak and clinic-risk insight.
 
 ## Architecture
 
