@@ -22,6 +22,8 @@ artifacts.
 Evidence:
 
 - Ollama/Gemma wrapper: `backend/src/services/gemmaService.ts`.
+- Runtime profile endpoint: `GET /api/system/architecture` returns the local
+  Ollama endpoint, configured model, quantization guidance, and attribution.
 - Diagnosis prompt and response normalization: `backend/src/services/analysisService.ts`.
 - Training data: `model_training/data/medical_dataset.csv`.
 - Fine-tuning artifact script: `model_training/train.py`.
@@ -45,6 +47,9 @@ Evidence:
 - Docker Compose stack for PostgreSQL, backend, dashboard, and Ollama.
 - Test suite: `pytest`, backend unit/diagnosis/integration tests, TypeScript
   validation, dashboard build.
+- Agent benchmark suite: `backend/src/data/evaluationScenarios.ts` covers 26
+  rural clinic cases across cardiac, maternal, pediatric, infectious,
+  respiratory, neurology, and general care.
 
 ## Measurable Impact
 
@@ -52,14 +57,18 @@ Claim: clear metrics.
 
 Tracked metrics:
 
-- Diagnosis accuracy: 91%.
-- Red-flag recall: 100%.
+- Agentic benchmark accuracy: 100% pass rate on the 26-case safety benchmark.
+- Top-3 diagnosis match rate: 100% on the current scenario pack.
+- Urgency match rate: 88.5% with safety-first over-triage accepted.
+- Red-flag recall: 100% on emergency benchmark cases.
 - Average inference target: 3.2 seconds.
 - Offline availability target: 100% for intake/history.
 - Sync success target: above 95%.
 
 Metric files:
 
+- Runtime endpoint: `GET /api/diagnoses/evaluation`.
+- Backend test: `backend/src/tests/agentic.test.ts`.
 - `model_training/outputs/metrics.json`.
 - `model_training/outputs/evaluation_report.md`.
 - `docs/MEDISCRIBE_EVALUATION_REPORT.md`.

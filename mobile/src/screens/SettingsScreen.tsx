@@ -92,6 +92,19 @@ export function SettingsScreen({
       </Card>
 
       <Card>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Safety and AI proof</Text>
+        <View style={styles.proofRows}>
+          <ProofRow label="Runtime" value="Gemma 4 via local Ollama" />
+          <ProofRow label="Fallback" value="Deterministic triage rules" />
+          <ProofRow label="Benchmark" value="26 rural clinic cases" />
+          <ProofRow label="Guardrail" value="Red flags override confidence" />
+        </View>
+        <Text style={[styles.meta, { color: c.muted }]}>
+          MediScribe is decision support only. Emergency signs always trigger referral guidance before sync or model availability.
+        </Text>
+      </Card>
+
+      <Card>
         <Text style={[styles.sectionTitle, { color: c.ink }]}>Demo reset</Text>
         <Text style={[styles.meta, { color: c.muted }]}>Clear local SQLite records plus saved language and theme so the next pitch starts fresh.</Text>
         <ActionButton title="Reset demo data" onPress={resetDemoState} variant="danger" />
@@ -101,6 +114,16 @@ export function SettingsScreen({
 
       <ActionButton title={copy('returnHome')} onPress={() => onNavigate('home')} />
     </ScrollView>
+  );
+}
+
+function ProofRow({ label, value }: { label: string; value: string }) {
+  const { theme } = useAppTheme();
+  return (
+    <View style={[styles.proofRow, { borderColor: theme.colors.border }]}>
+      <Text style={[styles.proofLabel, { color: theme.colors.muted }]}>{label}</Text>
+      <Text style={[styles.proofValue, { color: theme.colors.ink }]}>{value}</Text>
+    </View>
   );
 }
 
@@ -178,6 +201,24 @@ const styles = StyleSheet.create({
   themeChoiceMeta: {
     fontSize: 13,
     fontWeight: '700'
+  },
+  proofRows: {
+    gap: 8
+  },
+  proofRow: {
+    borderBottomWidth: 1,
+    gap: 3,
+    paddingBottom: 8
+  },
+  proofLabel: {
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  proofValue: {
+    fontSize: 15,
+    fontWeight: '900',
+    lineHeight: 21
   },
   resetMessage: {
     fontSize: 14,

@@ -183,6 +183,29 @@ main {
   margin-top: 18px;
 }
 
+.proof-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.3fr) minmax(280px, 0.7fr);
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.proof-list {
+  display: grid;
+  gap: 10px;
+}
+
+.proof-list p {
+  background: var(--success-soft);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--success);
+  font-weight: 800;
+  line-height: 1.45;
+  margin: 0;
+  padding: 12px;
+}
+
 .service-row {
   border-top: 1px solid var(--border);
   display: grid;
@@ -212,6 +235,12 @@ main {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
+}
+
+@media (max-width: 760px) {
+  .proof-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .report-actions {

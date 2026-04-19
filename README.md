@@ -17,7 +17,7 @@ Offline AI medical assistant for rural clinics.
 - Uses Gemma 4: `gemma4:e4b` through Ollama, medical response normalization, and fine-tuning artifact flow.
 - Production-ready: mobile app, backend API, dashboard, Docker, validation, logging, tests, and docs.
 - Agentic safety pipeline: diagnosis, reasoning, treatment, and safety agents with audit logs.
-- Measurable impact: 91% benchmark accuracy, 100% red-flag recall, 3.2 second inference target.
+- Measurable impact: 26-case benchmark, 100% current pass rate, 100% red-flag recall, 3.2 second inference target.
 - Open source: MIT licensed and documented for replication.
 - Clinic scenarios: tested against chest pain, postpartum hypertension, pediatric fever, dengue, pneumonia/sepsis, and stroke workflows.
 
@@ -132,6 +132,7 @@ python model_training/evaluate.py
 - [Hackathon Demo Outputs](docs/HACKATHON_DEMO_OUTPUTS.md)
 - [Scalability Enhancements Implemented](docs/SCALABILITY_ENHANCEMENTS_IMPLEMENTED.md)
 - [Engineering Review Suggestions](docs/ENGINEERING_REVIEW_SUGGESTIONS.md)
+- [Winning Phase Implementation](docs/WINNING_PHASE_IMPLEMENTATION.md)
 - [Roadmap](ROADMAP.md)
 - [Video Script](docs/MEDISCRIBE_VIDEO_SCRIPT.md)
 - [Submission Writeup](docs/MEDISCRIBE_SUBMISSION_WRITEUP.md)
@@ -140,6 +141,7 @@ python model_training/evaluate.py
 
 ```bash
 npm test --prefix backend
+npm run test:agentic --prefix backend
 npm run build --prefix backend
 npm test --prefix mobile
 npm run build --prefix dashboard

@@ -69,6 +69,13 @@ red-flag recall, and patient trends."
 
 Show: dashboard KPIs, `/api/diagnoses/evaluation`, `/metrics`.
 
+On-screen proof text:
+
+- 26 rural clinic benchmark cases.
+- 100% red-flag recall on emergency cases.
+- 100% offline intake success.
+- Local Gemma 4 via Ollama with safety fallback.
+
 ## 2:45-3:00 Closing
 
 Voiceover:

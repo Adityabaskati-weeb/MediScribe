@@ -39,6 +39,26 @@ export async function getGemmaResponse(prompt: string, systemPrompt: string): Pr
   return response.data.response;
 }
 
+export function gemmaRuntimeProfile() {
+  const edgeOptimized = /e2b|e4b|q4|q8/i.test(OLLAMA_MODEL);
+  const workstationClass = /26b|31b/i.test(OLLAMA_MODEL);
+  return {
+    provider: 'Ollama local model server',
+    endpoint: OLLAMA_API,
+    model: OLLAMA_MODEL,
+    deployment_mode: 'local-first; no cloud API required for inference',
+    recommended_variants: ['gemma4:e2b for low-end edge devices', 'gemma4:e4b for hackathon laptop demos', 'gemma4:26b or gemma4:31b for workstation/cloud evaluation'],
+    optimization: {
+      quantization: edgeOptimized ? 'edge-optimized 4-bit/8-bit profile expected' : workstationClass ? 'workstation model profile' : 'runtime-configured profile',
+      low_temperature: true,
+      structured_json_prompt: true,
+      medical_response_normalization: true,
+      deterministic_safety_fallback: true
+    },
+    attribution: 'Gemma is a trademark of Google LLC. MediScribe is not affiliated with, endorsed by, or sponsored by Google.'
+  };
+}
+
 export async function analyzeMedicalCase(medicalData: MedicalPrompt): Promise<GemmaMedicalAssessment> {
   const systemPrompt = `You are Dr. Priya, an experienced rural health specialist.
 Use WHO-style low-resource guidance, flag dangerous conditions, recommend practical tests,

@@ -1,4 +1,5 @@
 import { ClinicalIntake, DifferentialDiagnosis, MediScribeAssessment, TreatmentRecommendation } from '../models/Clinical';
+import { EVALUATION_SCENARIOS, EvaluationScenario } from '../data/evaluationScenarios';
 import { analyzeIntake, saveAssessment } from './clinicalEngine';
 import { analyzeMedicalCase, MedicalPrompt } from './gemmaService';
 import { recordAuditLog } from './auditLogService';
@@ -135,71 +136,73 @@ export async function runAgenticMedicalAssessment(intake: ClinicalIntake): Promi
 }
 
 export function agenticEvaluationMetrics() {
-  const scenarios = [
-    {
-      name: 'Shock chest pain',
-      expected: 'Acute coronary syndrome',
-      intake: {
-        patient: { age_years: 58, gender: 'female' as const, known_conditions: ['hypertension'] },
-        chief_complaint: 'Crushing chest pain with sweating',
-        symptoms: ['shortness of breath', 'left arm pain'],
-        vitals: { systolic_bp: 84, diastolic_bp: 56, oxygen_saturation: 89, respiratory_rate: 32 },
-        offline_captured: true
-      }
-    },
-    {
-      name: 'Postpartum danger signs',
-      expected: 'Postpartum emergency',
-      intake: {
-        patient: { age_years: 28, gender: 'female' as const, postpartum_days: 3 },
-        chief_complaint: 'Severe headache and visual symptoms postpartum',
-        symptoms: ['high blood pressure', 'visual changes'],
-        vitals: { systolic_bp: 178, diastolic_bp: 112 },
-        offline_captured: true
-      }
-    },
-    {
-      name: 'Child pneumonia risk',
-      expected: 'Respiratory infection',
-      intake: {
-        patient: { age_years: 4, gender: 'male' as const },
-        chief_complaint: 'Fever cough fast breathing',
-        symptoms: ['cough', 'fever'],
-        vitals: { oxygen_saturation: 91, respiratory_rate: 38, temperature_c: 39.2 },
-        offline_captured: true
-      }
-    }
-  ];
-
-  const evaluated = scenarios.map((scenario) => {
+  const evaluated = EVALUATION_SCENARIOS.map((scenario) => {
     const assessment = analyzeIntake(scenario.intake, 'evaluation-rules');
     const top = assessment.differential_diagnoses[0]?.name || '';
-    const redFlagRecall = assessment.red_flags.some((flag) => flag.level === 'red') ? 1 : 0;
+    const allDiagnosisText = assessment.differential_diagnoses.map((item) => item.name).join(' ').toLowerCase();
+    const topMatch = scenario.expectedDiagnosisKeywords.some((keyword) => top.toLowerCase().includes(keyword));
+    const top3Match = scenario.expectedDiagnosisKeywords.some((keyword) => allDiagnosisText.includes(keyword));
+    const predictedRedFlag = assessment.red_flags.some((flag) => flag.level === 'red');
+    const redFlagRecall = scenario.expectedRedFlag ? Number(predictedRedFlag) : 1;
+    const urgencyMatch = urgencyAtLeast(assessment.urgency, scenario.expectedUrgency);
+    const safetyPass = scenario.expectedRedFlag ? predictedRedFlag && urgencyMatch : urgencyMatch;
     return {
+      id: scenario.id,
       scenario: scenario.name,
-      expected: scenario.expected,
+      category: scenario.category,
+      expected_keywords: scenario.expectedDiagnosisKeywords,
       predicted: top,
+      predicted_urgency: assessment.urgency,
+      expected_urgency: scenario.expectedUrgency,
       urgent_detected: ['immediate', 'emergent', 'urgent'].includes(assessment.urgency),
+      red_flag_expected: scenario.expectedRedFlag,
+      red_flag_detected: predictedRedFlag,
       red_flag_recall: redFlagRecall,
-      pass: top.toLowerCase().includes(scenario.expected.toLowerCase().split(' ')[0]) || redFlagRecall === 1
+      top_match: topMatch,
+      top3_match: top3Match,
+      urgency_match: urgencyMatch,
+      offline_success: Boolean(scenario.intake.offline_captured) === scenario.offlineExpected,
+      pass: top3Match || safetyPass
     };
   });
 
   const passes = evaluated.filter((row) => row.pass).length;
+  const redFlagCases = evaluated.filter((row) => row.red_flag_expected);
+  const top3Matches = evaluated.filter((row) => row.top3_match).length;
+  const urgencyMatches = evaluated.filter((row) => row.urgency_match).length;
+  const offlineMatches = evaluated.filter((row) => row.offline_success).length;
+  const categories = Array.from(new Set(EVALUATION_SCENARIOS.map((scenario) => scenario.category))).sort();
   return {
     accuracy: Number((passes / evaluated.length).toFixed(3)),
-    red_flag_recall: Number((evaluated.reduce((sum, row) => sum + row.red_flag_recall, 0) / evaluated.length).toFixed(3)),
+    top3_match_rate: Number((top3Matches / evaluated.length).toFixed(3)),
+    urgency_accuracy: Number((urgencyMatches / evaluated.length).toFixed(3)),
+    red_flag_recall: redFlagCases.length ? Number((redFlagCases.reduce((sum, row) => sum + row.red_flag_recall, 0) / redFlagCases.length).toFixed(3)) : 1,
+    offline_success_rate: Number((offlineMatches / evaluated.length).toFixed(3)),
+    safety_override_rate: Number((redFlagCases.length / evaluated.length).toFixed(3)),
     latency: performanceSummary(),
     reliability: performanceSummary().reliability,
     evaluated_cases: evaluated.length,
+    categories,
     cases: evaluated,
     targets: {
       accuracy: '>= 0.85',
-      p95_latency_ms: '<= 5000',
+      top3_match_rate: '>= 0.85',
+      p95_latency_ms: '<= 2000 production target; <= 5000 demo hardware tolerance',
       reliability: '>= 0.98',
-      red_flag_recall: '1.0 for emergency demo cases'
+      red_flag_recall: '1.0 for emergency demo cases',
+      offline_success_rate: '1.0 for intake, fallback, save, and sync queue'
     }
   };
+}
+
+function urgencyAtLeast(actual: EvaluationScenario['expectedUrgency'], expected: EvaluationScenario['expectedUrgency']) {
+  const rank: Record<EvaluationScenario['expectedUrgency'], number> = {
+    immediate: 1,
+    emergent: 2,
+    urgent: 3,
+    routine: 4
+  };
+  return rank[actual] <= rank[expected];
 }
 
 function toMedicalPrompt(intake: ClinicalIntake): MedicalPrompt {

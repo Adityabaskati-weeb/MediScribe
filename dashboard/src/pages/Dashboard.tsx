@@ -23,6 +23,8 @@ export function DashboardPage() {
   const reports = dashboard?.reports || {};
   const topDiagnoses = (reports.top_diagnoses || []).map((item: any) => ({ diagnosis: item.name, count: item.count }));
   const dailyConsultations = reports.daily_consultations || [];
+  const gemma = architecture?.ai_system?.gemma;
+  const judgeProof = demoPack?.judge_proof || [];
 
   return (
     <main>
@@ -33,9 +35,29 @@ export function DashboardPage() {
 
       <section className="metrics highlight">
         <article className="metric">
-          <span>Diagnosis Accuracy</span>
+          <span>Benchmark Cases</span>
+          <strong>{evaluation?.evaluated_cases ?? '--'}</strong>
+          <small>{evaluation?.categories?.length || 0} clinical categories</small>
+        </article>
+        <article className="metric">
+          <span>Pass Rate</span>
           <strong>{evaluation ? `${Math.round(evaluation.accuracy * 100)}%` : '--'}</strong>
           <small>Scenario benchmark target: {evaluation?.targets?.accuracy || '>= 85%'}</small>
+        </article>
+        <article className="metric">
+          <span>Top-3 Match</span>
+          <strong>{evaluation ? `${Math.round(evaluation.top3_match_rate * 100)}%` : '--'}</strong>
+          <small>Clinical differential ranking proof</small>
+        </article>
+        <article className="metric">
+          <span>Red-Flag Recall</span>
+          <strong>{evaluation ? `${Math.round(evaluation.red_flag_recall * 100)}%` : '--'}</strong>
+          <small>Emergency cases caught by guardrails</small>
+        </article>
+        <article className="metric">
+          <span>Offline Success</span>
+          <strong>{evaluation ? `${Math.round(evaluation.offline_success_rate * 100)}%` : '--'}</strong>
+          <small>Intake, fallback, save, and sync queue proof</small>
         </article>
         <article className="metric">
           <span>P95 Latency</span>
@@ -51,6 +73,27 @@ export function DashboardPage() {
           <span>Cache</span>
           <strong>{architecture?.performance?.cache?.entries ?? '--'}</strong>
           <small>Frequent medical query cache entries</small>
+        </article>
+      </section>
+
+      <section className="proof-grid">
+        <article className="chart">
+          <h2>Judge Proof Pack</h2>
+          <div className="proof-list">
+            {judgeProof.map((proof: string) => <p key={proof}>{proof}</p>)}
+          </div>
+        </article>
+        <article className="chart">
+          <h2>Local Gemma Runtime</h2>
+          <div className="service-row">
+            <strong>{gemma?.model || 'Configured Ollama model'}</strong>
+            <span>{gemma?.provider || 'Ollama local model server'}</span>
+          </div>
+          <div className="service-row">
+            <strong>{gemma?.deployment_mode || 'Offline-first edge reasoning'}</strong>
+            <span>{gemma?.endpoint || 'http://localhost:11434'}</span>
+          </div>
+          <p className="story-beat">{gemma?.attribution || 'Gemma is a trademark of Google LLC.'}</p>
         </article>
       </section>
 

@@ -12,7 +12,7 @@ import {
   TreatmentRecommendation,
   Urgency
 } from '../models/Clinical';
-import { addKnowledgeDifferentials, addKnowledgeRedFlags, applyKnowledgeTreatment } from '../data/medicalKnowledge';
+import { addKnowledgeDifferentials, addKnowledgeRedFlags, applyKnowledgeTreatment, hasAffirmedPhrase } from '../data/medicalKnowledge';
 
 const assessments: StoredAssessment[] = [];
 const queue: QueuedIntake[] = [];
@@ -46,10 +46,6 @@ function isAssessmentOperation(operation: string) {
 
 function textOf(intake: ClinicalIntake) {
   return [intake.chief_complaint, ...(intake.symptoms || []), ...(intake.notes || [])].join(' ').toLowerCase();
-}
-
-function hasAny(text: string, phrases: string[]) {
-  return phrases.some((phrase) => text.includes(phrase));
 }
 
 function firstInt(patterns: RegExp[], text: string): number | undefined {
@@ -139,11 +135,14 @@ function redFlags(intake: ClinicalIntake): SafetySignal[] {
   if ((vitals.systolic_bp ?? 999) < 90) flags.push({ level: 'red', message: 'Systolic blood pressure below 90 mmHg.' });
   if ((vitals.respiratory_rate ?? 0) > 30) flags.push({ level: 'red', message: 'Very high respiratory rate.' });
   if ((vitals.systolic_bp ?? 0) >= 180 || (vitals.diastolic_bp ?? 0) >= 120) flags.push({ level: 'red', message: 'Severe hypertension range blood pressure.' });
-  if (hasAny(text, ['unresponsive', 'altered mental', 'confusion', 'drowsy', 'seizure'])) flags.push({ level: 'red', message: 'Altered mental status or seizure concern.' });
-  if (hasAny(text, ['chest pain', 'crushing chest', 'radiating to left arm'])) flags.push({ level: 'red', message: 'Possible acute coronary syndrome.' });
-  if (hasAny(text, ['facial droop', 'slurred speech', 'unilateral weakness'])) flags.push({ level: 'red', message: 'Possible stroke symptoms.' });
-  if (hasAny(text, ['lip swelling', 'peanut', 'anaphylaxis', 'throat tightness'])) flags.push({ level: 'red', message: 'Possible anaphylaxis.' });
-  if (intake.patient.postpartum_days !== undefined && hasAny(text, ['heavy bleeding', 'severe headache', 'visual'])) flags.push({ level: 'red', message: 'Postpartum emergency warning signs.' });
+  if (hasAffirmedPhrase(text, ['unresponsive', 'altered mental', 'confusion', 'drowsy', 'seizure', 'convulsion'])) flags.push({ level: 'red', message: 'Altered mental status or seizure concern.' });
+  if (hasAffirmedPhrase(text, ['chest pain', 'crushing chest', 'chest discomfort', 'chest pressure', 'jaw pain', 'radiating to left arm'])) flags.push({ level: 'red', message: 'Possible acute coronary syndrome.' });
+  if (hasAffirmedPhrase(text, ['facial droop', 'face drooping', 'slurred speech', 'unilateral weakness', 'arm weakness', 'speech difficulty'])) flags.push({ level: 'red', message: 'Possible stroke symptoms.' });
+  if (hasAffirmedPhrase(text, ['lip swelling', 'peanut', 'anaphylaxis', 'throat tightness'])) flags.push({ level: 'red', message: 'Possible anaphylaxis.' });
+  if (intake.patient.postpartum_days !== undefined && hasAffirmedPhrase(text, ['heavy bleeding', 'severe headache', 'visual', 'seizure'])) flags.push({ level: 'red', message: 'Postpartum emergency warning signs.' });
+  if (intake.patient.pregnancy_weeks !== undefined && hasAffirmedPhrase(text, ['bleeding', 'abdominal pain', 'severe headache', 'visual', 'seizure'])) flags.push({ level: 'red', message: 'Pregnancy emergency warning signs.' });
+  if (intake.patient.age_years <= 1 && hasAffirmedPhrase(text, ['not feeding', 'lethargic', 'blue lips', 'blue', 'convulsion'])) flags.push({ level: 'red', message: 'Infant danger sign requiring urgent clinician review.' });
+  if (intake.patient.age_years < 5 && hasAffirmedPhrase(text, ['diarrhea', 'vomiting', 'reduced urine', 'dry mouth'])) flags.push({ level: 'amber', message: 'Possible pediatric dehydration.' });
   if ((vitals.temperature_c ?? 0) >= 39) flags.push({ level: 'amber', message: 'High fever.' });
   if ((vitals.glucose_mg_dl ?? 0) >= 300) flags.push({ level: 'amber', message: 'Marked hyperglycemia.' });
   addKnowledgeRedFlags(text, flags);
@@ -154,7 +153,7 @@ function urgency(flags: SafetySignal[], intake: ClinicalIntake): [Urgency, numbe
   const text = textOf(intake);
   const redCount = flags.filter((flag) => flag.level === 'red').length;
   const amberCount = flags.filter((flag) => flag.level === 'amber').length;
-  const timeSensitive = hasAny(text, ['stroke', 'chest pain', 'sepsis', 'anaphylaxis', 'bleeding']);
+  const timeSensitive = hasAffirmedPhrase(text, ['stroke', 'chest pain', 'chest discomfort', 'chest pressure', 'sepsis', 'anaphylaxis', 'bleeding']);
   if (redCount > 0 && (timeSensitive || redCount >= 2)) return ['immediate', 1];
   if (redCount > 0) return ['emergent', 2];
   if (amberCount > 0 || intake.patient.age_years < 5) return ['urgent', 3];
@@ -163,14 +162,32 @@ function urgency(flags: SafetySignal[], intake: ClinicalIntake): [Urgency, numbe
 
 function differentials(intake: ClinicalIntake, flags: SafetySignal[]): DifferentialDiagnosis[] {
   const text = textOf(intake);
+  const vitals = intake.vitals || {};
   const items: DifferentialDiagnosis[] = [];
   const add = (name: string, confidence: number, reasoning: string) => items.push({ name, confidence, reasoning });
-  if (hasAny(text, ['chest pain', 'crushing chest', 'left arm'])) add('Acute coronary syndrome', 0.82, 'Chest pain pattern and unstable vitals are high risk.');
-  if (hasAny(text, ['facial droop', 'slurred speech', 'unilateral weakness'])) add('Acute stroke or TIA', 0.86, 'Focal neurologic symptoms require urgent stroke pathway assessment.');
-  if (hasAny(text, ['fever', 'rigors', 'hypotension', 'confusion'])) add('Sepsis or serious infection', flags.some((flag) => flag.level === 'red') ? 0.78 : 0.62, 'Fever plus systemic features can indicate sepsis.');
-  if (hasAny(text, ['wheeze', 'shortness of breath', 'asthma'])) add('Asthma or obstructive airway exacerbation', 0.74, 'Wheeze and respiratory distress fit obstructive airway disease.');
-  if (hasAny(text, ['high glucose', 'diabetic', 'vomiting'])) add('Diabetic ketoacidosis risk', 0.76, 'Vomiting and hyperglycemia are concerning in diabetes.');
-  if (hasAny(text, ['cough', 'sputum', 'fever'])) add('Respiratory infection', 0.58, 'Cough or sputum with fever suggests infection.');
+  if (intake.patient.age_years <= 1 && hasAffirmedPhrase(text, ['not feeding', 'lethargic', 'blue lips', 'blue', 'convulsion'])) {
+    add('Infant danger sign illness', 0.83, 'Not feeding, lethargy, cyanosis, or convulsion in an infant needs urgent clinician review.');
+  }
+  if ((intake.patient.pregnancy_weeks !== undefined || intake.patient.postpartum_days !== undefined) && hasAffirmedPhrase(text, ['bleeding', 'abdominal pain', 'severe headache', 'visual', 'seizure', 'high blood pressure'])) {
+    add('Pregnancy or postpartum emergency', 0.8, 'Maternal danger signs override routine AI confidence and require urgent obstetric review.');
+  }
+  if (hasAffirmedPhrase(text, ['throat tightness', 'lip swelling', 'anaphylaxis']) || (hasAffirmedPhrase(text, ['peanut', 'allergy']) && hasAffirmedPhrase(text, ['rash', 'breathing difficulty', 'wheeze']))) {
+    add('Anaphylaxis or severe allergic reaction', 0.82, 'Airway symptoms, swelling, allergen exposure, or shock signs are consistent with anaphylaxis risk.');
+  }
+  if (hasAffirmedPhrase(text, ['snake bite', 'snakebite', 'envenomation'])) {
+    add('Snake bite envenomation risk', 0.8, 'Snake bite with shock, swelling, or neurologic symptoms requires urgent local protocol and referral.');
+  }
+  if (hasAffirmedPhrase(text, ['chest pain', 'crushing chest', 'chest discomfort', 'chest pressure', 'jaw pain', 'left arm', 'cold sweat'])) add('Acute coronary syndrome', 0.82, 'Chest pain pattern and unstable vitals are high risk.');
+  if (hasAffirmedPhrase(text, ['facial droop', 'face drooping', 'slurred speech', 'speech difficulty', 'unilateral weakness', 'arm weakness'])) add('Acute stroke or TIA', 0.86, 'Focal neurologic symptoms require urgent stroke pathway assessment.');
+  const sepsisSystemic = hasAffirmedPhrase(text, ['rigors', 'hypotension', 'confusion', 'low blood pressure', 'weak pulse', 'low urine', 'shivering', 'difficulty breathing']) || (vitals.systolic_bp ?? 999) < 90;
+  if (hasAffirmedPhrase(text, ['fever', 'low temperature', 'infection']) && sepsisSystemic) add('Sepsis or serious infection', flags.some((flag) => flag.level === 'red') ? 0.78 : 0.62, 'Fever plus systemic features can indicate sepsis.');
+  if (hasAffirmedPhrase(text, ['wheeze', 'shortness of breath', 'asthma'])) add('Asthma or obstructive airway exacerbation', 0.74, 'Wheeze and respiratory distress fit obstructive airway disease.');
+  const hasDiabetesRisk = hasAffirmedPhrase(text, ['high glucose', 'diabetic']) || (vitals.glucose_mg_dl ?? 0) >= 300 || intake.patient.known_conditions?.some((condition) => condition.toLowerCase().includes('diabetes'));
+  if (hasDiabetesRisk && hasAffirmedPhrase(text, ['vomiting', 'abdominal pain', 'weakness', 'high glucose'])) add('Diabetic ketoacidosis risk', 0.76, 'Vomiting and hyperglycemia are concerning in diabetes.');
+  if (hasAffirmedPhrase(text, ['cough', 'sputum', 'fever', 'fast breathing'])) {
+    const respiratoryConfidence = hasAffirmedPhrase(text, ['shortness of breath', 'difficulty breathing', 'fast breathing', 'low oxygen', 'chills']) || (vitals.oxygen_saturation ?? 100) < 94 ? 0.72 : 0.58;
+    add(respiratoryConfidence >= 0.7 ? 'Pneumonia or acute respiratory infection' : 'Respiratory infection', respiratoryConfidence, 'Cough, fever, fast breathing, or low oxygen suggest respiratory infection risk.');
+  }
   addKnowledgeDifferentials(text, items);
   if (!items.length) add('Undifferentiated primary-care presentation', 0.42, 'More history, exam, and basic tests are needed.');
   return items.sort((a, b) => b.confidence - a.confidence).slice(0, 3);
@@ -183,9 +200,9 @@ function treatment(intake: ClinicalIntake, urgencyValue: Urgency): TreatmentReco
     : ['Record full vital signs.', 'Perform focused examination.'];
   const suggested_tests = ['Repeat vital signs', 'Focused history and examination'];
   const medications_to_consider: string[] = [];
-  if (hasAny(text, ['chest pain', 'crushing chest'])) suggested_tests.push('ECG now', 'Troponin if available');
-  if (hasAny(text, ['fever', 'sepsis', 'rigors'])) suggested_tests.push('CBC if available', 'Local infection testing as relevant');
-  if (hasAny(text, ['wheeze', 'asthma'])) medications_to_consider.push('Bronchodilator per local asthma protocol');
+  if (hasAffirmedPhrase(text, ['chest pain', 'crushing chest', 'chest discomfort', 'chest pressure'])) suggested_tests.push('ECG now', 'Troponin if available');
+  if (hasAffirmedPhrase(text, ['fever', 'sepsis', 'rigors'])) suggested_tests.push('CBC if available', 'Local infection testing as relevant');
+  if (hasAffirmedPhrase(text, ['wheeze', 'asthma'])) medications_to_consider.push('Bronchodilator per local asthma protocol');
   const referral = urgencyValue === 'immediate' ? 'Immediate emergency referral' : urgencyValue === 'emergent' ? 'Urgent clinician review' : urgencyValue === 'urgent' ? 'Same-day review' : 'Routine follow-up';
   return applyKnowledgeTreatment(text, { immediate_actions, suggested_tests, medications_to_consider, referral, follow_up: urgencyValue === 'routine' ? 'Safety-net before discharge' : 'Reassess within 15 minutes or sooner if worse' });
 }

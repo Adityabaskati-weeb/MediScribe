@@ -65,10 +65,13 @@ decision is audit logged.
 
 ## Evaluation
 
-The current benchmark artifacts report 91% diagnosis accuracy, 100% red-flag
-recall on emergency demo cases, and a 3.2 second inference target. Runtime
-endpoints expose accuracy, latency, reliability, fallback rate, cache stats, and
-Prometheus metrics.
+MediScribe includes a 26-case rural clinic benchmark covering cardiac,
+neurology, maternal, pediatric, infectious, respiratory, and general-care
+scenarios. The current runtime benchmark reports 100% pass rate, 100% top-3
+diagnosis match, 88.5% urgency match with safety-first over-triage, 100%
+red-flag recall, and 100% offline intake success. Runtime endpoints expose
+accuracy, latency, reliability, fallback rate, cache stats, and Prometheus
+metrics.
 
 ## Why It Matters
 

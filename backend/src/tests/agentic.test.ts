@@ -29,8 +29,11 @@ async function testAgenticAssessment() {
   assert.ok(result.demo.pitch_script.length >= 4);
 
   const metrics = agenticEvaluationMetrics();
-  assert.ok(metrics.accuracy >= 0.66);
-  assert.ok(metrics.red_flag_recall >= 0.66);
+  assert.ok(metrics.evaluated_cases >= 25);
+  assert.ok(metrics.accuracy >= 0.85);
+  assert.ok(metrics.top3_match_rate >= 0.85);
+  assert.ok(metrics.red_flag_recall >= 0.95);
+  assert.equal(metrics.offline_success_rate, 1);
   assert.ok(performanceSummary().total_requests > 0);
 }
 

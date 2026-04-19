@@ -6,6 +6,8 @@ export interface KnowledgeRule {
   source: string;
   sourceUrl: string;
   keywords: string[];
+  requiredAny?: string[];
+  redFlagTriggers?: string[];
   redFlags: string[];
   tests: string[];
   actions: string[];
@@ -18,7 +20,8 @@ export const MEDICAL_KNOWLEDGE_RULES: KnowledgeRule[] = [
     condition: 'Acute coronary syndrome / heart attack warning signs',
     source: 'CDC heart attack symptoms',
     sourceUrl: 'https://www.cdc.gov/heart-disease/about/heart-attack.html',
-    keywords: ['chest pain', 'chest discomfort', 'jaw pain', 'left arm', 'shortness of breath', 'cold sweat', 'lightheaded', 'nausea'],
+    keywords: ['chest pain', 'chest discomfort', 'chest pressure', 'crushing chest', 'jaw pain', 'left arm', 'shortness of breath', 'cold sweat', 'lightheaded', 'nausea'],
+    requiredAny: ['chest pain', 'chest discomfort', 'chest pressure', 'crushing chest', 'jaw pain', 'left arm', 'cold sweat'],
     redFlags: ['Chest discomfort with shortness of breath, sweating, nausea, jaw/back/arm pain, or faintness requires emergency referral.'],
     tests: ['ECG now if available', 'Troponin if available', 'Repeat blood pressure and oxygen saturation'],
     actions: ['Keep patient resting and monitored.', 'Arrange urgent emergency transfer for suspected acute coronary syndrome.'],
@@ -49,6 +52,8 @@ export const MEDICAL_KNOWLEDGE_RULES: KnowledgeRule[] = [
     source: 'WHO sepsis fact sheet',
     sourceUrl: 'https://www.who.int/news-room/fact-sheets/detail/sepsis',
     keywords: ['fever', 'low temperature', 'shivering', 'confusion', 'difficulty breathing', 'weak pulse', 'low blood pressure', 'low urine'],
+    requiredAny: ['shivering', 'confusion', 'difficulty breathing', 'weak pulse', 'low blood pressure', 'low urine'],
+    redFlagTriggers: ['shivering', 'confusion', 'difficulty breathing', 'weak pulse', 'low blood pressure', 'low urine'],
     redFlags: ['Possible sepsis is a medical emergency when infection symptoms combine with confusion, breathing difficulty, weak pulse, hypotension, or low urine output.'],
     tests: ['Repeat vital signs', 'Blood glucose', 'CBC if available', 'Local infection testing', 'Urine output assessment'],
     actions: ['Escalate urgently.', 'Assess airway, breathing, circulation, disability, and exposure.'],
@@ -64,6 +69,8 @@ export const MEDICAL_KNOWLEDGE_RULES: KnowledgeRule[] = [
     source: 'CDC dengue warning signs and WHO dengue fact sheet',
     sourceUrl: 'https://www.cdc.gov/dengue/signs-symptoms/index.html',
     keywords: ['fever', 'eye pain', 'rash', 'joint pain', 'bone pain', 'belly pain', 'abdominal pain', 'persistent vomiting', 'bleeding gums', 'nose bleeding', 'restless'],
+    requiredAny: ['fever', 'eye pain', 'rash', 'bone pain', 'belly pain', 'abdominal pain', 'persistent vomiting', 'bleeding gums', 'nose bleeding'],
+    redFlagTriggers: ['belly pain', 'abdominal pain', 'persistent vomiting', 'bleeding gums', 'nose bleeding', 'restless'],
     redFlags: ['Dengue warning signs include abdominal pain, persistent vomiting, mucosal bleeding, lethargy, restlessness, or blood in stool/vomit.'],
     tests: ['Dengue test if available', 'CBC/platelets if available', 'Hydration status', 'Warning-sign reassessment'],
     actions: ['Avoid aspirin and ibuprofen when dengue is suspected.', 'Refer or monitor closely if warning signs are present.'],
@@ -79,6 +86,8 @@ export const MEDICAL_KNOWLEDGE_RULES: KnowledgeRule[] = [
     source: 'WHO pneumonia overview',
     sourceUrl: 'https://www.who.int/health-topics/pneumonia/',
     keywords: ['cough', 'shortness of breath', 'difficulty breathing', 'fever', 'chills', 'fast breathing', 'lower chest indrawing'],
+    requiredAny: ['cough', 'shortness of breath', 'difficulty breathing', 'fast breathing', 'lower chest indrawing'],
+    redFlagTriggers: ['shortness of breath', 'difficulty breathing', 'fast breathing', 'lower chest indrawing'],
     redFlags: ['Cough or fever with difficult breathing, low oxygen, fast breathing, or chest indrawing needs urgent review.'],
     tests: ['Respiratory rate', 'Oxygen saturation', 'Temperature', 'Chest exam', 'Referral assessment'],
     actions: ['Check oxygen saturation and respiratory rate.', 'Refer urgently if hypoxic or severe respiratory distress.'],
@@ -90,13 +99,35 @@ export const MEDICAL_KNOWLEDGE_RULES: KnowledgeRule[] = [
   }
 ];
 
+function isNegated(normalized: string, keyword: string) {
+  let index = normalized.indexOf(keyword);
+  while (index >= 0) {
+    const prefix = normalized.slice(Math.max(0, index - 28), index);
+    if (!/\b(no|not|denies|without|negative for)\s+(?:\w+\s+){0,3}$/i.test(prefix)) {
+      return false;
+    }
+    index = normalized.indexOf(keyword, index + keyword.length);
+  }
+  return true;
+}
+
+export function hasAffirmedPhrase(text: string, phrases: string[]) {
+  const normalized = text.toLowerCase();
+  return phrases.some((phrase) => normalized.includes(phrase) && !isNegated(normalized, phrase));
+}
+
 export function matchKnowledgeRules(text: string) {
   const normalized = text.toLowerCase();
   return MEDICAL_KNOWLEDGE_RULES
-    .map((rule) => ({
-      rule,
-      matches: rule.keywords.filter((keyword) => normalized.includes(keyword)).length
-    }))
+    .map((rule) => {
+      const matchedKeywords = rule.keywords.filter((keyword) => normalized.includes(keyword) && !isNegated(normalized, keyword));
+      const requiredSatisfied = !rule.requiredAny?.length || rule.requiredAny.some((keyword) => matchedKeywords.includes(keyword));
+      return {
+        rule,
+        matches: requiredSatisfied ? matchedKeywords.length : 0,
+        matchedKeywords
+      };
+    })
     .filter((item) => item.matches > 0)
     .sort((a, b) => b.matches - a.matches)
     .map((item) => item.rule);
@@ -104,6 +135,8 @@ export function matchKnowledgeRules(text: string) {
 
 export function addKnowledgeRedFlags(text: string, flags: SafetySignal[]) {
   for (const rule of matchKnowledgeRules(text)) {
+    const shouldRaise = !rule.redFlagTriggers?.length || hasAffirmedPhrase(text, rule.redFlagTriggers);
+    if (!shouldRaise) continue;
     const urgentRule = rule.id.includes('heart') || rule.id.includes('stroke') || rule.id.includes('sepsis');
     for (const message of rule.redFlags) {
       if (!flags.some((flag) => flag.message === message)) {
