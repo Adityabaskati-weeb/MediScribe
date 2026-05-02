@@ -1,9 +1,12 @@
 import * as ImagePicker from 'expo-image-picker';
+import { extractChartVisionText } from './apiClient';
 
 export interface OCRResult {
   extractedText: string;
   confidence: number;
   imageUri?: string;
+  mode: 'vision-assist' | 'manual-confirmation' | 'sample-chart';
+  note: string;
   blocks: Array<{ text: string; bounds: { top: number; left: number; width: number; height: number } }>;
 }
 
@@ -17,17 +20,37 @@ export async function captureMedicalChartImage(source: 'camera' | 'library' = 'c
   }
 
   const result = source === 'camera'
-    ? await ImagePicker.launchCameraAsync({ quality: 0.85, allowsEditing: false })
-    : await ImagePicker.launchImageLibraryAsync({ quality: 0.85, allowsEditing: false, mediaTypes: ['images'] });
+    ? await ImagePicker.launchCameraAsync({ quality: 0.55, allowsEditing: false, base64: true })
+    : await ImagePicker.launchImageLibraryAsync({ quality: 0.55, allowsEditing: false, base64: true, mediaTypes: ['images'] });
 
   if (result.canceled || !result.assets?.[0]?.uri) {
     throw new Error('Chart scan cancelled.');
   }
 
+  const asset = result.assets[0];
+  let extractedText = '';
+  let confidence = 0;
+  let mode: OCRResult['mode'] = 'manual-confirmation';
+  let note = 'Chart image captured. Confirm the visible text before diagnosis.';
+
+  if (asset.base64) {
+    try {
+      const aiAssist = await extractChartVisionText(asset.base64);
+      extractedText = aiAssist.extracted_text || '';
+      confidence = aiAssist.confidence || 0;
+      mode = aiAssist.mode;
+      note = aiAssist.note;
+    } catch {
+      note = 'Chart image captured. AI assist is unavailable right now, so confirm the text manually.';
+    }
+  }
+
   return {
-    imageUri: result.assets[0].uri,
-    extractedText: '',
-    confidence: 0,
+    imageUri: asset.uri,
+    extractedText,
+    confidence,
+    mode,
+    note,
     blocks: []
   };
 }

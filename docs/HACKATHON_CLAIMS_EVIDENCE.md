@@ -44,8 +44,9 @@ Evidence:
 
 - Node/Express backend with controllers, middleware, validation, logging, rate
   limiting, and OpenAPI docs.
-- React Native mobile app with offline storage, native speech build path, chart
-  scan flow, and local triage fallback.
+- React Native mobile app with offline storage, platform-native speech support,
+  AI-assisted chart scan with manual confirmation fallback, and local triage
+  fallback.
 - React dashboard with analytics and reports.
 - Docker Compose stack for PostgreSQL, backend, dashboard, and Ollama.
 - Test suite: `pytest`, backend unit/diagnosis/integration tests, TypeScript
@@ -58,20 +59,32 @@ Evidence:
 
 Claim: clear metrics.
 
-Tracked metrics:
+Tracked metrics are split into two proof layers:
+
+1. System benchmark for the end-to-end product.
+2. Fine-tuning dataset and adapter benchmark proof for the Unsloth path.
+
+System benchmark:
 
 - Agentic benchmark accuracy: 100% pass rate on the 26-case safety benchmark.
 - Top-3 diagnosis match rate: 100% on the current scenario pack.
 - Urgency match rate: 88.5% with safety-first over-triage accepted.
 - Red-flag recall: 100% on emergency benchmark cases.
-- Average inference target: 3.2 seconds.
 - Offline availability target: 100% for intake/history.
 - Sync success target: above 95%.
+
+Fine-tuning dataset and adapter proof:
+
+- SFT rows prepared for GPU training: 32.
+- Holdout eval rows prepared for trainer evaluation: 6.
+- Rural-clinic adapter benchmark cases prepared for post-training generation scoring: 26.
+- Benchmark artifacts are written to the adapter output folder and uploaded with the model repo after a real GPU run.
 
 Metric files:
 
 - Runtime endpoint: `GET /api/diagnoses/evaluation`.
 - Backend test: `backend/src/tests/agentic.test.ts`.
+- Scenario pack: `backend/src/data/evaluationScenarios.ts`.
 - `model_training/outputs/metrics.json`.
 - `model_training/outputs/evaluation_report.md`.
 - `docs/MEDISCRIBE_EVALUATION_REPORT.md`.

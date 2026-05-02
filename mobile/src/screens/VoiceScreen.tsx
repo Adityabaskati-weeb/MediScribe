@@ -13,6 +13,7 @@ import { VoiceInput } from '../components/VoiceInput';
 import { useToast } from '../context/ToastContext';
 import { colors, spacing } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
+import type { ChartCaptureMode } from '../types/clinical';
 import { t } from '../utils/i18n';
 
 export function VoiceScreen({
@@ -43,10 +44,23 @@ export function VoiceScreen({
     onNavigate('summary');
   };
 
-  const saveChartText = (text: string) => {
+  const saveChartCapture = ({
+    text,
+    imageUri,
+    mode,
+    confidence
+  }: {
+    text: string;
+    imageUri?: string;
+    mode: ChartCaptureMode;
+    confidence?: number;
+  }) => {
     onDraftChange({
       ...draft,
       chartText: text,
+      chartImageUri: imageUri,
+      chartCaptureMode: mode,
+      chartCaptureConfidence: confidence,
       transcript: [draft.transcript, text].filter(Boolean).join('\n'),
       ...clearDerivedState()
     });
@@ -95,7 +109,7 @@ export function VoiceScreen({
       <InteractiveSymptomSelector onContinue={saveSelectedSymptoms} />
       <SeveritySelector symptom={selectedSymptom || 'main symptom'} onSubmit={saveSeverity} />
       <VoiceInput language={draft.language} onTranscript={saveTranscript} />
-      <ChartOCR onText={saveChartText} />
+      <ChartOCR onCapture={saveChartCapture} />
       <SymptomChecker onAnalyze={saveTranscript} />
     </ScrollView>
   );

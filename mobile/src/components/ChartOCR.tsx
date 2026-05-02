@@ -5,11 +5,21 @@ import { Card } from './Card';
 import { captureMedicalChartImage, parseExtractedMedicalData } from '../services/ocrService';
 import { colors } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
+import type { ChartCaptureMode } from '../types/clinical';
 
-export function ChartOCR({ onText }: { onText: (text: string) => void }) {
+type ChartCapturePayload = {
+  text: string;
+  imageUri?: string;
+  mode: ChartCaptureMode;
+  confidence?: number;
+};
+
+export function ChartOCR({ onCapture }: { onCapture: (payload: ChartCapturePayload) => void }) {
   const [imageUri, setImageUri] = useState<string | undefined>();
   const [chartText, setChartText] = useState('');
-  const [status, setStatus] = useState('Capture a chart photo, then confirm the extracted text.');
+  const [status, setStatus] = useState('Capture a chart photo, then confirm the extracted text before diagnosis.');
+  const [captureMode, setCaptureMode] = useState<ChartCaptureMode>('manual-confirmation');
+  const [confidence, setConfidence] = useState<number | undefined>();
   const { theme } = useAppTheme();
   const c = theme.colors;
 
@@ -18,7 +28,10 @@ export function ChartOCR({ onText }: { onText: (text: string) => void }) {
     try {
       const result = await captureMedicalChartImage(source);
       setImageUri(result.imageUri);
-      setStatus('Chart image captured. Enter visible chart text or paste OCR text.');
+      setChartText(result.extractedText || '');
+      setCaptureMode(result.mode);
+      setConfidence(result.confidence || undefined);
+      setStatus(result.note);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Unable to scan chart.');
     }
@@ -37,24 +50,45 @@ export function ChartOCR({ onText }: { onText: (text: string) => void }) {
       parsed.symptoms.length ? `Parsed symptoms: ${parsed.symptoms.join(', ')}` : '',
       parsed.medications.length ? `Medications: ${parsed.medications.join(', ')}` : ''
     ].filter(Boolean).join('\n');
-    setStatus('Chart text parsed and added to triage.');
-    onText(summary);
+    setStatus('Chart text parsed and added to triage. The image stays attached to this visit.');
+    onCapture({
+      text: summary,
+      imageUri,
+      mode: captureMode,
+      confidence
+    });
   };
 
   const useSampleChart = () => {
     const text = 'Complaint: fever and cough. BP 120/80 HR 90 SpO2 96 temp 38.2. Meds: paracetamol.';
     setChartText(text);
+    setCaptureMode('sample-chart');
+    setConfidence(1);
     setStatus('Sample chart loaded. Tap Analyze Chart Text to continue.');
   };
 
   return (
     <Card>
-      <Text style={[styles.eyebrow, { color: c.primary }]}>Chart OCR</Text>
-      <Text style={[styles.heading, { color: c.ink }]}>Scan vitals and notes</Text>
+      <Text style={[styles.eyebrow, { color: c.primary }]}>Chart Scan Assist</Text>
+      <Text style={[styles.heading, { color: c.ink }]}>Scan vitals and clinic notes</Text>
       <View style={[styles.statusBox, { backgroundColor: c.surfaceMuted, borderColor: c.border }]}>
         <Text style={[styles.copy, { color: c.ink }]}>{status}</Text>
       </View>
       {imageUri && <Image source={{ uri: imageUri }} style={styles.preview} />}
+      {(captureMode || confidence) ? (
+        <View style={styles.metaRow}>
+          <View style={[styles.metaPill, { backgroundColor: captureMode === 'vision-assist' ? c.successSoft : c.warningSoft }]}>
+            <Text style={[styles.metaText, { color: captureMode === 'vision-assist' ? c.success : c.warning }]}>
+              {captureMode === 'vision-assist' ? 'AI extract ready' : captureMode === 'sample-chart' ? 'Sample chart' : 'Manual confirmation'}
+            </Text>
+          </View>
+          {typeof confidence === 'number' ? (
+            <View style={[styles.metaPill, { backgroundColor: c.infoSoft }]}>
+              <Text style={[styles.metaText, { color: c.primaryDark }]}>Confidence {Math.round(confidence * 100)}%</Text>
+            </View>
+          ) : null}
+        </View>
+      ) : null}
       <View style={styles.actions}>
         <ActionButton title="Open Camera" variant="secondary" onPress={() => scan('camera')} />
         <ActionButton title="Choose Photo" variant="secondary" onPress={() => scan('library')} />
@@ -105,6 +139,20 @@ const styles = StyleSheet.create({
   },
   actions: {
     gap: 8
+  },
+  metaRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8
+  },
+  metaPill: {
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8
+  },
+  metaText: {
+    fontSize: 12,
+    fontWeight: '800'
   },
   preview: {
     borderColor: colors.border,

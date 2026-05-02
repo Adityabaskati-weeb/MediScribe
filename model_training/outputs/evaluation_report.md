@@ -1,18 +1,12 @@
-# MediScribe Model Training Evaluation
+# MediScribe Fine-Tuning Evaluation Summary
 
-This evaluation validates the curated medical dataset and records the hackathon benchmark targets.
+- Train rows: 26
+- Eval rows: 6
+- Total rows: 32
+- Red-risk rows: 20
 
-- Cases: 6
-- Diagnosis accuracy: 91%
-- Red flag recall: 100%
-- Average inference time: 3.2 seconds
-- Safety guardrails: pass
+## Adapter Benchmark
 
-| Case | Primary diagnosis | Treatment |
-| --- | --- | --- |
-| 58F diabetes | acute coronary syndrome | Immediate referral, ECG, aspirin if safe |
-| 29F postpartum | postpartum preeclampsia | Urgent obstetric referral and BP management |
-| 3M child | pediatric febrile illness | Hydration assessment, antipyretic per protocol, safety net |
-| 42M farmer | dengue with warning signs | Avoid NSAIDs, assess hydration, urgent monitoring or referral |
-| 67M smoker | pneumonia with sepsis risk | Oxygen if available, urgent referral, repeat vitals |
-| 61F hypertension | acute stroke or TIA | Record last-known-well time, urgent referral, glucose/BP check |
+No adapter benchmark artifacts were found yet. Run `model_training/train.py`
+without `--skip-benchmark` after a real GPU fine-tuning job to publish
+adapter-level metrics.

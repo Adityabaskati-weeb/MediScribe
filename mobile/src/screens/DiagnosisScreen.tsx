@@ -8,7 +8,7 @@ import { RedFlagGuardian } from '../components/RedFlagGuardian';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { StatusPill } from '../components/StatusPill';
 import { analyzeMedicalCase } from '../services/gemmaService';
-import { saveDiagnosis } from '../services/databaseService';
+import { createConsultation, saveChartImage, saveDiagnosis } from '../services/databaseService';
 import { colors, spacing } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
 import type { DiagnosisEnvelope, MediScribeAssessment, PatientProfile } from '../types/clinical';
@@ -78,7 +78,18 @@ export function DiagnosisScreen({
       response?.assessment;
     if (assessment) {
       onDraftChange({ ...draft, assessment, cachedDiagnosisResult: response });
-      saveDiagnosis(`consultation-${Date.now()}`, assessment);
+      const patientId = draft.patient?.id || draft.patient?.patient_id || `patient-local-${Date.now()}`;
+      const consultationId = createConsultation({
+        patientId,
+        chiefComplaint: symptoms,
+        symptoms: extractClinicalSymptoms(symptoms),
+        vitals: extractClinicalVitals(symptoms),
+        notes: draft.chartText || ''
+      });
+      saveDiagnosis(consultationId, assessment);
+      if (draft.chartImageUri) {
+        saveChartImage(consultationId, draft.chartImageUri, draft.chartText || '');
+      }
     }
   };
 

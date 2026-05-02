@@ -34,12 +34,15 @@ export function NewPatientScreen({
       />
       <ConsultationProgress current={1} />
       <PatientForm onSubmit={(patient) => {
-        createPatient(patient);
+        const savedPatient = createPatient(patient);
         onDraftChange({
           ...draft,
-          patient,
+          patient: savedPatient,
           transcript: '',
           chartText: '',
+          chartImageUri: undefined,
+          chartCaptureMode: undefined,
+          chartCaptureConfidence: undefined,
           assessment: undefined,
           cachedDiagnosisResult: undefined,
           demoCaseId: undefined,

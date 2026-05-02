@@ -131,5 +131,5 @@ export async function captureSymptomInMultipleLanguages(symptoms: string[]): Pro
 }
 
 export function getSpeechSupportMessage() {
-  return 'Expo Go uses guided dictation. Use a custom dev build for real microphone speech.';
+  return 'Install the custom dev build for real microphone speech recognition.';
 }

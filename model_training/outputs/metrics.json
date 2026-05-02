@@ -1,6 +1,7 @@
 {
-  "cases": 6,
-  "diagnosis_accuracy": 0.91,
-  "red_flag_recall": 1.0,
-  "average_inference_seconds": 3.2
+  "benchmark_type": "dataset_and_adapter_summary",
+  "eval_rows": 6,
+  "red_risk_rows": 20,
+  "total_rows": 32,
+  "train_rows": 26
 }

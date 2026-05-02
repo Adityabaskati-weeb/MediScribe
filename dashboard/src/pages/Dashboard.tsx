@@ -3,7 +3,7 @@ import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Too
 import { Analytics } from '../components/Analytics';
 import { DoctorReviewQueue } from '../components/DoctorReviewQueue';
 import { ImpactMetrics } from '../components/ImpactMetrics';
-import { fetchDashboard, fetchDemoPack, fetchEvaluationMetrics, fetchPerformanceMetrics, fetchSystemArchitecture } from '../services/api';
+import { fetchDashboard, fetchDemoCases, fetchDemoPack, fetchEvaluationMetrics, fetchPerformanceMetrics, fetchSystemArchitecture } from '../services/api';
 
 export function DashboardPage() {
   const [dashboard, setDashboard] = useState<any>(null);
@@ -11,6 +11,7 @@ export function DashboardPage() {
   const [performance, setPerformance] = useState<any>(null);
   const [architecture, setArchitecture] = useState<any>(null);
   const [demoPack, setDemoPack] = useState<any>(null);
+  const [demoCases, setDemoCases] = useState<any[]>([]);
 
   useEffect(() => {
     fetchDashboard().then(setDashboard).catch(console.error);
@@ -18,6 +19,7 @@ export function DashboardPage() {
     fetchPerformanceMetrics().then(setPerformance).catch(console.error);
     fetchSystemArchitecture().then(setArchitecture).catch(console.error);
     fetchDemoPack().then(setDemoPack).catch(console.error);
+    fetchDemoCases().then(setDemoCases).catch(console.error);
   }, []);
 
   const reports = dashboard?.reports || {};
@@ -25,7 +27,9 @@ export function DashboardPage() {
   const dailyConsultations = reports.daily_consultations || [];
   const outbreakRadar = reports.outbreak_radar || [];
   const gemma = architecture?.ai_system?.gemma;
-  const judgeProof = demoPack?.judge_proof || [];
+  const readinessSignals = demoPack?.readiness_signals || demoPack?.judge_proof || [];
+  const heroCases = demoCases.filter((item) => item.hero);
+  const hasLiveCases = (dashboard?.total_assessments ?? 0) > 0;
 
   return (
     <main>
@@ -47,6 +51,12 @@ export function DashboardPage() {
           <h2>Live Workload</h2>
         </div>
         <Analytics metrics={dashboard?.metrics || []} />
+        {!hasLiveCases && (
+          <article className="empty-state">
+            <strong>Ready for the first clinic shift</strong>
+            <p>No live consultations have been saved on this deployment yet. The readiness signals and care pathways below show what the system is prepared to handle immediately.</p>
+          </article>
+        )}
         <ImpactMetrics impact={dashboard?.impact || reports?.impact} />
       </section>
 
@@ -61,7 +71,7 @@ export function DashboardPage() {
       <section className="dashboard-zone">
         <div className="zone-heading">
           <p className="eyebrow">Operations</p>
-          <h2>Model And Demo Proof</h2>
+          <h2>Operational Readiness</h2>
         </div>
       <section className="metrics highlight">
         <article className="metric">
@@ -109,9 +119,9 @@ export function DashboardPage() {
 
       <section className="proof-grid">
         <article className="chart">
-          <h2>Judge Proof Pack</h2>
+          <h2>Readiness Signals</h2>
           <div className="proof-list">
-            {judgeProof.map((proof: string) => <p key={proof}>{proof}</p>)}
+            {readinessSignals.map((proof: string) => <p key={proof}>{proof}</p>)}
           </div>
         </article>
         <article className="chart">
@@ -126,6 +136,33 @@ export function DashboardPage() {
           </div>
           <p className="story-beat">{gemma?.attribution || 'Gemma is a trademark of Google LLC.'}</p>
         </article>
+      </section>
+
+      <section className="chart care-pathways">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">High-stakes workflows</p>
+            <h2>Care Pathways That Hold Under Pressure</h2>
+            <p className="muted">These are the cases frontline teams can open first when seconds matter and network quality does not cooperate.</p>
+          </div>
+          <span className="queue-count">{heroCases.length} hero flows</span>
+        </div>
+        <div className="pathway-grid">
+          {heroCases.map((item: any) => (
+            <article className="pathway-card" key={item.id}>
+              <div className="pathway-header">
+                <strong>{item.title}</strong>
+                <span className={`pathway-mode ${item.demo_mode}`}>{item.demo_mode === 'offline' ? 'Offline safe' : 'Local Gemma'}</span>
+              </div>
+              <p>{item.story}</p>
+              <div className="pathway-badges">
+                <span>{item.language} workflow</span>
+                <span>{item.intake?.symptoms?.length || 0} symptoms captured</span>
+                <span>{item.intake?.offline_captured ? 'Saves offline' : 'Network assisted'}</span>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="chart outbreak-panel">
@@ -163,7 +200,7 @@ export function DashboardPage() {
           ))}
         </article>
         <article className="chart">
-          <h2>Hackathon Story</h2>
+          <h2>Field Workflow Story</h2>
           {(demoPack?.story_beats || []).map((beat: string) => <p className="story-beat" key={beat}>{beat}</p>)}
         </article>
       </section>
@@ -171,28 +208,42 @@ export function DashboardPage() {
       <section className="charts">
         <article className="chart">
           <h2>Consultations Over Time</h2>
-          <ResponsiveContainer width="100%" height={260}>
-            <LineChart data={dailyConsultations}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Line type="monotone" dataKey="count" stroke="#13795b" strokeWidth={3} />
-            </LineChart>
-          </ResponsiveContainer>
+          {dailyConsultations.length > 0 ? (
+            <ResponsiveContainer width="100%" height={260}>
+              <LineChart data={dailyConsultations}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Line type="monotone" dataKey="count" stroke="#13795b" strokeWidth={3} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="empty-chart">
+              <strong>No visits recorded yet</strong>
+              <p>The line will populate as the clinic captures consultations. Until then, use the hero workflows above to walk through emergency-ready behavior.</p>
+            </div>
+          )}
         </article>
 
         <article className="chart">
           <h2>Most Common Diagnoses</h2>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={topDiagnoses}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="diagnosis" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Bar dataKey="count" fill="#335f8a" />
-            </BarChart>
-          </ResponsiveContainer>
+          {topDiagnoses.length > 0 ? (
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={topDiagnoses}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="diagnosis" />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#335f8a" />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="empty-chart">
+              <strong>Differentials will appear here</strong>
+              <p>Once cases are saved, the dashboard shows which diagnoses rise most often so clinic leads can spot pressure patterns quickly.</p>
+            </div>
+          )}
         </article>
       </section>
     </main>

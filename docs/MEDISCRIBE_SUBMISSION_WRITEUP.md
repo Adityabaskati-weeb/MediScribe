@@ -30,9 +30,10 @@ flag to the front.
 
 MediScribe is an offline-first assistant that turns a clinic visit into a
 structured, safety-checked assessment. A worker registers a patient, speaks or
-types symptoms, scans chart notes, reviews extracted vitals, and receives ranked
-diagnosis support with next steps. If internet or AI serving fails, the mobile app
-still saves the visit locally and returns referral-safe guidance.
+types symptoms, scans chart notes with AI-assisted extraction plus manual
+confirmation, reviews extracted vitals, and receives ranked diagnosis support
+with next steps. If internet or AI serving fails, the mobile app still saves the
+visit locally and returns referral-safe guidance.
 
 The solution is intentionally safety-led: red flags outrank confidence scores,
 plain-language reasoning outranks technical jargon, and urgent referral can be
@@ -97,13 +98,18 @@ decision is audit logged.
 
 ## Evaluation
 
-MediScribe includes a 26-case rural clinic benchmark covering cardiac,
-neurology, maternal, pediatric, infectious, respiratory, and general-care
-scenarios. The current runtime benchmark reports 100% pass rate, 100% top-3
-diagnosis match, 88.5% urgency match with safety-first over-triage, 100%
-red-flag recall, and 100% offline intake success. Runtime endpoints expose
-accuracy, latency, reliability, fallback rate, cache stats, and Prometheus
-metrics.
+MediScribe includes two evaluation layers. The first is a 26-case rural clinic
+system benchmark covering cardiac, neurology, maternal, pediatric, infectious,
+respiratory, and general-care scenarios. The current runtime benchmark reports
+100% pass rate, 100% top-3 diagnosis match, 88.5% urgency match with
+safety-first over-triage, 100% red-flag recall, and 100% offline intake
+success. Runtime endpoints expose accuracy, latency, reliability, fallback
+rate, cache stats, and Prometheus metrics.
+
+The second is the Unsloth adapter path: 32 curated SFT rows, 6 held-out eval
+rows, and a 26-case post-training benchmark pack that is scored after a real
+GPU run. We keep these artifacts separate so the submission does not blur
+end-to-end product safety with model-adapter training quality.
 
 ## Why It Matters
 

@@ -97,6 +97,12 @@ export function productionSystemDesign() {
 
 export function demoReadinessPack() {
   const evaluation = agenticEvaluationMetrics();
+  const readinessSignals = [
+    `Scenario benchmark: ${evaluation.evaluated_cases} rural clinic cases across ${evaluation.categories.join(', ')}.`,
+    `Safety proof: ${Math.round(evaluation.red_flag_recall * 100)}% red-flag recall on emergency benchmark cases.`,
+    `Offline proof: ${Math.round(evaluation.offline_success_rate * 100)}% offline intake, fallback, save, and queue coverage in the benchmark pack.`,
+    `Gemma proof: local ${gemmaRuntimeProfile().model} through Ollama with deterministic safety fallback.`
+  ];
   return {
     title: 'MediScribe: Offline AI clinical assistant for rural clinics',
     setup: ['Start Docker Compose', 'Open mobile Expo/dev build', 'Open dashboard', 'Use demo patient script'],
@@ -111,12 +117,8 @@ export function demoReadinessPack() {
       before: 'Manual triage, inconsistent documentation, no instant second opinion.',
       after: 'Structured intake, ranked diagnosis, safety escalation, and offline patient history.'
     },
-    judge_proof: [
-      `Scenario benchmark: ${evaluation.evaluated_cases} rural clinic cases across ${evaluation.categories.join(', ')}.`,
-      `Safety proof: ${Math.round(evaluation.red_flag_recall * 100)}% red-flag recall on emergency benchmark cases.`,
-      `Offline proof: ${Math.round(evaluation.offline_success_rate * 100)}% offline intake/fallback/save expectation in the benchmark pack.`,
-      `Gemma proof: local ${gemmaRuntimeProfile().model} through Ollama with deterministic safety fallback.`
-    ],
+    readiness_signals: readinessSignals,
+    judge_proof: readinessSignals,
     metrics_to_show: ['diagnosis accuracy', 'top-3 match rate', 'p95 latency', 'offline success rate', 'red-flag recall', 'usability score'],
     video_shots: [
       'Phone in airplane mode with Offline Ready badge.',

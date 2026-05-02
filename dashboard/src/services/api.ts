@@ -43,3 +43,8 @@ export async function fetchDemoPack() {
   const response = await api.get('/api/system/demo-pack');
   return response.data.data;
 }
+
+export async function fetchDemoCases() {
+  const response = await api.get('/api/diagnoses/demo-cases');
+  return response.data.data || [];
+}

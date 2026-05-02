@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { DEMO_CASES, demoCaseById } from '../data/demoCases';
 import { analyzeClinicalIntake, generateDiagnosis } from '../services/analysisService';
 import { agenticEvaluationMetrics, runAgenticMedicalAssessment } from '../services/agentOrchestrator';
+import { extractChartVisionText } from '../services/chartVisionService';
 import { performanceSummary } from '../services/performanceMonitor';
 import { successResponse } from '../utils/apiResponse';
 
@@ -75,4 +76,19 @@ export async function getHackathonDemoOutput(req: Request, res: Response) {
       'Referral handoff now includes guideline-backed reasoning for a receiving facility.'
     ]
   }));
+}
+
+export async function extractChartVisionForImage(req: Request, res: Response) {
+  const imageBase64 = typeof req.body?.image_base64 === 'string' ? req.body.image_base64.trim() : '';
+  if (!imageBase64) {
+    return res.status(400).json({
+      success: false,
+      error: 'image_base64 is required',
+      statusCode: 400,
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  const extraction = await extractChartVisionText(imageBase64);
+  return res.json(successResponse(extraction));
 }

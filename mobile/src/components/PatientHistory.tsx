@@ -28,7 +28,7 @@ export function PatientHistory({ items }: { items: any[] }) {
                     Outcome: {formatOutcome(item.clinicOutcomeStatus || item.assessment?.clinic_outcome?.status)}
                   </Text>
                 ) : null}
-                <Text style={[styles.metaPill, { backgroundColor: c.surfaceMuted, color: c.primaryDark }]}>OCR ready</Text>
+                <Text style={[styles.metaPill, { backgroundColor: c.surfaceMuted, color: c.primaryDark }]}>Offline saved</Text>
               </View>
               <Text style={[styles.meta, { color: c.muted }]}>
                 {item.created_at || item.assessment?.created_at || 'Saved locally'}

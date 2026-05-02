@@ -14,6 +14,11 @@ Node/Express + PostgreSQL + Gemma/Ollama architecture marker.
 ## Diagnoses
 
 - `POST /api/diagnoses/generate`
+- `POST /api/diagnoses/agentic`
+- `POST /api/diagnoses/chart-vision`
+- `GET /api/diagnoses/evaluation`
+- `GET /api/diagnoses/demo-cases`
+- `GET /api/diagnoses/demo-output`
 
 Request body:
 
@@ -34,6 +39,14 @@ Request body:
     "respiratory_rate": 26,
     "temperature_c": 36.8
   }
+}
+```
+
+Chart vision request body:
+
+```json
+{
+  "image_base64": "<base64-encoded-chart-image>"
 }
 ```
 

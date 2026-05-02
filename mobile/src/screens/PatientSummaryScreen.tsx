@@ -65,6 +65,20 @@ export function PatientSummaryScreen({
         </View>
       </Card>
 
+      {draft.chartText ? (
+        <Card>
+          <Text style={[styles.sectionTitle, { color: theme.colors.ink }]}>Chart scan attached</Text>
+          <Text style={[styles.line, { color: theme.colors.muted }]}>
+            {draft.chartCaptureMode === 'vision-assist'
+              ? `AI-assisted extraction ready${typeof draft.chartCaptureConfidence === 'number' ? ` (${Math.round(draft.chartCaptureConfidence * 100)}% confidence)` : ''}.`
+              : draft.chartCaptureMode === 'sample-chart'
+                ? 'Sample chart loaded for demo.'
+                : 'Manual chart confirmation captured.'}
+          </Text>
+          <Text style={[styles.line, { color: theme.colors.muted }]}>The chart text is already merged into the intake notes below.</Text>
+        </Card>
+      ) : null}
+
       <VitalSignsDisplay vitals={vitals} />
 
       <Card>

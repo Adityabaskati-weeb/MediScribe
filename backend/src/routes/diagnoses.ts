@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   generateAgenticDiagnosisForIntake,
+  extractChartVisionForImage,
   generateDiagnosisForIntake,
   getHackathonDemoCases,
   getEvaluationMetrics,
@@ -16,6 +17,7 @@ const router = Router();
 
 router.post('/generate', requireRole(['health_worker', 'doctor', 'admin']), validateBody(validateDiagnosisInput), asyncHandler(generateDiagnosisForIntake));
 router.post('/agentic', requireRole(['health_worker', 'doctor', 'admin']), validateBody(validateDiagnosisInput), asyncHandler(generateAgenticDiagnosisForIntake));
+router.post('/chart-vision', asyncHandler(extractChartVisionForImage));
 router.get('/evaluation', asyncHandler(getEvaluationMetrics));
 router.get('/performance', asyncHandler(getPerformanceMetrics));
 router.get('/demo-cases', asyncHandler(getHackathonDemoCases));

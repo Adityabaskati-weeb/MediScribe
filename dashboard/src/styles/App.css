@@ -175,6 +175,34 @@ main {
   margin: 0;
 }
 
+.empty-state,
+.empty-chart {
+  background: var(--surface-soft);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 16px;
+}
+
+.empty-state strong,
+.empty-chart strong {
+  color: var(--ink);
+}
+
+.empty-state p,
+.empty-chart p {
+  line-height: 1.5;
+  margin: 0;
+}
+
+.empty-chart {
+  min-height: 220px;
+  place-content: center;
+}
+
 .section-heading {
   align-items: flex-start;
   display: flex;
@@ -271,6 +299,74 @@ main {
 
 .outbreak-panel {
   margin-top: 18px;
+}
+
+.care-pathways {
+  margin-top: 18px;
+}
+
+.pathway-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  margin-top: 14px;
+}
+
+.pathway-card {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.pathway-card p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.pathway-header {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.pathway-mode {
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.pathway-mode.offline {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.pathway-mode.local-ai {
+  background: rgba(8, 126, 164, 0.12);
+  color: var(--primary-dark);
+}
+
+.pathway-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pathway-badges span {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
 }
 
 .outbreak-grid {

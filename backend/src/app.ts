@@ -16,7 +16,7 @@ export function createApp() {
   const app = express();
 
   app.use(cors());
-  app.use(express.json({ limit: '2mb' }));
+  app.use(express.json({ limit: '8mb' }));
   app.use(requestLogger);
   app.use(rateLimiter);
   app.use(apiKeyAuth);
@@ -66,4 +66,3 @@ export function createApp() {
 
   return app;
 }
-

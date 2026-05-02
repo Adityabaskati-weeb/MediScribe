@@ -28,8 +28,8 @@ export function ImpactMetrics({ impact }: { impact?: any }) {
     <section className="impact-panel">
       <div>
         <p className="eyebrow">Before vs after</p>
-        <h2>Impact story for the pitch</h2>
-        <p className="muted">Use this screen in the video to show why the product matters, not just how it works.</p>
+        <h2>Operational impact snapshot</h2>
+        <p className="muted">Shows how much triage pressure the clinic can absorb when intake, safety checks, and referrals move faster.</p>
       </div>
       <div className="metrics">
         {metrics.map((metric) => (

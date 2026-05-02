@@ -1,8 +1,10 @@
 {
   "adapter_name": "MediScribe Medical Adapter",
   "base_model": "google/gemma-4-E4B-it",
+  "benchmark_enabled": true,
+  "benchmark_rows": 26,
   "effective_batch_size": 4,
-  "eval_rows": 1,
+  "eval_rows": 6,
   "hub_model_id": null,
   "learning_rate": 0.0002,
   "load_in_16bit": true,
@@ -10,10 +12,10 @@
   "lora_alpha": 16,
   "lora_r": 16,
   "max_seq_length": 2048,
-  "max_steps": 100,
+  "max_steps": 150,
   "method": "Unsloth LoRA SFT",
   "num_train_epochs": null,
   "push_to_hub": false,
   "trackio_space": null,
-  "train_rows": 5
+  "train_rows": 26
 }

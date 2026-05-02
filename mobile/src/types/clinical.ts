@@ -92,6 +92,7 @@ export type MediScribeAssessment = {
 };
 
 export type DemoMode = 'offline' | 'local-ai';
+export type ChartCaptureMode = 'manual-confirmation' | 'vision-assist' | 'sample-chart';
 
 export type DemoCaseSeed = {
   id: string;
@@ -153,6 +154,9 @@ export type ConsultationDraft = {
   patient?: PatientProfile;
   transcript?: string;
   chartText?: string;
+  chartImageUri?: string;
+  chartCaptureMode?: ChartCaptureMode;
+  chartCaptureConfidence?: number;
   assessment?: MediScribeAssessment;
   cachedDiagnosisResult?: DiagnosisEnvelope;
   demoCaseId?: string;

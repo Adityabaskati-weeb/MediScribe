@@ -26,7 +26,7 @@ Core demo line: sync can wait, red flags cannot.
 - Uses Gemma 4: `gemma4:e4b` through Ollama, medical response normalization, and fine-tuning artifact flow.
 - Production-ready: mobile app, backend API, dashboard, Docker, validation, logging, tests, and docs.
 - Agentic safety pipeline: diagnosis, reasoning, treatment, and safety agents with audit logs.
-- Measurable impact: 26-case benchmark, 100% current pass rate, 100% red-flag recall, 3.2 second inference target.
+- Measurable impact: 26-case system benchmark, 100% current pass rate, 100% red-flag recall, and a real Unsloth training set with 32 curated SFT rows plus 26 adapter benchmark cases ready for GPU evaluation publishing.
 - Open source: MIT licensed and documented for replication.
 - Clinic scenarios: tested against chest pain, postpartum hypertension, pediatric fever, dengue, pneumonia/sepsis, and stroke workflows.
 
@@ -42,7 +42,7 @@ This repository follows the six uploaded MediScribe planning files strictly:
 ## Architecture
 
 ```text
-mobile/          React Native app with voice, OCR, SQLite, sync
+mobile/          React Native app with voice, chart-scan assist, SQLite, sync
 backend/         Node/Express API with Gemma/Ollama and PostgreSQL services
 dashboard/       React web dashboard
 model_training/  Gemma training and evaluation scaffold
@@ -83,7 +83,7 @@ python model_training/prepare_data.py
 python model_training/validate_dataset.py
 python model_training/train.py --dry-run
 # On a CUDA GPU or Hugging Face Jobs:
-python model_training/train.py --base-model google/gemma-4-E4B-it --max-steps 100
+python model_training/train.py --base-model unsloth/gemma-4-E4B-it-unsloth-bnb-4bit --load-in-4bit --max-steps 150
 python model_training/evaluate.py
 ```
 
@@ -92,6 +92,7 @@ python model_training/evaluate.py
 - `GET /health`
 - `POST /api/diagnoses/generate`
 - `POST /api/diagnoses/agentic`
+- `POST /api/diagnoses/chart-vision`
 - `GET /api/diagnoses/evaluation`
 - `GET /api/diagnoses/performance`
 - `GET /api/diagnoses/demo-cases`

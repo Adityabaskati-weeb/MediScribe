@@ -298,7 +298,7 @@ export function saveDiagnosis(consultationId: string, assessment: MediScribeAsse
       JSON.stringify(assessment.treatment || {}),
       JSON.stringify(assessment.red_flags || []),
       assessment.urgency,
-      assessment.model_source || 'gemma2:2b',
+      assessment.model_source || 'gemma4:e4b',
       ['immediate', 'emergent'].includes(assessment.urgency) ? 1 : 0,
       assessment.clinic_outcome?.status || '',
       assessment.clinic_outcome?.updated_at || '',

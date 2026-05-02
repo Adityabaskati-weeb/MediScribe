@@ -69,6 +69,16 @@ async function main() {
   assert.equal(demoOutput.body.data.selected_case.id, 'stroke-fast-track');
   assert.ok(demoOutput.body.data.agentic_assessment.assessment.evidence_summary);
 
+  const chartVision = await request('/api/diagnoses/chart-vision', {
+    method: 'POST',
+    headers: authHeaders,
+    body: JSON.stringify({ image_base64: 'ZmFrZS1pbWFnZS1ieXRlcw==' })
+  });
+  assert.equal(chartVision.status, 200);
+  assert.equal(chartVision.body.success, true);
+  assert.ok(['vision-assist', 'manual-confirmation'].includes(chartVision.body.data.mode));
+  assert.ok(typeof chartVision.body.data.note === 'string');
+
   const readiness = await request('/api/scalability/readiness', { headers: authHeaders });
   assert.equal(readiness.status, 200);
   assert.equal(readiness.body.success, true);

@@ -8,9 +8,12 @@ adapter with Unsloth.
 
 - Gemma 4 chat-format dataset generation using `system`, `user`, and `assistant`
   roles.
+- 32 curated SFT rows built from core rural-clinic cases plus the 26-case
+  product benchmark pack.
 - Dataset validation before spending GPU time.
 - Unsloth LoRA SFT training with Trackio and optional Hugging Face Hub push.
-- Adapter model card with Gemma attribution and safety limits.
+- Adapter model card plus benchmark artifacts with Gemma attribution and safety
+  limits.
 - HF Jobs-ready command for cloud GPU training.
 
 ## Prepare The Dataset
@@ -26,6 +29,7 @@ Outputs:
 - `model_training/data/training_splits/train.jsonl`
 - `model_training/data/training_splits/eval.jsonl`
 - `model_training/data/training_splits/all.jsonl`
+- `model_training/data/evaluation_scenarios.json`
 - `model_training/outputs/mediscribe-medical-adapter/training_plan.json`
 
 ## Local GPU Training
@@ -35,20 +39,11 @@ workflow.
 
 ```powershell
 python model_training/train.py `
-  --base-model google/gemma-4-E4B-it `
-  --output-dir model_training/outputs/mediscribe-medical-adapter `
-  --max-steps 100 `
-  --trackio-space your-hf-name/trackio
-```
-
-Use 4-bit only if your GPU memory is tight:
-
-```powershell
-python model_training/train.py `
   --base-model unsloth/gemma-4-E4B-it-unsloth-bnb-4bit `
   --load-in-4bit `
   --output-dir model_training/outputs/mediscribe-medical-adapter `
-  --max-steps 100
+  --max-steps 150 `
+  --trackio-space your-hf-name/trackio
 ```
 
 ## Push Adapter Weights
@@ -67,11 +62,12 @@ Training with Hub push:
 ```powershell
 $env:HF_TOKEN="hf_your_write_token"
 python model_training/train.py `
-  --base-model google/gemma-4-E4B-it `
+  --base-model unsloth/gemma-4-E4B-it-unsloth-bnb-4bit `
+  --load-in-4bit `
   --hub-model-id your-hf-name/mediscribe-medical-adapter `
   --push-to-hub `
   --trackio-space your-hf-name/trackio `
-  --max-steps 100
+  --max-steps 150
 ```
 
 ## Hugging Face Jobs Training
@@ -83,18 +79,29 @@ Hugging Face account and an `HF_TOKEN` secret with write permission.
 ```powershell
 hf jobs uv run `
   --flavor a10g-large `
-  --timeout 2h `
+  --timeout 3h `
   --secrets HF_TOKEN `
   "https://raw.githubusercontent.com/Adityabaskati-weeb/MediScribe/main/model_training/train.py" `
   -- `
   --train-url "https://raw.githubusercontent.com/Adityabaskati-weeb/MediScribe/main/model_training/data/training_splits/train.jsonl" `
   --eval-url "https://raw.githubusercontent.com/Adityabaskati-weeb/MediScribe/main/model_training/data/training_splits/eval.jsonl" `
-  --base-model google/gemma-4-E4B-it `
+  --benchmark-url "https://raw.githubusercontent.com/Adityabaskati-weeb/MediScribe/main/model_training/data/evaluation_scenarios.json" `
+  --base-model unsloth/gemma-4-E4B-it-unsloth-bnb-4bit `
+  --load-in-4bit `
   --hub-model-id your-hf-name/mediscribe-medical-adapter `
   --push-to-hub `
   --trackio-space your-hf-name/trackio `
-  --max-steps 100
+  --max-steps 150
 ```
+
+This run now uploads:
+
+- adapter weights
+- tokenizer files
+- `training_metrics.json`
+- `benchmarks/benchmark_results.json`
+- `benchmarks/benchmark_report.md`
+- model card with attribution
 
 ## Claim Rules
 
@@ -103,7 +110,7 @@ true:
 
 - A real GPU training run completed.
 - Adapter weights are public on Hugging Face or attached to the submission.
-- `training_metrics.json` or a benchmark report is published.
+- `training_metrics.json` and benchmark artifacts are published.
 - The model card says the adapter is based on Gemma 4 and includes:
   `Gemma is a trademark of Google LLC.`
 

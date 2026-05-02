@@ -39,3 +39,17 @@ export async function fetchDemoOutput(caseId: string): Promise<DiagnosisEnvelope
   const response = await apiClient.get('/api/diagnoses/demo-output', { params: { caseId } });
   return response.data?.data?.agentic_assessment || response.data;
 }
+
+export type ChartVisionResponse = {
+  extracted_text: string;
+  confidence: number;
+  note: string;
+  mode: 'vision-assist' | 'manual-confirmation';
+};
+
+export async function extractChartVisionText(imageBase64: string): Promise<ChartVisionResponse> {
+  const response = await apiClient.post('/api/diagnoses/chart-vision', {
+    image_base64: imageBase64
+  });
+  return response.data?.data || response.data;
+}
