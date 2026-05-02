@@ -283,6 +283,29 @@ def verify_hf_token(token: str) -> None:
     api.whoami()
 
 
+def initialize_trackio(args: argparse.Namespace) -> bool:
+    if not args.trackio_space:
+        return False
+
+    import trackio
+
+    project = os.environ.get("TRACKIO_PROJECT", "mediscribe-unsloth")
+    trackio.init(
+        project=project,
+        name=args.run_name,
+        space_id=args.trackio_space,
+        config={
+            "base_model": args.base_model,
+            "max_steps": args.max_steps,
+            "learning_rate": args.learning_rate,
+            "lora_r": args.lora_r,
+            "lora_alpha": args.lora_alpha,
+            "load_in_4bit": args.load_in_4bit,
+        },
+    )
+    return True
+
+
 def summarize_patient(patient: dict[str, Any]) -> str:
     parts = [f"{patient.get('age_years', 'unknown')} year old", patient.get("gender", "unknown")]
     if patient.get("pregnancy_weeks") is not None:
@@ -504,6 +527,7 @@ def main() -> None:
 
     if args.trackio_space:
         os.environ["TRACKIO_SPACE_ID"] = args.trackio_space
+        os.environ.setdefault("TRACKIO_PROJECT", "mediscribe-unsloth")
     os.environ.setdefault("HF_HUB_ENABLE_HF_TRANSFER", "1")
 
     check_gpu()
@@ -517,6 +541,8 @@ def main() -> None:
         raise RuntimeError("HF_TOKEN is required when --push-to-hub is enabled.")
     if token:
         verify_hf_token(token)
+
+    trackio_enabled = initialize_trackio(args)
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -634,6 +660,11 @@ def main() -> None:
     if args.push_to_hub and args.hub_model_id:
         upload_artifacts(output_dir, args.hub_model_id, token=token)
         print(f"Pushed adapter and artifacts to https://huggingface.co/{args.hub_model_id}")
+
+    if trackio_enabled:
+        import trackio
+
+        trackio.finish()
 
     print(f"Training complete. Adapter saved to {output_dir}")
 
