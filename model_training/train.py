@@ -276,6 +276,13 @@ def check_gpu() -> None:
     print(f"CUDA available: {torch.cuda.get_device_name(0)}")
 
 
+def verify_hf_token(token: str) -> None:
+    from huggingface_hub import HfApi
+
+    api = HfApi(token=token)
+    api.whoami()
+
+
 def summarize_patient(patient: dict[str, Any]) -> str:
     parts = [f"{patient.get('age_years', 'unknown')} year old", patient.get("gender", "unknown")]
     if patient.get("pregnancy_weeks") is not None:
@@ -502,15 +509,14 @@ def main() -> None:
     check_gpu()
 
     from datasets import load_dataset
-    from huggingface_hub import login
-    from trl import SFTConfig, SFTTrainer
     from unsloth import FastLanguageModel
+    from trl import SFTConfig, SFTTrainer
 
     token = os.environ.get("HF_TOKEN")
-    if token:
-        login(token=token)
-    elif args.push_to_hub:
+    if args.push_to_hub and not token:
         raise RuntimeError("HF_TOKEN is required when --push-to-hub is enabled.")
+    if token:
+        verify_hf_token(token)
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
