@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
 import { StatusPill } from '../components/StatusPill';
+import { fetchDemoCases, fetchDemoOutput } from '../services/apiClient';
 import { colors, spacing } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
-import { clinicDemoCases } from '../utils/clinicalDecisionSupport';
+import type { DemoCaseSeed, DiagnosisEnvelope, MediScribeAssessment } from '../types/clinical';
+import { buildTranscriptFromIntake, clinicDemoCases, type DemoCase } from '../utils/clinicalDecisionSupport';
 import { t } from '../utils/i18n';
 
 export function HomeScreen({
@@ -21,35 +23,62 @@ export function HomeScreen({
   const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
   const { theme } = useAppTheme();
   const c = theme.colors;
+  const [demoCases, setDemoCases] = useState<DemoCase[]>(clinicDemoCases);
+  const [demoSource, setDemoSource] = useState<'backend' | 'device'>('device');
+  const [loadingDemoId, setLoadingDemoId] = useState<string | null>(null);
+  const heroCases = useMemo(() => demoCases.filter((item) => item.hero).slice(0, 2), [demoCases]);
+  const standardCases = useMemo(() => demoCases.filter((item) => !item.hero), [demoCases]);
+  const primaryHeroCase = heroCases[0];
 
-  const loadCase = (caseId: string) => {
-    const demo = clinicDemoCases.find((item) => item.id === caseId);
-    if (!demo) return;
-    onDraftChange({
+  useEffect(() => {
+    let active = true;
+    fetchDemoCases()
+      .then((remoteCases) => {
+        if (!active || !remoteCases.length) return;
+        setDemoCases(remoteCases.map(mapRemoteDemoCase));
+        setDemoSource('backend');
+      })
+      .catch(() => {
+        if (active) setDemoSource('device');
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const loadCase = async (demo: DemoCase) => {
+    const nextDraft: ConsultationDraft = {
       ...draft,
       patient: demo.patient,
       transcript: demo.transcript,
       assessment: undefined,
+      cachedDiagnosisResult: undefined,
       demoCaseId: demo.id,
-      forceOfflineDemo: false,
+      forceOfflineDemo: demo.demoMode === 'offline',
       consultationStartedAt: Date.now()
-    });
-    onNavigate('summary');
-  };
+    };
 
-  const loadAirplaneModeDemo = () => {
-    const demo = clinicDemoCases.find((item) => item.id === 'airplane-maternal-emergency');
-    if (!demo) return;
-    onDraftChange({
-      ...draft,
-      patient: demo.patient,
-      transcript: demo.transcript,
-      assessment: undefined,
-      demoCaseId: demo.id,
-      forceOfflineDemo: true,
-      consultationStartedAt: Date.now()
-    });
-    onNavigate('diagnosis');
+    if (demo.hero && demo.demoMode !== 'offline' && demoSource === 'backend') {
+      setLoadingDemoId(demo.id);
+      try {
+        const preloaded = await fetchDemoOutput(demo.id);
+        const preloadedAssessment = extractAssessment(preloaded);
+        onDraftChange({
+          ...nextDraft,
+          assessment: preloadedAssessment,
+          cachedDiagnosisResult: preloaded
+        });
+        onNavigate('diagnosis');
+        return;
+      } catch {
+        // Fall back to local transcript-driven flow.
+      } finally {
+        setLoadingDemoId(null);
+      }
+    }
+
+    onDraftChange(nextDraft);
+    onNavigate(demo.hero || demo.demoMode === 'offline' ? 'diagnosis' : 'summary');
   };
 
   return (
@@ -92,12 +121,28 @@ export function HomeScreen({
           <MiniStat label="Red flags" value="100%" />
           <MiniStat label="Care paths" value="26" />
         </View>
+        {primaryHeroCase ? (
+          <View style={styles.promiseRow}>
+            <PromiseTile label="Case" value={shortPromise(primaryHeroCase)} />
+            <PromiseTile label="Proof" value={impactProof(primaryHeroCase)} />
+            <PromiseTile label="Ready" value={launchHint(primaryHeroCase)} />
+          </View>
+        ) : null}
 
         <ActionButton title={copy('startConsultation')} onPress={() => onNavigate('newPatient')} variant="success" />
-        <Pressable style={styles.airplaneButton} onPress={loadAirplaneModeDemo}>
-          <Text style={styles.airplaneTitle}>Offline Emergency Path</Text>
-          <Text style={styles.airplaneCopy}>Pregnancy bleeding case, local safety checks, saved without internet.</Text>
-        </Pressable>
+        {primaryHeroCase ? (
+          <Pressable style={[styles.airplaneButton, loadingDemoId === primaryHeroCase.id && styles.loadingTile]} onPress={() => void loadCase(primaryHeroCase)}>
+            <View style={styles.airplaneTopRow}>
+              <StatusPill label={primaryHeroCase.demoMode === 'offline' ? 'Offline hero' : 'AI preload'} tone={primaryHeroCase.demoMode === 'offline' ? 'danger' : 'info'} />
+              <StatusPill label={primaryHeroCase.risk === 'red' ? 'Emergency' : 'Ready'} tone={primaryHeroCase.risk === 'red' ? 'danger' : 'success'} />
+            </View>
+            <Text style={styles.airplaneTitle}>
+              {loadingDemoId === primaryHeroCase.id ? 'Loading hero demo...' : `Hero demo: ${primaryHeroCase.title}`}
+            </Text>
+            <Text style={styles.airplaneCopy}>{primaryHeroCase.story}</Text>
+            <Text style={styles.airplaneHint}>{impactProof(primaryHeroCase)}</Text>
+          </Pressable>
+        ) : null}
       </View>
 
       <Card>
@@ -154,15 +199,46 @@ export function HomeScreen({
       <Card>
         <View style={styles.cardHeader}>
           <View>
-            <Text style={[styles.panelTitle, { color: c.ink }]}>Common clinic cases</Text>
+            <Text style={[styles.panelTitle, { color: c.ink }]}>Clinic demo pack</Text>
             <Text style={[styles.helper, { color: c.muted }]}>
-              Quickly rehearse urgent, same-day, and routine workflows used in rural primary care.
+              Hero cases now come from the backend when available, with local device fallback if the clinic is offline.
             </Text>
           </View>
-          <StatusPill label="Ready" tone="info" />
+          <StatusPill label={demoSource === 'backend' ? 'Backend demo pack' : 'Device fallback'} tone={demoSource === 'backend' ? 'success' : 'info'} />
         </View>
+        {heroCases.length > 0 && (
+          <View style={styles.heroCaseGrid}>
+            {heroCases.map((demo) => (
+              <Pressable
+                key={demo.id}
+                style={({ pressed }) => [
+                  styles.heroCaseTile,
+                  {
+                    backgroundColor: demo.demoMode === 'offline' ? c.dangerSoft : c.infoSoft,
+                    borderColor: demo.demoMode === 'offline' ? c.accent : c.primary
+                  },
+                  pressed && styles.pressedTile
+                ]}
+                onPress={() => void loadCase(demo)}
+              >
+                <View style={styles.heroCaseTop}>
+                  <StatusPill label={demo.demoMode === 'offline' ? 'Offline hero' : 'AI hero'} tone={demo.demoMode === 'offline' ? 'danger' : 'info'} />
+                  <StatusPill label={demo.risk === 'red' ? 'Emergency' : 'Ready'} tone={demo.risk === 'red' ? 'danger' : 'success'} />
+                </View>
+                <Text style={[styles.heroCaseTitle, { color: c.ink }]}>{demo.title}</Text>
+                <Text style={[styles.heroCaseStory, { color: c.muted }]}>{demo.story}</Text>
+                <Text style={[styles.heroCaseImpact, { color: c.ink }]}>{impactProof(demo)}</Text>
+                <View style={styles.heroCaseFooter}>
+                  <Text style={[styles.heroFooterText, { color: c.primaryDark }]}>{launchHint(demo)}</Text>
+                  <Text style={[styles.heroFooterText, { color: c.primaryDark }]}>{demo.demoMode === 'offline' ? 'No network required' : 'Preloaded from backend demo pack'}</Text>
+                </View>
+                {loadingDemoId === demo.id ? <Text style={[styles.caseStory, { color: c.primaryDark }]}>Pulling backend demo output...</Text> : null}
+              </Pressable>
+            ))}
+          </View>
+        )}
         <View style={styles.caseGrid}>
-          {clinicDemoCases.map((demo) => (
+          {standardCases.map((demo) => (
             <Pressable
               key={demo.id}
               style={({ pressed }) => [
@@ -173,7 +249,7 @@ export function HomeScreen({
                 },
                 pressed && styles.pressedTile
               ]}
-              onPress={() => loadCase(demo.id)}
+              onPress={() => void loadCase(demo)}
             >
               <StatusPill
                 label={demo.risk === 'red' ? 'Emergency' : demo.risk === 'amber' ? 'Watch' : 'Routine'}
@@ -181,6 +257,8 @@ export function HomeScreen({
               />
               <Text style={[styles.caseTitle, { color: c.ink }]}>{demo.title}</Text>
               <Text style={[styles.casePatient, { color: c.muted }]}>{demo.patient.name}, {demo.patient.age_years}</Text>
+              <Text style={[styles.caseStory, { color: c.muted }]}>{demo.story}</Text>
+              <Text style={[styles.caseImpact, { color: c.ink }]}>{impactProof(demo)}</Text>
             </Pressable>
           ))}
         </View>
@@ -254,6 +332,15 @@ function QuickTile({ index, label, onPress }: { index: string; label: string; on
       </View>
       <Text style={[styles.quickText, { color: theme.colors.ink }]}>{label}</Text>
     </Pressable>
+  );
+}
+
+function PromiseTile({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.promiseTile}>
+      <Text style={styles.promiseLabel}>{label}</Text>
+      <Text style={styles.promiseValue}>{value}</Text>
+    </View>
   );
 }
 
@@ -345,6 +432,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8
   },
+  promiseRow: {
+    flexDirection: 'row',
+    gap: 8
+  },
+  promiseTile: {
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderColor: 'rgba(255,255,255,0.18)',
+    borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
+    gap: 4,
+    minHeight: 74,
+    padding: 10
+  },
+  promiseLabel: {
+    color: '#d7eee8',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  promiseValue: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18
+  },
   heroStat: {
     backgroundColor: 'rgba(255,255,255,0.12)',
     borderColor: 'rgba(255,255,255,0.16)',
@@ -372,6 +485,11 @@ const styles = StyleSheet.create({
     gap: 5,
     padding: 13
   },
+  airplaneTopRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8
+  },
   airplaneTitle: {
     color: '#ffffff',
     fontSize: 16,
@@ -381,6 +499,12 @@ const styles = StyleSheet.create({
     color: '#d7eee8',
     fontSize: 13,
     fontWeight: '700',
+    lineHeight: 18
+  },
+  airplaneHint: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '800',
     lineHeight: 18
   },
   metrics: {
@@ -437,6 +561,43 @@ const styles = StyleSheet.create({
   caseGrid: {
     gap: 10
   },
+  heroCaseGrid: {
+    gap: 10
+  },
+  heroCaseTile: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 8,
+    padding: 14
+  },
+  heroCaseTop: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8
+  },
+  heroCaseTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    lineHeight: 23
+  },
+  heroCaseStory: {
+    fontSize: 14,
+    fontWeight: '700',
+    lineHeight: 20
+  },
+  heroCaseImpact: {
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18
+  },
+  heroCaseFooter: {
+    gap: 4
+  },
+  heroFooterText: {
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 16
+  },
   caseTile: {
     borderRadius: 8,
     borderWidth: 1,
@@ -446,12 +607,24 @@ const styles = StyleSheet.create({
   pressedTile: {
     opacity: 0.82
   },
+  loadingTile: {
+    opacity: 0.9
+  },
   caseTitle: {
     fontSize: 16,
     fontWeight: '900'
   },
   casePatient: {
     fontWeight: '700'
+  },
+  caseStory: {
+    fontSize: 13,
+    lineHeight: 18
+  },
+  caseImpact: {
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17
   },
   proofGrid: {
     flexDirection: 'row',
@@ -539,3 +712,49 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   }
 });
+
+function mapRemoteDemoCase(remoteCase: DemoCaseSeed): DemoCase {
+  const lower = remoteCase.story.toLowerCase();
+  return {
+    id: remoteCase.id,
+    title: remoteCase.title,
+    story: remoteCase.story,
+    risk: lower.includes('urgent') || lower.includes('danger') || lower.includes('stroke') || lower.includes('bleeding') ? 'red' : lower.includes('child') || lower.includes('oxygen') ? 'amber' : 'green',
+    hero: remoteCase.hero,
+    language: remoteCase.language,
+    demoMode: remoteCase.demo_mode,
+    expectedTrackStrength: remoteCase.expected_track_strength,
+    patient: remoteCase.intake.patient,
+    transcript: buildTranscriptFromIntake(remoteCase.intake)
+  };
+}
+
+function extractAssessment(result: DiagnosisEnvelope): MediScribeAssessment | undefined {
+  return (
+    result?.data?.agentic?.assessment ||
+    result?.data?.agentic?.stored?.assessment ||
+    result?.data?.stored?.assessment ||
+    result?.data?.ai?.assessment ||
+    result?.data?.assessment ||
+    result?.assessment
+  );
+}
+
+function impactProof(demo: DemoCase) {
+  if (demo.id.includes('maternal')) return 'Danger signs stay visible and referral starts before sync.';
+  if (demo.id.includes('stroke')) return 'Speech and weakness cues escalate while the golden hour still matters.';
+  if (demo.id.includes('child')) return 'Low-oxygen and feeding risk turn into same-day escalation.';
+  if (demo.demoMode === 'offline') return 'The full path still works with no network.';
+  return 'Structured triage, ranked reasoning, and a cleaner handoff.';
+}
+
+function launchHint(demo: DemoCase) {
+  return demo.demoMode === 'offline' ? 'Tap to open the offline emergency path.' : demo.hero ? 'Tap to open a preloaded diagnosis.' : 'Tap to review and run diagnosis.';
+}
+
+function shortPromise(demo: DemoCase) {
+  if (demo.id.includes('maternal')) return '32-week maternal emergency';
+  if (demo.id.includes('stroke')) return 'Golden-hour stroke rescue';
+  if (demo.id.includes('child')) return 'Child respiratory risk';
+  return demo.title;
+}

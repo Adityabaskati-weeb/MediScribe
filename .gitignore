@@ -23,3 +23,4 @@ model_training/outputs/**/gguf/
 .hf-space-push/
 .hf-space-sync*/
 context-engineering-intro-codex-work/
+mobile/web-preview-*/

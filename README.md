@@ -94,6 +94,7 @@ python model_training/evaluate.py
 - `POST /api/diagnoses/agentic`
 - `GET /api/diagnoses/evaluation`
 - `GET /api/diagnoses/performance`
+- `GET /api/diagnoses/demo-cases`
 - `GET /api/diagnoses/demo-output`
 - `GET /api/system/architecture`
 - `GET /api/system/demo-pack`

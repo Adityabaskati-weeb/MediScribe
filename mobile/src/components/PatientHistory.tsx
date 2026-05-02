@@ -23,9 +23,17 @@ export function PatientHistory({ items }: { items: any[] }) {
               <Text style={[styles.title, { color: c.ink }]}>{item.possibleDiagnosis1 || item.assessment?.clinical_summary || 'Visit'}</Text>
               <View style={styles.metaRow}>
                 <Text style={[styles.metaPill, { backgroundColor: c.surfaceMuted, color: c.primaryDark }]}>Risk: {item.urgency || item.assessment?.urgency || 'routine'}</Text>
+                {(item.clinicOutcomeStatus || item.assessment?.clinic_outcome?.status) ? (
+                  <Text style={[styles.metaPill, { backgroundColor: c.infoSoft, color: c.primaryDark }]}>
+                    Outcome: {formatOutcome(item.clinicOutcomeStatus || item.assessment?.clinic_outcome?.status)}
+                  </Text>
+                ) : null}
                 <Text style={[styles.metaPill, { backgroundColor: c.surfaceMuted, color: c.primaryDark }]}>OCR ready</Text>
               </View>
-              <Text style={[styles.meta, { color: c.muted }]}>{item.created_at || item.assessment?.created_at || 'Saved locally'}</Text>
+              <Text style={[styles.meta, { color: c.muted }]}>
+                {item.created_at || item.assessment?.created_at || 'Saved locally'}
+                {item.clinicOutcomeUpdatedAt ? ` | outcome updated ${item.clinicOutcomeUpdatedAt}` : ''}
+              </Text>
             </View>
           </View>
         </Card>
@@ -87,3 +95,11 @@ const styles = StyleSheet.create({
     paddingVertical: 6
   }
 });
+
+function formatOutcome(status?: string) {
+  return ({
+    transfer_completed: 'Transfer completed',
+    stabilized_before_transfer: 'Stabilized before transfer',
+    follow_up_due: 'Follow-up due'
+  } as Record<string, string>)[status || ''] || status || 'Recorded';
+}

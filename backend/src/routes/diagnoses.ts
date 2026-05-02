@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   generateAgenticDiagnosisForIntake,
   generateDiagnosisForIntake,
+  getHackathonDemoCases,
   getEvaluationMetrics,
   getHackathonDemoOutput,
   getPerformanceMetrics
@@ -17,6 +18,7 @@ router.post('/generate', requireRole(['health_worker', 'doctor', 'admin']), vali
 router.post('/agentic', requireRole(['health_worker', 'doctor', 'admin']), validateBody(validateDiagnosisInput), asyncHandler(generateAgenticDiagnosisForIntake));
 router.get('/evaluation', asyncHandler(getEvaluationMetrics));
 router.get('/performance', asyncHandler(getPerformanceMetrics));
+router.get('/demo-cases', asyncHandler(getHackathonDemoCases));
 router.get('/demo-output', asyncHandler(getHackathonDemoOutput));
 
 export default router;

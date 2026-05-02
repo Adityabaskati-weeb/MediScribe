@@ -30,13 +30,26 @@ export function VoiceScreen({
   const [selectedSymptom, setSelectedSymptom] = useState('');
   const [quickNote, setQuickNote] = useState('');
 
+  const clearDerivedState = () => ({
+    assessment: undefined,
+    cachedDiagnosisResult: undefined,
+    demoCaseId: undefined,
+    forceOfflineDemo: false,
+    consultationStartedAt: Date.now()
+  });
+
   const saveTranscript = (text: string) => {
-    onDraftChange({ ...draft, transcript: text });
+    onDraftChange({ ...draft, transcript: text, ...clearDerivedState() });
     onNavigate('summary');
   };
 
   const saveChartText = (text: string) => {
-    onDraftChange({ ...draft, chartText: text, transcript: [draft.transcript, text].filter(Boolean).join('\n') });
+    onDraftChange({
+      ...draft,
+      chartText: text,
+      transcript: [draft.transcript, text].filter(Boolean).join('\n'),
+      ...clearDerivedState()
+    });
     onNavigate('summary');
   };
 
@@ -45,7 +58,7 @@ export function VoiceScreen({
     const note = `Symptoms selected: ${labels.join(', ')}.`;
     setSelectedSymptom(labels[0] || '');
     setQuickNote(note);
-    onDraftChange({ ...draft, transcript: [draft.transcript, note].filter(Boolean).join('\n') });
+    onDraftChange({ ...draft, transcript: [draft.transcript, note].filter(Boolean).join('\n'), ...clearDerivedState() });
     showToast(`${labels.length} symptoms added`, 'success');
   };
 

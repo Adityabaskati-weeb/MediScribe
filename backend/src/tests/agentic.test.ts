@@ -26,6 +26,10 @@ async function testAgenticAssessment() {
   assert.ok(result.agents.some((step) => step.agent === 'safety-agent'));
   assert.equal(result.guardrails.escalation_required, true);
   assert.equal(result.assessment.urgency, 'immediate');
+  assert.ok(result.assessment.hero_workflow);
+  assert.ok(result.assessment.evidence_summary);
+  assert.ok((result.assessment.citations || []).length >= 2);
+  assert.ok(result.assessment.referral_handoff?.summary_text);
   assert.ok(result.demo.pitch_script.length >= 4);
 
   const metrics = agenticEvaluationMetrics();

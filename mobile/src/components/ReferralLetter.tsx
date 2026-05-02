@@ -30,21 +30,46 @@ export function ReferralLetter({ patient, transcript, assessment }: { patient?: 
         <View style={styles.handoffTop}>
           <View>
             <Text style={[styles.handoffKicker, { color: isUrgent(assessment) ? c.accent : c.primaryDark }]}>Transfer snapshot</Text>
-            <Text style={[styles.handoffTitle, { color: c.ink }]}>{cleanReferralText(assessment?.treatment?.referral, isUrgent(assessment))}</Text>
+            <Text style={[styles.handoffTitle, { color: c.ink }]}>
+              {assessment?.referral_handoff?.priority_label || cleanReferralText(assessment?.treatment?.referral, isUrgent(assessment))}
+            </Text>
           </View>
           <Text style={[styles.handoffBadge, { backgroundColor: isUrgent(assessment) ? c.accent : c.success }]}>
             {isUrgent(assessment) ? 'URGENT' : 'READY'}
           </Text>
         </View>
+        <Text style={[styles.handoffSummary, { color: c.ink }]}>
+          {assessment?.referral_handoff?.reason_for_referral || 'Structured referral summary is ready for the receiving facility.'}
+        </Text>
         <View style={styles.handoffGrid}>
           <HandoffTile label="Patient" value={`${patient?.name || 'Unnamed'} | ${patient?.age_years || '--'} yrs`} />
           <HandoffTile label="Risk" value={assessment?.urgency || 'review'} />
           <HandoffTile label="Main concern" value={assessment?.differential_diagnoses?.[0]?.name || 'Clinical review'} />
+          <HandoffTile label="Destination" value={assessment?.referral_handoff?.destination || 'Saved on device'} />
+          <HandoffTile label="Referral reason" value={assessment?.referral_handoff?.reason_for_referral || 'Clinical review needed'} />
           <HandoffTile label="Offline status" value="Saved on device" />
         </View>
+        <View style={styles.checklistGrid}>
+          <ActionChecklist
+            title="Already done"
+            items={assessment?.referral_handoff?.actions_completed || ['Structured intake captured', 'Danger signs reviewed']}
+            tone="done"
+          />
+          <ActionChecklist
+            title="Before handoff"
+            items={assessment?.referral_handoff?.actions_pending || ['Repeat vitals', 'Follow receiving facility instructions']}
+            tone="pending"
+          />
+        </View>
+      </View>
+      <View style={[styles.fullNoteHeader, { borderColor: c.border }]}>
+        <Text style={[styles.fullNoteTitle, { color: c.ink }]}>Full transfer note</Text>
+        <Text style={[styles.fullNoteMeta, { color: c.muted }]}>Share this with the receiving facility or copy it into the chart.</Text>
       </View>
       <TextInput multiline editable={false} value={letter} style={[styles.letter, { backgroundColor: c.surfaceSoft, borderColor: c.border, color: c.ink }]} />
-      <ActionButton title="Share Referral Summary" onPress={share} variant="secondary" />
+      <View style={styles.actionRow}>
+        <ActionButton title="Share Transfer Note" onPress={share} variant="secondary" />
+      </View>
       {copied && <Text style={[styles.note, { color: c.muted }]}>Sharing is not available on this device. Use the text above for handoff.</Text>}
     </Card>
   );
@@ -72,6 +97,33 @@ function cleanReferralText(referral?: string, urgent = false) {
     .replace(/^Urgent clinician review$/i, 'Urgent clinician review today')
     .replace(/^Same-day review$/i, 'Same-day clinical review')
     .replace(/^Routine follow-up$/i, 'Routine follow-up');
+}
+
+function ActionChecklist({
+  title,
+  items,
+  tone
+}: {
+  title: string;
+  items: string[];
+  tone: 'done' | 'pending';
+}) {
+  const { theme } = useAppTheme();
+  const palette = tone === 'done'
+    ? { bg: theme.colors.successSoft, fg: theme.colors.success, border: theme.colors.success }
+    : { bg: theme.colors.warningSoft, fg: theme.colors.warning, border: theme.colors.warning };
+
+  return (
+    <View style={[styles.checklistCard, { backgroundColor: palette.bg, borderColor: palette.border }]}>
+      <Text style={[styles.checklistTitle, { color: palette.fg }]}>{title}</Text>
+      {items.slice(0, 3).map((item) => (
+        <View key={item} style={styles.checklistRow}>
+          <Text style={[styles.checklistDot, { color: palette.fg }]}>{tone === 'done' ? 'OK' : 'NEXT'}</Text>
+          <Text style={[styles.checklistText, { color: theme.colors.ink }]}>{item}</Text>
+        </View>
+      ))}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -109,6 +161,11 @@ const styles = StyleSheet.create({
     lineHeight: 25,
     marginTop: 3
   },
+  handoffSummary: {
+    fontSize: 14,
+    fontWeight: '700',
+    lineHeight: 20
+  },
   handoffBadge: {
     borderRadius: 8,
     color: '#ffffff',
@@ -122,6 +179,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8
+  },
+  checklistGrid: {
+    gap: 8
+  },
+  checklistCard: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 6,
+    padding: 10
+  },
+  checklistTitle: {
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  checklistRow: {
+    flexDirection: 'row',
+    gap: 8
+  },
+  checklistDot: {
+    fontSize: 11,
+    fontWeight: '900',
+    minWidth: 34
+  },
+  checklistText: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18
   },
   handoffTile: {
     borderRadius: 8,
@@ -141,6 +227,20 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop: 4
   },
+  fullNoteHeader: {
+    borderTopWidth: 1,
+    gap: 3,
+    paddingTop: 2
+  },
+  fullNoteTitle: {
+    fontSize: 14,
+    fontWeight: '900'
+  },
+  fullNoteMeta: {
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 17
+  },
   letter: {
     backgroundColor: colors.surfaceSoft,
     borderColor: colors.border,
@@ -148,9 +248,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     color: colors.ink,
     fontSize: 13,
-    minHeight: 210,
+    minHeight: 180,
     padding: 12,
     textAlignVertical: 'top'
+  },
+  actionRow: {
+    gap: 10
   },
   note: {
     color: colors.muted,

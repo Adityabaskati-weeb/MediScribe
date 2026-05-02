@@ -3,6 +3,7 @@ import { EVALUATION_SCENARIOS, EvaluationScenario } from '../data/evaluationScen
 import { analyzeIntake, saveAssessment } from './clinicalEngine';
 import { analyzeMedicalCase, MedicalPrompt } from './gemmaService';
 import { recordAuditLog } from './auditLogService';
+import { enrichAssessmentWithEvidence } from './clinicalEvidenceService';
 import { getCachedMedicalQuery, setCachedMedicalQuery } from './medicalQueryCache';
 import { performanceSummary, recordPerformance, timed } from './performanceMonitor';
 import { applySafetyGuardrails, evaluateSafetyGuardrails, GuardrailResult } from './safetyGuardrails';
@@ -101,6 +102,7 @@ export async function runAgenticMedicalAssessment(intake: ClinicalIntake): Promi
   const safetyStarted = Date.now();
   const guardrails = evaluateSafetyGuardrails(intake, assessment);
   assessment = applySafetyGuardrails(assessment, guardrails);
+  assessment = enrichAssessmentWithEvidence(intake, assessment);
   agents.push({
     agent: 'safety-agent',
     status: guardrails.fallback_required ? 'fallback' : 'completed',

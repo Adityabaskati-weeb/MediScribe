@@ -30,7 +30,17 @@ export function SettingsScreen({
       resetLocalDemoData();
       await AsyncStorage.multiRemove(['mediscribe.language', 'mediscribe.theme']);
       setThemeMode('light');
-      onDraftChange({ language: 'Hindi' });
+      onDraftChange({
+        language: 'Hindi',
+        patient: undefined,
+        transcript: '',
+        chartText: '',
+        assessment: undefined,
+        cachedDiagnosisResult: undefined,
+        demoCaseId: undefined,
+        forceOfflineDemo: false,
+        consultationStartedAt: undefined
+      });
       setResetState('done');
     } catch {
       setResetState('failed');

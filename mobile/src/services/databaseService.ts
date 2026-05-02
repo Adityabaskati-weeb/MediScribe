@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import type { MediScribeAssessment, PatientProfile, TreatmentRecommendation } from '../types/clinical';
+import type { ClinicOutcome, MediScribeAssessment, PatientProfile, TreatmentRecommendation } from '../types/clinical';
 
 const db = SQLite.openDatabaseSync('mediscribe.db');
 
@@ -47,6 +47,9 @@ export function initializeLocalDatabase() {
         urgency TEXT,
         modelVersion TEXT,
         referralRequired INTEGER DEFAULT 0,
+        clinicOutcomeStatus TEXT,
+        clinicOutcomeUpdatedAt TEXT,
+        clinicOutcomeNote TEXT,
         created_at TEXT NOT NULL
       );
 
@@ -146,6 +149,9 @@ function runLocalMigrations() {
     ['urgency', 'TEXT'],
     ['modelVersion', 'TEXT'],
     ['referralRequired', 'INTEGER DEFAULT 0'],
+    ['clinicOutcomeStatus', 'TEXT'],
+    ['clinicOutcomeUpdatedAt', 'TEXT'],
+    ['clinicOutcomeNote', 'TEXT'],
     ['created_at', 'TEXT']
   ]);
 
@@ -278,8 +284,8 @@ export function saveDiagnosis(consultationId: string, assessment: MediScribeAsse
   db.runSync(
     `INSERT OR REPLACE INTO diagnoses
        (id, consultationId, possibleDiagnosis1, confidence1, possibleDiagnosis2, confidence2, possibleDiagnosis3, confidence3,
-        suggestedTreatment, redFlags, urgency, modelVersion, referralRequired, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        suggestedTreatment, redFlags, urgency, modelVersion, referralRequired, clinicOutcomeStatus, clinicOutcomeUpdatedAt, clinicOutcomeNote, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
     [
       id,
       consultationId,
@@ -294,12 +300,25 @@ export function saveDiagnosis(consultationId: string, assessment: MediScribeAsse
       assessment.urgency,
       assessment.model_source || 'gemma2:2b',
       ['immediate', 'emergent'].includes(assessment.urgency) ? 1 : 0,
+      assessment.clinic_outcome?.status || '',
+      assessment.clinic_outcome?.updated_at || '',
+      assessment.clinic_outcome?.note || '',
       new Date().toISOString()
     ]
   );
   enqueueOfflinePayload(`diagnosis-${id}`, { type: 'UPSERT_DIAGNOSIS', assessment });
   saveTreatmentPlan(id, assessment.treatment || {}, ['immediate', 'emergent'].includes(assessment.urgency));
   return { id, consultationId, assessment };
+}
+
+export function updateClinicOutcome(diagnosisId: string, outcome: ClinicOutcome) {
+  db.runSync(
+    `UPDATE diagnoses
+      SET clinicOutcomeStatus = ?, clinicOutcomeUpdatedAt = ?, clinicOutcomeNote = ?
+      WHERE id = ?;`,
+    [outcome.status, outcome.updated_at, outcome.note, diagnosisId]
+  );
+  enqueueOfflinePayload(`outcome-${diagnosisId}`, { type: 'UPDATE_CLINIC_OUTCOME', diagnosisId, outcome });
 }
 
 export function saveTreatmentPlan(diagnosisId: string, treatment: Partial<TreatmentRecommendation> & { medications?: string[]; nonPharmacological?: string[]; followUpInDays?: number }, referralRequired = false) {
@@ -339,7 +358,8 @@ export function saveChartImage(consultationId: string, imagePath: string, extrac
 export function getPatientHistory(patientId?: string): Promise<Array<Record<string, unknown>>> {
   if (!patientId) return db.getAllAsync('SELECT * FROM diagnoses ORDER BY created_at DESC;');
   return db.getAllAsync(
-    `SELECT c.*, d.possibleDiagnosis1, d.possibleDiagnosis2, d.possibleDiagnosis3, d.urgency
+    `SELECT c.*, d.possibleDiagnosis1, d.possibleDiagnosis2, d.possibleDiagnosis3, d.urgency,
+            d.clinicOutcomeStatus, d.clinicOutcomeUpdatedAt, d.clinicOutcomeNote
      FROM consultations c
      LEFT JOIN diagnoses d ON c.id = d.consultationId
      WHERE c.patientId = ?

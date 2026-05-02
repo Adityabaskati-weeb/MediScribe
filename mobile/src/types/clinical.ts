@@ -47,6 +47,31 @@ export type TreatmentRecommendation = {
   follow_up: string;
 };
 
+export type GuidelineCitation = {
+  id: string;
+  title: string;
+  organization: string;
+  url: string;
+  updated_at?: string;
+  summary: string;
+  why_it_applies: string;
+};
+
+export type ReferralHandoff = {
+  priority_label: string;
+  destination: string;
+  reason_for_referral: string;
+  actions_completed: string[];
+  actions_pending: string[];
+  summary_text: string;
+};
+
+export type ClinicOutcome = {
+  status: 'transfer_completed' | 'stabilized_before_transfer' | 'follow_up_due';
+  updated_at: string;
+  note: string;
+};
+
 export type MediScribeAssessment = {
   assessment_id: string;
   patient_id: string;
@@ -59,6 +84,32 @@ export type MediScribeAssessment = {
   clinical_summary: string;
   model_source: string;
   disclaimer: string;
+  hero_workflow?: string;
+  evidence_summary?: string;
+  citations?: GuidelineCitation[];
+  referral_handoff?: ReferralHandoff;
+  clinic_outcome?: ClinicOutcome;
+};
+
+export type DemoMode = 'offline' | 'local-ai';
+
+export type DemoCaseSeed = {
+  id: string;
+  title: string;
+  story: string;
+  language: string;
+  hero: boolean;
+  demo_mode: DemoMode;
+  expected_track_strength: string[];
+  intake: {
+    patient: PatientProfile;
+    chief_complaint: string;
+    symptoms?: string[];
+    vitals?: ClinicalVitals;
+    notes?: string[];
+    language?: string;
+    offline_captured?: boolean;
+  };
 };
 
 export type DiagnosisEnvelope = {
@@ -103,6 +154,7 @@ export type ConsultationDraft = {
   transcript?: string;
   chartText?: string;
   assessment?: MediScribeAssessment;
+  cachedDiagnosisResult?: DiagnosisEnvelope;
   demoCaseId?: string;
   forceOfflineDemo?: boolean;
   consultationStartedAt?: number;

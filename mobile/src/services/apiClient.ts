@@ -1,6 +1,23 @@
 import axios from 'axios';
+import type { DemoCaseSeed, DiagnosisEnvelope } from '../types/clinical';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://192.168.31.138:3001';
+function resolveApiBaseUrl() {
+  if (process.env.EXPO_PUBLIC_API_BASE_URL) {
+    return process.env.EXPO_PUBLIC_API_BASE_URL;
+  }
+
+  if (typeof window !== 'undefined' && window.location?.hostname) {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return 'http://localhost:3001';
+    }
+    return `${window.location.protocol}//${host}:3001`;
+  }
+
+  return 'http://192.168.31.138:3001';
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -11,4 +28,14 @@ export const apiClient = axios.create({
 export async function generateDiagnosis(payload: unknown) {
   const response = await apiClient.post('/api/diagnoses/agentic', payload);
   return response.data;
+}
+
+export async function fetchDemoCases(): Promise<DemoCaseSeed[]> {
+  const response = await apiClient.get('/api/diagnoses/demo-cases');
+  return response.data?.data?.cases || [];
+}
+
+export async function fetchDemoOutput(caseId: string): Promise<DiagnosisEnvelope> {
+  const response = await apiClient.get('/api/diagnoses/demo-output', { params: { caseId } });
+  return response.data?.data?.agentic_assessment || response.data;
 }

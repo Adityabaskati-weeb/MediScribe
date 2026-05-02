@@ -13,6 +13,7 @@ import {
   Urgency
 } from '../models/Clinical';
 import { addKnowledgeDifferentials, addKnowledgeRedFlags, applyKnowledgeTreatment, hasAffirmedPhrase } from '../data/medicalKnowledge';
+import { enrichAssessmentWithEvidence } from './clinicalEvidenceService';
 
 const assessments: StoredAssessment[] = [];
 const queue: QueuedIntake[] = [];
@@ -212,7 +213,7 @@ export function analyzeIntake(intake: ClinicalIntake, modelSource = 'determinist
   const flags = redFlags(intake);
   const [urgencyValue, triageCategory] = urgency(flags, intake);
   const summary = `${intake.patient.age_years}-year-old ${intake.patient.gender} patient. chief complaint: ${intake.chief_complaint}. urgency: ${urgencyValue} (triage category ${triageCategory}).`;
-  return {
+  return enrichAssessmentWithEvidence(intake, {
     assessment_id: id('assessment'),
     patient_id: patientId,
     created_at: now(),
@@ -224,7 +225,7 @@ export function analyzeIntake(intake: ClinicalIntake, modelSource = 'determinist
     clinical_summary: summary,
     model_source: modelSource,
     disclaimer: 'Decision support only. Confirm with clinical judgement, local protocols, and urgent referral for red flags.'
-  };
+  });
 }
 
 export function saveAssessment(intake: ClinicalIntake, assessment = analyzeIntake(intake)): StoredAssessment {

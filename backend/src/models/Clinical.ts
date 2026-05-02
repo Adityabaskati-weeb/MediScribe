@@ -61,6 +61,31 @@ export interface TreatmentRecommendation {
   follow_up: string;
 }
 
+export interface GuidelineCitation {
+  id: string;
+  title: string;
+  organization: string;
+  url: string;
+  updated_at?: string;
+  summary: string;
+  why_it_applies: string;
+}
+
+export interface ReferralHandoff {
+  priority_label: string;
+  destination: string;
+  reason_for_referral: string;
+  actions_completed: string[];
+  actions_pending: string[];
+  summary_text: string;
+}
+
+export interface ClinicOutcome {
+  status: 'transfer_completed' | 'stabilized_before_transfer' | 'follow_up_due';
+  updated_at: string;
+  note: string;
+}
+
 export interface MediScribeAssessment {
   assessment_id: string;
   patient_id: string;
@@ -73,6 +98,11 @@ export interface MediScribeAssessment {
   clinical_summary: string;
   model_source: string;
   disclaimer: string;
+  hero_workflow?: string;
+  evidence_summary?: string;
+  citations?: GuidelineCitation[];
+  referral_handoff?: ReferralHandoff;
+  clinic_outcome?: ClinicOutcome;
 }
 
 export interface StoredAssessment {

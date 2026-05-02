@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { DEMO_CASES, demoCaseById } from '../data/demoCases';
 import { analyzeClinicalIntake, generateDiagnosis } from '../services/analysisService';
 import { agenticEvaluationMetrics, runAgenticMedicalAssessment } from '../services/agentOrchestrator';
 import { performanceSummary } from '../services/performanceMonitor';
@@ -30,36 +31,48 @@ export async function getPerformanceMetrics(_req: Request, res: Response) {
   return res.json(successResponse(performanceSummary()));
 }
 
-export async function getHackathonDemoOutput(_req: Request, res: Response) {
-  const demo = await runAgenticMedicalAssessment({
-    patient: {
-      name: 'Asha Devi',
-      age_years: 58,
-      gender: 'female',
-      known_conditions: ['hypertension'],
-      medications: ['amlodipine']
-    },
-    chief_complaint: 'Crushing chest pain with sweating',
-    symptoms: ['shortness of breath', 'left arm pain'],
-    vitals: {
-      systolic_bp: 84,
-      diastolic_bp: 56,
-      oxygen_saturation: 89,
-      respiratory_rate: 32
-    },
-    language: 'Hindi',
-    offline_captured: true
-  });
+export async function getHackathonDemoCases(_req: Request, res: Response) {
+  return res.json(
+    successResponse({
+      cases: DEMO_CASES.map((item) => ({
+        id: item.id,
+        title: item.title,
+        story: item.story,
+        language: item.language,
+        hero: item.hero,
+        demo_mode: item.demo_mode,
+        expected_track_strength: item.expected_track_strength,
+        intake: item.intake
+      }))
+    })
+  );
+}
+
+export async function getHackathonDemoOutput(req: Request, res: Response) {
+  const requestedId = typeof req.query.caseId === 'string' ? req.query.caseId : undefined;
+  const selected = demoCaseById(requestedId);
+  const demo = await runAgenticMedicalAssessment(selected.intake);
 
   return res.json(successResponse({
     title: 'MediScribe hackathon demo output',
-    video_moment: 'Offline rural clinic detects a cardiac emergency and guides referral.',
+    selected_case: {
+      id: selected.id,
+      title: selected.title,
+      story: selected.story,
+      language: selected.language,
+      hero: selected.hero,
+      demo_mode: selected.demo_mode,
+      expected_track_strength: selected.expected_track_strength,
+      intake: selected.intake
+    },
+    video_moment: selected.story,
     agentic_assessment: demo,
     talking_points: [
       'Separate agents handle diagnosis, reasoning, treatment, and safety.',
       'Safety guardrails override model confidence when red flags appear.',
       'Fallback rules keep the app useful without internet or Ollama.',
-      'Metrics expose accuracy, latency, reliability, and fallback rate.'
+      'Metrics expose accuracy, latency, reliability, and fallback rate.',
+      'Referral handoff now includes guideline-backed reasoning for a receiving facility.'
     ]
   }));
 }

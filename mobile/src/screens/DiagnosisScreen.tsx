@@ -11,8 +11,8 @@ import { analyzeMedicalCase } from '../services/gemmaService';
 import { saveDiagnosis } from '../services/databaseService';
 import { colors, spacing } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
-import type { DiagnosisEnvelope, MediScribeAssessment } from '../types/clinical';
-import { evaluateGuardian } from '../utils/clinicalDecisionSupport';
+import type { DiagnosisEnvelope, MediScribeAssessment, PatientProfile } from '../types/clinical';
+import { buildOfflineClinicalEvidence, evaluateGuardian } from '../utils/clinicalDecisionSupport';
 import { extractClinicalSymptoms, extractClinicalVitals } from '../utils/clinicalText';
 
 export function DiagnosisScreen({
@@ -24,10 +24,19 @@ export function DiagnosisScreen({
   onDraftChange: (draft: ConsultationDraft) => void;
   onNavigate?: (screen: ScreenName) => void;
 }) {
-  const [result, setResult] = useState<DiagnosisEnvelope | null>(draft.assessment ? { assessment: draft.assessment } : null);
-  const [status, setStatus] = useState('Ready for intake');
-  const [analysisSeconds, setAnalysisSeconds] = useState<number | null>(null);
+  const initialResult = draft.cachedDiagnosisResult || (draft.assessment ? { assessment: draft.assessment } : null);
+  const [result, setResult] = useState<DiagnosisEnvelope | null>(initialResult);
+  const [status, setStatus] = useState(
+    draft.cachedDiagnosisResult ? 'Backend hero demo loaded. You can review the diagnosis now or run it again.' : 'Ready for intake'
+  );
+  const [analysisSeconds, setAnalysisSeconds] = useState<number | null>(getInitialSeconds(draft.cachedDiagnosisResult));
   const { theme } = useAppTheme();
+  const heroContext = getHeroContext(draft.demoCaseId, Boolean(draft.forceOfflineDemo), Boolean(draft.cachedDiagnosisResult));
+  const primaryActionLabel = draft.cachedDiagnosisResult
+    ? 'Refresh Diagnosis'
+    : draft.forceOfflineDemo
+      ? 'Run Offline Emergency Check'
+      : 'Generate Diagnosis';
 
   const analyze = async (symptoms: string) => {
     const startedAt = draft.consultationStartedAt || Date.now();
@@ -35,7 +44,7 @@ export function DiagnosisScreen({
     let response: DiagnosisEnvelope;
     try {
       if (draft.forceOfflineDemo) {
-        response = buildOfflineAssessment(symptoms, true);
+        response = buildOfflineAssessment(symptoms, true, draft.patient);
         setStatus('Emergency caught locally, saved offline, queued for sync.');
       } else {
         response = await analyzeMedicalCase({
@@ -55,7 +64,7 @@ export function DiagnosisScreen({
         setStatus('Assessment saved locally and queued for sync');
       }
     } catch {
-      response = buildOfflineAssessment(symptoms);
+      response = buildOfflineAssessment(symptoms, false, draft.patient);
       setStatus('Backend unavailable. Offline triage result saved locally.');
     }
     setAnalysisSeconds(Math.max(3, Math.round((Date.now() - startedAt) / 1000)));
@@ -68,7 +77,7 @@ export function DiagnosisScreen({
       response?.data?.assessment ||
       response?.assessment;
     if (assessment) {
-      onDraftChange({ ...draft, assessment });
+      onDraftChange({ ...draft, assessment, cachedDiagnosisResult: response });
       saveDiagnosis(`consultation-${Date.now()}`, assessment);
     }
   };
@@ -82,6 +91,16 @@ export function DiagnosisScreen({
         subtitle="Ranked diagnosis support with safety guardrails and offline fallback."
         right={<StatusPill label="Local AI" tone="info" />}
       />
+      {heroContext ? (
+        <View style={[styles.heroPanel, { backgroundColor: heroContext.tone === 'danger' ? theme.colors.dangerSoft : theme.colors.infoSoft, borderColor: heroContext.tone === 'danger' ? theme.colors.accent : theme.colors.primary }]}>
+          <View style={styles.heroPanelTop}>
+            <StatusPill label={heroContext.modeLabel} tone={heroContext.tone} />
+            {draft.cachedDiagnosisResult ? <StatusPill label="Preloaded" tone="success" /> : null}
+          </View>
+          <Text style={[styles.heroPanelTitle, { color: theme.colors.ink }]}>{heroContext.title}</Text>
+          <Text style={[styles.heroPanelCopy, { color: theme.colors.muted }]}>{heroContext.copy}</Text>
+        </View>
+      ) : null}
       <ConsultationProgress current={4} />
       <RedFlagGuardian text={draft.transcript || ''} patient={draft.patient} />
       <View style={[styles.statusPanel, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
@@ -89,13 +108,22 @@ export function DiagnosisScreen({
         <Text style={[styles.status, { color: theme.colors.ink }]}>{status}</Text>
       </View>
       <View style={styles.actions}>
-        <ActionButton title="Generate Diagnosis" onPress={() => analyze(draft.transcript || '')} disabled={!draft.transcript?.trim()} />
+        <ActionButton title={primaryActionLabel} onPress={() => analyze(draft.transcript || '')} disabled={!draft.transcript?.trim()} />
         {result && onNavigate && <ActionButton title="Open Treatment Guidelines" onPress={() => onNavigate('treatment')} variant="success" />}
       </View>
       <DemoTimerPanel visible={Boolean(result)} seconds={analysisSeconds} offline={Boolean(draft.forceOfflineDemo)} />
       <DiagnosisResult result={result} transcript={draft.transcript} patient={draft.patient} offlineDemo={Boolean(draft.forceOfflineDemo)} />
     </ScrollView>
   );
+}
+
+function getInitialSeconds(result: DiagnosisEnvelope | undefined) {
+  if (!result) return null;
+  const latencyMs =
+    result?.data?.agentic?.metrics?.latency_ms ||
+    result?.data?.metrics?.latency_ms ||
+    result?.metrics?.latency_ms;
+  return latencyMs ? Math.max(1, Math.round(latencyMs / 1000)) : null;
 }
 
 function DemoTimerPanel({ visible, seconds, offline }: { visible: boolean; seconds: number | null; offline: boolean }) {
@@ -135,6 +163,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: 8,
     padding: 16
+  },
+  heroPanel: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 8,
+    padding: 14
+  },
+  heroPanelTop: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8
+  },
+  heroPanelTitle: {
+    fontSize: 19,
+    fontWeight: '900',
+    lineHeight: 24
+  },
+  heroPanelCopy: {
+    fontSize: 14,
+    fontWeight: '700',
+    lineHeight: 20
   },
   statusLabel: {
     color: colors.muted,
@@ -187,7 +236,45 @@ const styles = StyleSheet.create({
   }
 });
 
-function buildOfflineAssessment(symptoms: string, forcedAirplaneMode = false) {
+function getHeroContext(demoCaseId: string | undefined, offline: boolean, preloaded: boolean) {
+  if (!demoCaseId) return null;
+  if (demoCaseId.includes('maternal')) {
+    return {
+      title: 'Maternal emergency pathway',
+      copy: offline
+        ? 'This case is proving the no-network flow: danger signs stay visible, the referral decision stays local, and transfer does not wait for sync.'
+        : 'This case highlights how maternal danger signs move quickly into a cleaner referral workflow.',
+      tone: 'danger' as const,
+      modeLabel: offline ? 'Offline emergency' : preloaded ? 'Hero preload' : 'Maternal hero'
+    };
+  }
+  if (demoCaseId.includes('stroke')) {
+    return {
+      title: 'Golden-hour stroke rescue',
+      copy: preloaded
+        ? 'The backend hero assessment is already loaded so the first impression is fast, decisive, and focused on escalation.'
+        : 'Speech change and one-sided weakness should feel urgent immediately, and the handoff should preserve that urgency.',
+      tone: 'info' as const,
+      modeLabel: preloaded ? 'Stroke preload' : 'Stroke hero'
+    };
+  }
+  if (demoCaseId.includes('child')) {
+    return {
+      title: 'Child respiratory escalation',
+      copy: 'Low oxygen, feeding difficulty, and fever should quickly become a same-day safety decision rather than a vague watch-and-wait.',
+      tone: 'info' as const,
+      modeLabel: 'Respiratory path'
+    };
+  }
+  return {
+    title: 'Clinic demo pathway',
+    copy: offline ? 'This path is using the offline fallback flow.' : 'This path is using the local-first AI flow.',
+    tone: offline ? 'danger' as const : 'info' as const,
+    modeLabel: offline ? 'Offline path' : 'Local AI'
+  };
+}
+
+function buildOfflineAssessment(symptoms: string, forcedAirplaneMode = false, patient?: PatientProfile) {
   const lower = symptoms.toLowerCase();
   const guardianFlags = evaluateGuardian(symptoms);
   const maternalEmergency = /pregnan|postpartum/.test(lower) && /bleeding|abdominal pain|dizzy|headache|visual|seizure/.test(lower);
@@ -202,7 +289,8 @@ function buildOfflineAssessment(symptoms: string, forcedAirplaneMode = false) {
         : 'Undifferentiated primary-care presentation';
   const assessment: MediScribeAssessment = {
     assessment_id: `offline-${Date.now()}`,
-    patient_id: 'local-demo-patient',
+    patient_id: patient?.patient_id || 'local-demo-patient',
+    created_at: new Date().toISOString(),
     urgency: urgent ? 'immediate' : fever ? 'urgent' : 'routine',
     triage_category: urgent ? 1 : fever ? 3 : 4,
     clinical_summary: `Offline assessment for symptoms: ${symptoms}`,
@@ -226,16 +314,25 @@ function buildOfflineAssessment(symptoms: string, forcedAirplaneMode = false) {
     model_source: 'mobile-offline-rules',
     disclaimer: 'Offline decision support only. Confirm with clinical review and local protocols.'
   };
+  const evidenceBundle = buildOfflineClinicalEvidence({
+    patient,
+    transcript: symptoms,
+    assessment
+  });
+  const enrichedAssessment: MediScribeAssessment = {
+    ...assessment,
+    ...evidenceBundle
+  };
   return {
     success: true,
     data: {
-      assessment,
-      agents: buildOfflineAgents(assessment, forcedAirplaneMode),
+      assessment: enrichedAssessment,
+      agents: buildOfflineAgents(enrichedAssessment, forcedAirplaneMode),
       metrics: { latency_ms: 430, fallback_used: true },
-      guardrails: { fallback_required: true, escalation_required: urgent, safety_messages: assessment.red_flags }
+      guardrails: { fallback_required: true, escalation_required: urgent, safety_messages: enrichedAssessment.red_flags }
     },
-    assessment,
-    agents: buildOfflineAgents(assessment, forcedAirplaneMode),
+    assessment: enrichedAssessment,
+    agents: buildOfflineAgents(enrichedAssessment, forcedAirplaneMode),
     metrics: { latency_ms: 430, fallback_used: true }
   };
 }

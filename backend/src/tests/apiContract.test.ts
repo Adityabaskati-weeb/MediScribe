@@ -57,6 +57,18 @@ async function main() {
   assert.ok(agentic.body.data.assessment);
   assert.ok(agentic.body.data.guardrails);
 
+  const demoCases = await request('/api/diagnoses/demo-cases');
+  assert.equal(demoCases.status, 200);
+  assert.equal(demoCases.body.success, true);
+  assert.ok(demoCases.body.data.cases.length >= 3);
+  assert.ok(demoCases.body.data.cases.some((item: any) => item.id === 'stroke-fast-track' && item.hero === true));
+
+  const demoOutput = await request('/api/diagnoses/demo-output?caseId=stroke-fast-track');
+  assert.equal(demoOutput.status, 200);
+  assert.equal(demoOutput.body.success, true);
+  assert.equal(demoOutput.body.data.selected_case.id, 'stroke-fast-track');
+  assert.ok(demoOutput.body.data.agentic_assessment.assessment.evidence_summary);
+
   const readiness = await request('/api/scalability/readiness', { headers: authHeaders });
   assert.equal(readiness.status, 200);
   assert.equal(readiness.body.success, true);

@@ -24,10 +24,12 @@ export function OfflineProofBanner({
   }, [pulse]);
 
   const activeCare = ['voice', 'summary', 'diagnosis', 'treatment'].includes(screen);
-  const title = emergency ? 'Critical command active' : activeCare ? 'Offline clinic workflow' : 'Offline ready';
+  const title = emergency ? 'Critical command active' : activeCare ? 'Offline clinic workflow' : 'Clinic command center';
   const message = emergency
     ? 'Safety rules are running locally. Refer now; sync can wait.'
-    : 'SQLite saves visits on-device. Gemma 4 via Ollama can reason locally when available.';
+    : activeCare
+      ? 'SQLite saves visits on-device. Gemma 4 via Ollama can reason locally when available.'
+      : 'Offline history, local reasoning, and cleaner referral handoffs are ready for the next patient.';
 
   return (
     <View

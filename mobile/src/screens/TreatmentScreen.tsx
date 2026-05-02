@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ConsultationDraft, ScreenName } from '../App';
 import { ActionButton } from '../components/ActionButton';
 import { Card } from '../components/Card';
@@ -8,16 +8,44 @@ import { RedFlagGuardian } from '../components/RedFlagGuardian';
 import { ReferralLetter } from '../components/ReferralLetter';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { StatusPill } from '../components/StatusPill';
+import { updateClinicOutcome } from '../services/databaseService';
 import { colors, spacing } from '../styles/theme';
 import { useAppTheme } from '../styles/ThemeContext';
+import type { ClinicOutcome } from '../types/clinical';
 import { medicineSafetyMessages } from '../utils/clinicalDecisionSupport';
 
-export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraft; onNavigate: (screen: ScreenName) => void }) {
+export function TreatmentScreen({
+  draft,
+  onDraftChange,
+  onNavigate
+}: {
+  draft: ConsultationDraft;
+  onDraftChange: (draft: ConsultationDraft) => void;
+  onNavigate: (screen: ScreenName) => void;
+}) {
   const assessment = draft.assessment;
   const treatment = assessment?.treatment;
   const urgent = assessment ? ['immediate', 'emergent'].includes(assessment.urgency) : false;
   const { theme } = useAppTheme();
   const c = theme.colors;
+  const selectedOutcome = assessment?.clinic_outcome?.status;
+
+  const setOutcome = (status: ClinicOutcome['status'], note: string) => {
+    if (!assessment) return;
+    const clinicOutcome: ClinicOutcome = {
+      status,
+      updated_at: new Date().toISOString(),
+      note
+    };
+    onDraftChange({
+      ...draft,
+      assessment: {
+        ...assessment,
+        clinic_outcome: clinicOutcome
+      }
+    });
+    updateClinicOutcome(assessment.assessment_id, clinicOutcome);
+  };
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -46,10 +74,19 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
       </Card>
 
       <Card>
-        <Text style={[styles.sectionTitle, { color: c.ink }]}>WHO-style offline guidance</Text>
-        <Text style={[styles.item, { color: c.ink }]}>- Check danger signs before medicine advice.</Text>
-        <Text style={[styles.item, { color: c.ink }]}>- Repeat abnormal vitals and document trend.</Text>
-        <Text style={[styles.item, { color: c.ink }]}>- Refer immediately for red flags, pregnancy danger signs, low oxygen, altered consciousness, or severe dehydration.</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Guideline grounding</Text>
+        <Text style={[styles.item, { color: c.ink }]}>
+          {assessment?.evidence_summary || 'Check danger signs before medicine advice, repeat abnormal vitals, and use local protocol before referral.'}
+        </Text>
+        {(assessment?.citations || []).map((citation) => (
+          <View key={citation.id} style={[styles.citationCard, { backgroundColor: c.surfaceSoft, borderColor: c.border }]}>
+            <Text style={[styles.citationTitle, { color: c.ink }]}>{citation.title}</Text>
+            <Text style={[styles.citationMeta, { color: c.muted }]}>
+              {citation.organization}{citation.updated_at ? ` | ${citation.updated_at}` : ''}
+            </Text>
+            <Text style={[styles.citationReason, { color: c.ink }]}>{citation.why_it_applies}</Text>
+          </View>
+        ))}
       </Card>
 
       <Card>
@@ -68,9 +105,61 @@ export function TreatmentScreen({ draft, onNavigate }: { draft: ConsultationDraf
       </Card>
 
       <Card>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Clinic outcome</Text>
+        <Text style={[styles.item, { color: c.ink }]}>
+          Capture what happened next so the demo shows resolution, not just a diagnosis.
+        </Text>
+        <View style={styles.outcomeGrid}>
+          {[
+            {
+              status: 'stabilized_before_transfer' as const,
+              label: 'Stabilized before transfer',
+              note: 'ABCs stabilized and repeat vitals captured before transfer.'
+            },
+            {
+              status: 'transfer_completed' as const,
+              label: 'Transfer completed',
+              note: 'Patient handed off to the receiving facility.'
+            },
+            {
+              status: 'follow_up_due' as const,
+              label: 'Follow-up due',
+              note: 'Needs clinician review or check-in at the next visit.'
+            }
+          ].map((option) => {
+            const active = selectedOutcome === option.status;
+            return (
+              <Pressable
+                key={option.status}
+                style={[
+                  styles.outcomeTile,
+                  {
+                    backgroundColor: active ? (option.status === 'transfer_completed' ? c.successSoft : option.status === 'stabilized_before_transfer' ? c.infoSoft : c.warningSoft) : c.surfaceSoft,
+                    borderColor: active ? (option.status === 'transfer_completed' ? c.success : option.status === 'stabilized_before_transfer' ? c.primary : c.warning) : c.border
+                  }
+                ]}
+                onPress={() => setOutcome(option.status, option.note)}
+              >
+                <Text style={[styles.outcomeTitle, { color: c.ink }]}>{option.label}</Text>
+                <Text style={[styles.outcomeNote, { color: c.muted }]}>{option.note}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        {assessment?.clinic_outcome ? (
+          <Text style={[styles.disclaimer, { color: c.muted }]}>
+            Current status: {formatOutcomeLabel(assessment.clinic_outcome.status)} | updated {assessment.clinic_outcome.updated_at}
+          </Text>
+        ) : null}
+      </Card>
+
+      <Card>
         <Text style={[styles.sectionTitle, { color: c.ink }]}>Follow up</Text>
         <Text style={[styles.item, { color: c.ink }]}>{treatment?.follow_up || 'Review if symptoms worsen, fever persists, or new danger signs appear.'}</Text>
         <Text style={[styles.referral, { color: urgent ? c.accent : c.primaryDark }]}>Referral plan: {cleanReferralText(treatment?.referral, urgent)}</Text>
+        {assessment?.referral_handoff?.destination ? (
+          <Text style={[styles.item, { color: c.ink }]}>Receiving facility: {assessment.referral_handoff.destination}</Text>
+        ) : null}
       </Card>
 
       <ReferralLetter patient={draft.patient} transcript={draft.transcript} assessment={assessment} />
@@ -88,6 +177,14 @@ function cleanReferralText(referral?: string, urgent = false) {
     .replace(/^Urgent clinician review$/i, 'Urgent clinician review today')
     .replace(/^Same-day review$/i, 'Same-day clinical review')
     .replace(/^Routine follow-up$/i, 'Routine follow-up');
+}
+
+function formatOutcomeLabel(status: ClinicOutcome['status']) {
+  return ({
+    transfer_completed: 'Transfer completed',
+    stabilized_before_transfer: 'Stabilized before transfer',
+    follow_up_due: 'Follow-up due'
+  } as Record<ClinicOutcome['status'], string>)[status];
 }
 
 const styles = StyleSheet.create({
@@ -146,5 +243,45 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 20,
     padding: 10
+  },
+  citationCard: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 4,
+    padding: 10
+  },
+  citationTitle: {
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 19
+  },
+  citationMeta: {
+    fontSize: 11,
+    fontWeight: '700',
+    lineHeight: 16
+  },
+  citationReason: {
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 19
+  },
+  outcomeGrid: {
+    gap: 10
+  },
+  outcomeTile: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 4,
+    padding: 12
+  },
+  outcomeTitle: {
+    fontSize: 15,
+    fontWeight: '900',
+    lineHeight: 20
+  },
+  outcomeNote: {
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18
   }
 });

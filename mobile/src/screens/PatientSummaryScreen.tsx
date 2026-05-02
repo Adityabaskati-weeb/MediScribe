@@ -29,7 +29,7 @@ export function PatientSummaryScreen({
   const symptoms = useMemo(() => extractSymptoms(notes), [notes]);
 
   const continueToDiagnosis = () => {
-    onDraftChange({ ...draft, transcript: notes });
+    onDraftChange({ ...draft, transcript: notes, assessment: undefined, cachedDiagnosisResult: undefined });
     onNavigate('diagnosis');
   };
 

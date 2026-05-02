@@ -2,7 +2,16 @@ import { NextFunction, Request, Response } from 'express';
 import { createHmac } from 'crypto';
 import { errorResponse } from '../utils/apiResponse';
 
-const PUBLIC_PATHS = ['/health', '/metrics', '/api/system/architecture', '/api/system/demo-pack', '/api/diagnoses/evaluation', '/api/diagnoses/performance', '/api/diagnoses/demo-output'];
+const PUBLIC_PATHS = [
+  '/health',
+  '/metrics',
+  '/api/system/architecture',
+  '/api/system/demo-pack',
+  '/api/diagnoses/evaluation',
+  '/api/diagnoses/performance',
+  '/api/diagnoses/demo-cases',
+  '/api/diagnoses/demo-output'
+];
 
 type Role = 'health_worker' | 'doctor' | 'admin';
 

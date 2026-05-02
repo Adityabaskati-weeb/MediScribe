@@ -67,11 +67,17 @@ export function DiagnosisResult({
       </View>
 
       <CarePathwayTimeline urgent={urgent} offlineDemo={offlineDemo} />
+      <GuidelineGrounding assessment={assessment} />
 
       {urgent && (
         <View style={[styles.referralCommand, { backgroundColor: c.accent }]}>
           <Text style={styles.referralCommandTitle}>Refer now</Text>
-          <Text style={styles.referralCommandCopy}>Do not wait for sync. Repeat vitals, monitor the patient, and arrange transfer.</Text>
+          <Text style={styles.referralCommandCopy}>
+            {assessment.referral_handoff?.reason_for_referral || 'Do not wait for sync. Repeat vitals, monitor the patient, and arrange transfer.'}
+          </Text>
+          {assessment.referral_handoff?.destination ? (
+            <Text style={styles.referralDestination}>Destination: {assessment.referral_handoff.destination}</Text>
+          ) : null}
         </View>
       )}
 
@@ -178,6 +184,7 @@ function EmergencyCatchHero({
         {catchReason}. {offlineDemo ? 'Airplane mode is active, so the referral path uses local safety logic.' : `Top concern: ${top}.`}
       </Text>
       <View style={styles.catchProofRow}>
+        {assessment.hero_workflow ? <ProofChip label={friendlyWorkflowLabel(assessment.hero_workflow)} tone={urgent ? 'danger' : 'info'} /> : null}
         <ProofChip label={offlineDemo ? 'Internet off' : 'AI ready'} tone={offlineDemo ? 'danger' : 'info'} />
         <ProofChip label="Saved locally" tone="success" />
         <ProofChip label={urgent ? 'Red flags first' : 'Guardrails checked'} tone={urgent ? 'danger' : 'success'} />
@@ -268,6 +275,31 @@ function ProofChip({ label, tone }: { label: string; tone: 'info' | 'success' | 
   );
 }
 
+function GuidelineGrounding({ assessment }: { assessment: MediScribeAssessment }) {
+  const { theme } = useAppTheme();
+  const c = theme.colors;
+  const citations = assessment.citations || [];
+  if (!assessment.evidence_summary && citations.length === 0) return null;
+
+  return (
+    <View style={[styles.groundingCard, { backgroundColor: c.surfaceSoft, borderColor: c.border }]}>
+      <Text style={[styles.groundingKicker, { color: c.primaryDark }]}>Guideline grounding</Text>
+      {assessment.evidence_summary ? (
+        <Text style={[styles.groundingSummary, { color: c.ink }]}>{assessment.evidence_summary}</Text>
+      ) : null}
+      {citations.map((citation) => (
+        <View key={citation.id} style={[styles.citationCard, { backgroundColor: c.surface, borderColor: c.border }]}>
+          <Text style={[styles.citationTitle, { color: c.ink }]}>{citation.title}</Text>
+          <Text style={[styles.citationMeta, { color: c.muted }]}>
+            {citation.organization}{citation.updated_at ? ` | updated ${citation.updated_at}` : ''}
+          </Text>
+          <Text style={[styles.citationReason, { color: c.ink }]}>{citation.why_it_applies}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 function findCatchReason(assessment: MediScribeAssessment, transcript: string) {
   const red = assessment.red_flags?.find((flag) => flag.level === 'red')?.message;
   if (/pregnan/i.test(transcript) && /bleeding|abdominal pain|dizzy/i.test(transcript)) {
@@ -333,6 +365,17 @@ function buildCouncilAgents(assessment: MediScribeAssessment, agents: AgentStep[
   ];
 }
 
+function friendlyWorkflowLabel(workflow: string) {
+  return ({
+    'maternal-emergency': 'Maternal emergency path',
+    'stroke-fast-track': 'Stroke fast-track',
+    'cardiac-emergency': 'Cardiac emergency path',
+    'child-respiratory': 'Child respiratory path',
+    'sepsis-escalation': 'Sepsis escalation',
+    'general-triage': 'General triage'
+  } as Record<string, string>)[workflow] || workflow;
+}
+
 const styles = StyleSheet.create({
   alertPanel: {
     borderWidth: 1,
@@ -395,6 +438,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
     lineHeight: 21
+  },
+  referralDestination: {
+    color: '#fff7f6',
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 19
   },
   agentGrid: {
     gap: 9
@@ -642,5 +691,42 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '900',
     textAlign: 'center'
+  },
+  groundingCard: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 10,
+    padding: 12
+  },
+  groundingKicker: {
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase'
+  },
+  groundingSummary: {
+    fontSize: 15,
+    fontWeight: '800',
+    lineHeight: 22
+  },
+  citationCard: {
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 4,
+    padding: 10
+  },
+  citationTitle: {
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 19
+  },
+  citationMeta: {
+    fontSize: 11,
+    fontWeight: '700',
+    lineHeight: 16
+  },
+  citationReason: {
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18
   }
 });

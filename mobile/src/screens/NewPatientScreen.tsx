@@ -35,7 +35,17 @@ export function NewPatientScreen({
       <ConsultationProgress current={1} />
       <PatientForm onSubmit={(patient) => {
         createPatient(patient);
-        onDraftChange({ ...draft, patient });
+        onDraftChange({
+          ...draft,
+          patient,
+          transcript: '',
+          chartText: '',
+          assessment: undefined,
+          cachedDiagnosisResult: undefined,
+          demoCaseId: undefined,
+          forceOfflineDemo: false,
+          consultationStartedAt: Date.now()
+        });
         onNavigate('voice');
       }} language={draft.language} />
     </ScrollView>

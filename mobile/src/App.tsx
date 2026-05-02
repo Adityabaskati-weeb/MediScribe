@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, SafeAreaView, StyleSheet } from 'react-native';
+import { Animated, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { AppErrorBoundary } from './components/AppErrorBoundary';
@@ -68,7 +68,7 @@ function MediScribeApp() {
     if (screen === 'voice') return <VoiceScreen draft={draft} onDraftChange={setDraft} onNavigate={setScreen} />;
     if (screen === 'summary') return <PatientSummaryScreen draft={draft} onDraftChange={setDraft} onNavigate={setScreen} />;
     if (screen === 'diagnosis') return <DiagnosisScreen draft={draft} onDraftChange={setDraft} onNavigate={setScreen} />;
-    if (screen === 'treatment') return <TreatmentScreen draft={draft} onNavigate={setScreen} />;
+    if (screen === 'treatment') return <TreatmentScreen draft={draft} onDraftChange={setDraft} onNavigate={setScreen} />;
     if (screen === 'history') return <HistoryScreen onNavigate={setScreen} />;
     if (screen === 'settings') return <SettingsScreen draft={draft} onDraftChange={setDraft} onNavigate={setScreen} />;
     return <HomeScreen draft={draft} onDraftChange={setDraft} onNavigate={setScreen} />;
@@ -81,7 +81,7 @@ function MediScribeApp() {
     (draft.assessment && ['immediate', 'emergent'].includes(draft.assessment.urgency))
   );
 
-  return (
+  const appBody = (
     <SafeAreaView style={[styles.shell, { backgroundColor: theme.colors.background }]}>
       <OfflineProofBanner emergency={emergencyActive} screen={screen} />
       <Animated.View style={[styles.content, { opacity: screenFade }]}>{renderScreen()}</Animated.View>
@@ -89,9 +89,37 @@ function MediScribeApp() {
       <StatusBar style={theme.mode === 'dark' ? 'light' : 'dark'} />
     </SafeAreaView>
   );
+
+  if (Platform.OS !== 'web') {
+    return appBody;
+  }
+
+  return (
+    <View style={[styles.webViewport, { backgroundColor: theme.mode === 'dark' ? '#061217' : '#dfeef5' }]}>
+      <View style={[styles.webFrame, { backgroundColor: theme.colors.background, borderColor: theme.colors.borderStrong }]}>
+        {appBody}
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
+  webViewport: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 18,
+    width: '100%'
+  },
+  webFrame: {
+    borderRadius: 18,
+    borderWidth: 1,
+    flex: 1,
+    maxWidth: 430,
+    overflow: 'hidden',
+    width: '100%'
+  },
   shell: {
     flex: 1,
     backgroundColor: colors.background
