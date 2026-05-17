@@ -70,11 +70,18 @@ python model_training/train.py `
   --max-steps 150
 ```
 
+Important:
+- `HF_TOKEN` must be a Hugging Face **User Access Token** with `write` permission.
+- The namespace in `--hub-model-id` must belong to that token's user or to an org where that user has write access.
+- Example: if the repo is `prodigyhuh/mediscribe-medical-adapter`, the token must be from `prodigyhuh` or from a member account with write access to that namespace.
+- The training script now runs a Hub preflight before model loading so permission problems fail fast instead of after GPU training.
+
 ## Hugging Face Jobs Training
 
 After the GitHub repo is pushed, this command trains from public raw files and
 pushes the adapter to your Hugging Face account. HF Jobs require a paid-capable
-Hugging Face account and an `HF_TOKEN` secret with write permission.
+Hugging Face account and an `HF_TOKEN` secret with `write` permission for the
+same namespace used in `--hub-model-id`.
 
 ```powershell
 hf jobs uv run `
@@ -93,6 +100,16 @@ hf jobs uv run `
   --trackio-space your-hf-name/trackio `
   --max-steps 150
 ```
+
+Recommended preflight before launching the GPU job:
+
+```powershell
+hf auth whoami
+hf repos create your-hf-name/mediscribe-medical-adapter --type model --exist-ok --token $env:HF_TOKEN
+```
+
+If that command returns `403 Forbidden`, the fix is not in the training code. It
+means the token cannot write to the namespace you chose.
 
 This run now uploads:
 

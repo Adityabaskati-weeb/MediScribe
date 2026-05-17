@@ -276,11 +276,62 @@ def check_gpu() -> None:
     print(f"CUDA available: {torch.cuda.get_device_name(0)}")
 
 
-def verify_hf_token(token: str) -> None:
+def verify_hf_token(token: str) -> dict[str, Any]:
     from huggingface_hub import HfApi
 
     api = HfApi(token=token)
-    api.whoami()
+    return api.whoami()
+
+
+def _extract_hf_namespaces(identity: dict[str, Any]) -> tuple[str | None, set[str]]:
+    username: str | None = None
+    if isinstance(identity, dict):
+        raw_username = identity.get("name")
+        if isinstance(raw_username, str) and raw_username.strip():
+            username = raw_username.strip()
+
+    org_names: set[str] = set()
+    for org in identity.get("orgs", []) if isinstance(identity, dict) else []:
+        if not isinstance(org, dict):
+            continue
+        raw_name = org.get("name")
+        if isinstance(raw_name, str) and raw_name.strip():
+            org_names.add(raw_name.strip())
+            continue
+        entity = org.get("entity")
+        if isinstance(entity, dict):
+            entity_name = entity.get("name")
+            if isinstance(entity_name, str) and entity_name.strip():
+                org_names.add(entity_name.strip())
+    return username, org_names
+
+
+def ensure_hub_write_access(repo_id: str, token: str, identity: dict[str, Any] | None = None) -> None:
+    from huggingface_hub import HfApi
+
+    api = HfApi(token=token)
+    resolved_identity = identity or api.whoami()
+    username, org_names = _extract_hf_namespaces(resolved_identity)
+    namespace = repo_id.split("/", 1)[0] if "/" in repo_id else username
+    allowed_namespaces = {name for name in {username, *org_names} if name}
+
+    if namespace and allowed_namespaces and namespace not in allowed_namespaces:
+        raise PermissionError(
+            "HF_TOKEN does not match the target Hugging Face namespace. "
+            f"Token identity can write under {sorted(allowed_namespaces)}, but "
+            f"--hub-model-id points to '{repo_id}'. Use a write token from that "
+            "account/org or change --hub-model-id to a namespace this token owns."
+        )
+
+    try:
+        api.create_repo(repo_id=repo_id, repo_type="model", exist_ok=True)
+    except Exception as exc:  # noqa: BLE001
+        raise PermissionError(
+            "HF Hub upload preflight failed. Hugging Face requires a User Access "
+            f"Token with write permission for '{repo_id}'. Create or update the "
+            "HF_TOKEN secret with write access to that namespace, or pre-create "
+            "the repo with the same token before launching the job."
+        ) from exc
 
 
 def initialize_trackio(args: argparse.Namespace) -> bool:
@@ -530,17 +581,20 @@ def main() -> None:
         os.environ.setdefault("TRACKIO_PROJECT", "mediscribe-unsloth")
     os.environ.setdefault("HF_HUB_ENABLE_HF_TRANSFER", "1")
 
+    token = os.environ.get("HF_TOKEN")
+    if args.push_to_hub and not token:
+        raise RuntimeError("HF_TOKEN is required when --push-to-hub is enabled.")
+    identity: dict[str, Any] | None = None
+    if token:
+        identity = verify_hf_token(token)
+    if args.push_to_hub and args.hub_model_id and token:
+        ensure_hub_write_access(args.hub_model_id, token=token, identity=identity)
+
     check_gpu()
 
     from datasets import load_dataset
     from unsloth import FastLanguageModel
     from trl import SFTConfig, SFTTrainer
-
-    token = os.environ.get("HF_TOKEN")
-    if args.push_to_hub and not token:
-        raise RuntimeError("HF_TOKEN is required when --push-to-hub is enabled.")
-    if token:
-        verify_hf_token(token)
 
     trackio_enabled = initialize_trackio(args)
 

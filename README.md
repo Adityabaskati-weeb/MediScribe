@@ -87,6 +87,11 @@ python model_training/train.py --base-model unsloth/gemma-4-E4B-it-unsloth-bnb-4
 python model_training/evaluate.py
 ```
 
+If you push adapter weights to Hugging Face, use a `write` token whose account
+matches the namespace in `--hub-model-id`. For example,
+`prodigyhuh/mediscribe-medical-adapter` needs a token that can write under
+`prodigyhuh`.
+
 ## Backend Endpoints
 
 - `GET /health`
