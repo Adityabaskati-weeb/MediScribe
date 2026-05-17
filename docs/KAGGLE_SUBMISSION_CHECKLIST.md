@@ -25,8 +25,10 @@ Strong secondary positioning inside the writeup:
 - Special Technology Track: Ollama, because Gemma 4 runs locally through Ollama.
 
 Do not claim LiteRT, Cactus, or llama.cpp prizes unless those exact runtimes are
-added before submission. Claim Unsloth only after the `model_training/train.py`
-GPU run completes and public adapter weights plus benchmark metrics are linked.
+added before submission. Unsloth is now claimable because the
+`model_training/train.py` GPU run completed and the public adapter is live at
+`https://hf.co/prodigyhuh/mediscribe-medical-adapter`. Include the completed job
+link in the writeup: `https://huggingface.co/jobs/prodigyhuh/6a096bf83308d79117b91adc`.
 
 ## Gemma Naming And Attribution
 
@@ -42,6 +44,8 @@ GPU run completes and public adapter weights plus benchmark metrics are linked.
 - Gemma 4 default model: `gemma4:e4b`.
 - Local model serving: Ollama.
 - Fine-tuning path: Unsloth LoRA SFT in `model_training/train.py`.
+- Public adapter proof: `https://hf.co/prodigyhuh/mediscribe-medical-adapter`.
+- Completed GPU training proof: `https://huggingface.co/jobs/prodigyhuh/6a096bf83308d79117b91adc`.
 - Offline-first storage: SQLite on mobile.
 - Cloud sync layer: Node/Express plus PostgreSQL.
 - Safety: deterministic guardrails override model confidence.

@@ -4,6 +4,17 @@ This is the real fine-tuning path for the MediScribe Medical Adapter. It turns
 the curated rural-clinic cases into Gemma 4 chat SFT examples and trains a LoRA
 adapter with Unsloth.
 
+## Completed Public Run
+
+The current public artifact is live:
+
+- Model repo: `https://hf.co/prodigyhuh/mediscribe-medical-adapter`
+- Completed HF Job: `https://huggingface.co/jobs/prodigyhuh/6a096bf83308d79117b91adc`
+- Completion date: `2026-05-17`
+- Runtime: about `11m 51s`
+- Hardware: `a10g-large`
+- Base model: `unsloth/gemma-4-E4B-it-unsloth-bnb-4bit`
+
 ## What This Adds
 
 - Gemma 4 chat-format dataset generation using `system`, `user`, and `assistant`
@@ -131,8 +142,8 @@ true:
 - The model card says the adapter is based on Gemma 4 and includes:
   `Gemma is a trademark of Google LLC.`
 
-Until then, the project should say it includes an Unsloth-ready fine-tuning
-pipeline, not that a fine-tuned adapter has already been published.
+These conditions are satisfied for the current public adapter linked above, so
+the project can now credibly claim a completed Unsloth fine-tuning path.
 
 ## Sources
 

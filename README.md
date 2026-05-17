@@ -26,7 +26,7 @@ Core demo line: sync can wait, red flags cannot.
 - Uses Gemma 4: `gemma4:e4b` through Ollama, medical response normalization, and fine-tuning artifact flow.
 - Production-ready: mobile app, backend API, dashboard, Docker, validation, logging, tests, and docs.
 - Agentic safety pipeline: diagnosis, reasoning, treatment, and safety agents with audit logs.
-- Measurable impact: 26-case system benchmark, 100% current pass rate, 100% red-flag recall, and a real Unsloth training set with 32 curated SFT rows plus 26 adapter benchmark cases ready for GPU evaluation publishing.
+- Measurable impact: 26-case system benchmark, 100% current pass rate, 100% red-flag recall, and a published Unsloth adapter trained from 32 curated SFT rows plus a 26-case adapter benchmark pack.
 - Open source: MIT licensed and documented for replication.
 - Clinic scenarios: tested against chest pain, postpartum hypertension, pediatric fever, dengue, pneumonia/sepsis, and stroke workflows.
 
@@ -86,6 +86,13 @@ python model_training/train.py --dry-run
 python model_training/train.py --base-model unsloth/gemma-4-E4B-it-unsloth-bnb-4bit --load-in-4bit --max-steps 150
 python model_training/evaluate.py
 ```
+
+Published adapter proof:
+
+- Model repo: `https://hf.co/prodigyhuh/mediscribe-medical-adapter`
+- Completed GPU job: `https://huggingface.co/jobs/prodigyhuh/6a096bf83308d79117b91adc`
+- Base model for the public adapter: `unsloth/gemma-4-E4B-it-unsloth-bnb-4bit`
+- Training pack: 32 curated SFT rows, 6 held-out eval rows, 26 post-training benchmark cases
 
 If you push adapter weights to Hugging Face, use a `write` token whose account
 matches the namespace in `--hub-model-id`. For example,
@@ -152,6 +159,7 @@ matches the namespace in `--hub-model-id`. For example,
 - [Scalability Enhancements Implemented](docs/SCALABILITY_ENHANCEMENTS_IMPLEMENTED.md)
 - [Engineering Review Suggestions](docs/ENGINEERING_REVIEW_SUGGESTIONS.md)
 - [Winning Phase Implementation](docs/WINNING_PHASE_IMPLEMENTATION.md)
+- [Hackathon Readiness Scorecard](docs/HACKATHON_READINESS_SCORECARD.md)
 - [Unsloth Fine-Tuning](docs/UNSLOTH_FINE_TUNING.md)
 - [Roadmap](ROADMAP.md)
 - [Video Script](docs/MEDISCRIBE_VIDEO_SCRIPT.md)

@@ -16,8 +16,8 @@ Evidence:
 
 ## Gemma Optimized
 
-Claim: optimized for medical cases through Gemma/Ollama prompting and an
-Unsloth-ready adapter training pipeline.
+Claim: optimized for medical cases through Gemma/Ollama prompting and a
+completed public Unsloth adapter path.
 
 Evidence:
 
@@ -31,10 +31,12 @@ Evidence:
 - Unsloth LoRA SFT script: `model_training/train.py`.
 - Fine-tuning runbook: `docs/UNSLOTH_FINE_TUNING.md`.
 - Evaluation script and metrics: `model_training/evaluate.py`.
+- Public adapter repo: `https://hf.co/prodigyhuh/mediscribe-medical-adapter`.
+- Completed GPU job: `https://huggingface.co/jobs/prodigyhuh/6a096bf83308d79117b91adc`.
 
-Note: the repository now contains the real Unsloth training path. Do not claim a
-published Unsloth adapter until a GPU run completes and public adapter weights
-plus benchmarks are linked in the Kaggle writeup.
+Note: this condition is now satisfied. A real GPU run completed on 2026-05-17
+and published the MediScribe Medical Adapter plus training artifacts to the
+public Hugging Face model repo linked above.
 
 ## Production-Ready
 
@@ -78,7 +80,9 @@ Fine-tuning dataset and adapter proof:
 - SFT rows prepared for GPU training: 32.
 - Holdout eval rows prepared for trainer evaluation: 6.
 - Rural-clinic adapter benchmark cases prepared for post-training generation scoring: 26.
-- Benchmark artifacts are written to the adapter output folder and uploaded with the model repo after a real GPU run.
+- Public adapter weights are live on Hugging Face.
+- A real GPU training job completed and uploaded artifacts successfully.
+- Benchmark artifacts are written to the adapter output folder and uploaded with the public model repo after the completed GPU run.
 
 Metric files:
 

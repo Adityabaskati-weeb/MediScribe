@@ -79,9 +79,10 @@ structured rural-health prompt with low-resource constraints. The default model 
 
 MediScribe also includes an Unsloth LoRA fine-tuning path in `model_training/`:
 curated medical cases, Gemma 4 chat SFT conversion, dataset validation, a GPU
-training script, adapter model-card generation, and optional Hugging Face Hub
-publishing. The Unsloth prize should be claimed only after the public adapter
-weights and benchmark metrics are linked.
+training script, adapter model-card generation, and Hugging Face Hub
+publishing. That path is now public: the MediScribe Medical Adapter lives at
+`https://hf.co/prodigyhuh/mediscribe-medical-adapter`, and the completed GPU job
+is recorded at `https://huggingface.co/jobs/prodigyhuh/6a096bf83308d79117b91adc`.
 
 ## Agentic Safety
 
@@ -108,8 +109,9 @@ rate, cache stats, and Prometheus metrics.
 
 The second is the Unsloth adapter path: 32 curated SFT rows, 6 held-out eval
 rows, and a 26-case post-training benchmark pack that is scored after a real
-GPU run. We keep these artifacts separate so the submission does not blur
-end-to-end product safety with model-adapter training quality.
+GPU run. That GPU run completed on 2026-05-17 and published the adapter plus
+artifacts to Hugging Face. We keep these artifacts separate so the submission
+does not blur end-to-end product safety with model-adapter training quality.
 
 ## Why It Matters
 
