@@ -1,163 +1,293 @@
-# MediScribe 3-Minute Story-First Demo Script
+# MediScribe 3-Minute Demo Production Playbook
 
-Goal: make judges feel the problem before they see the architecture.
+Goal: deliver a judge-ready, story-first video that feels real in the first 20
+seconds and proves the technology is not faked.
 
-## Core Story
+Core line:
 
-A rural health worker is alone in a busy clinic. The internet is down. A pregnant
-patient arrives with bleeding and abdominal pain. The dangerous part is not that
-the clinic lacks AI. The dangerous part is that a subtle emergency can look like
-one more patient in a long queue.
+`Sync can wait. Red flags cannot.`
 
-MediScribe turns that moment into a safer workflow: speak symptoms, catch the red
-flag, explain why, refer now, save offline, and sync later.
+## Video Outcome
 
-## 0:00-0:20 Problem Hook
+By the end of the video, judges should remember five things:
 
-Visual:
+1. MediScribe works when the internet does not.
+2. It catches dangerous maternal and stroke cases quickly.
+3. Gemma 4 is actually used, not just mentioned.
+4. The workflow is built for rural health workers, not AI enthusiasts.
+5. The system is real: public code, public adapter, real GPU run, real metrics.
 
-- Busy rural clinic.
-- Paper register.
-- No-network icon.
-- Health worker looking at a line of waiting patients.
+## Final Runtime
 
-Voiceover:
+- Target: `2:45` to `2:58`
+- Never go over `3:00`
 
-"In rural clinics, one health worker may see 50 patients a day. The internet is
-unreliable, records are paper-based, and the most dangerous patients do not
-always look dramatic at first."
+## Recording Order
 
-On screen:
+Record in this order so editing stays easy:
 
-- 50+ patients per day.
-- Low or no internet.
-- Dangerous cases can be missed.
+1. Maternal emergency offline flow
+2. Stroke hero flow
+3. Voice intake
+4. Chart scan
+5. Dashboard and outbreak radar
+6. Public proof: GitHub, Hugging Face adapter, completed HF job
 
-## 0:20-0:45 The Human Moment
+## Shot-by-Shot Script
 
-Visual:
-
-- Open MediScribe Home.
-- Tap Airplane Mode Emergency Demo.
-- Show patient: 32 weeks pregnant, bleeding, abdominal pain, dizziness.
-
-Voiceover:
-
-"Now imagine this patient arrives during a network outage: 32 weeks pregnant,
-bleeding, abdominal pain, dizzy. The worker cannot wait for the cloud."
-
-On screen:
-
-- Airplane Mode Emergency Demo.
-- Offline Ready.
-- Pregnancy danger signs.
-
-## 0:45-1:20 Wow Moment: Offline Emergency Catch
+### 0:00-0:07 Cold Open
 
 Visual:
 
-- Diagnosis screen.
-- Red REFER NOW banner.
-- Before vs After timer.
-- Referral command: Do not wait for sync.
+- Black screen for a beat
+- Cut immediately to phone in airplane mode
+- Show no internet / offline state clearly
 
 Voiceover:
 
-"MediScribe does not freeze. Local safety rules catch the emergency, explain the
-risk in simple language, and create a referral plan before anything syncs."
+`A rural clinic cannot wait for the cloud.`
 
-On screen:
+On-screen text:
 
-- REFER NOW.
-- Emergency transfer now.
-- Saved offline.
-- Sync can wait. Red flags cannot.
+- `No internet`
+- `Pregnant patient`
+- `High-risk symptoms`
 
-## 1:20-1:55 Gemma 4 Intelligence Made Visible
+### 0:07-0:20 Problem Hook
 
 Visual:
 
-- AI Safety Council cards.
-- Diagnosis Agent, Reasoning Agent, Treatment Agent, Safety Agent.
-- Safety Agent highlighted.
+- Open MediScribe home
+- Show one strong action, not menu wandering
+- Tap `Airplane Mode Emergency Demo`
 
 Voiceover:
 
-"When Gemma 4 is available through Ollama, it helps rank diagnoses and explain
-the reasoning. But MediScribe never lets the model act alone. A safety agent
-checks red flags and overrides routine advice."
+`One health worker may see 50 patients in a day. The dangerous cases do not always look dramatic at first.`
 
-On screen:
+On-screen text:
 
-- Diagnosis Agent: ranked concern.
-- Reasoning Agent: why it matters.
-- Treatment Agent: next steps.
-- Safety Agent: escalated.
+- `50+ patients/day`
+- `Offline clinic`
+- `Missed red flags cost lives`
 
-## 1:55-2:25 Real Clinic Workflow
+### 0:20-0:42 Hero Case 1: Maternal Emergency
 
 Visual:
 
-- Voice intake.
-- Chart scan.
-- Patient summary.
-- Treatment handoff.
+- Show the seeded maternal case
+- Focus on the patient summary, vitals, and danger signs
+- Move fast, do not linger on typing
 
 Voiceover:
 
-"The workflow matches the clinic: speak symptoms, scan a chart, review the
-summary, refer if needed, and keep the record on the phone until the network
-returns."
+`This patient is 32 weeks pregnant with bleeding, abdominal pain, and dizziness. The worker cannot wait for a network round-trip.`
 
-On screen:
+On-screen text:
 
-- Voice plus text plus chart scan.
-- Offline SQLite record.
-- Clean handoff summary.
+- `32 weeks pregnant`
+- `Bleeding`
+- `Abdominal pain`
+- `Dizziness`
 
-## 2:25-2:45 Public Health Angle
+### 0:42-1:05 The Wow Moment
 
 Visual:
 
-- Dashboard.
-- Outbreak Radar.
-- Possible dengue cluster.
+- Land on the diagnosis/referral screen
+- Hold on the red emergency state for a full beat
+- Show referral guidance and offline save
 
 Voiceover:
 
-"One patient is the first layer. Across many offline visits, MediScribe can flag
-patterns: dengue-like cases, respiratory clusters, and maternal danger-sign
-alerts."
+`MediScribe does not freeze. It catches the red flag, explains the danger in plain language, creates a referral handoff, and saves the visit offline.`
 
-On screen:
+On-screen text:
 
-- Outbreak Radar.
-- Possible dengue cluster.
-- Clinic-lead action.
+- `REFER NOW`
+- `Emergency transfer`
+- `Saved offline`
+- `Sync can wait. Red flags cannot.`
 
-## 2:45-3:00 Proof And Close
+### 1:05-1:22 Why The AI Is Trustworthy
 
 Visual:
 
-- Dashboard metrics.
-- Evaluation endpoint.
-- GitHub repo.
+- Show the AI Safety Council / multi-agent area
+- Highlight Diagnosis, Reasoning, Treatment, and Safety
+- Make Safety the last emphasis
 
 Voiceover:
 
-"This is not a concept video. MediScribe is a working Gemma 4 application with
-offline fallback, agentic safety, local storage, and a 26-case rural clinic
-benchmark. Medical AI should work where the internet does not."
+`Gemma 4 helps rank diagnoses and explain the reasoning. But the model does not act alone. Safety rules override routine advice when danger signs appear.`
 
-On screen:
+On-screen text:
 
-- 26 benchmark cases.
-- 100% red-flag recall.
-- 100% offline intake success.
-- Local Gemma 4 via Ollama.
-- GitHub repository link.
+- `Diagnosis Agent`
+- `Reasoning Agent`
+- `Treatment Agent`
+- `Safety Agent`
 
-## Final One-Line Pitch
+### 1:22-1:42 Hero Case 2: Stroke
 
-MediScribe: local Gemma 4 intelligence for the clinic moments where waiting is
-dangerous.
+Visual:
+
+- Jump to the stroke hero workflow
+- Show facial droop, weakness, slurred speech cues in the case summary
+- Show urgent escalation
+
+Voiceover:
+
+`The second hero path is stroke. When FAST symptoms appear, the app escalates immediately and structures the handoff while the clock is still on the patient’s side.`
+
+On-screen text:
+
+- `Stroke pathway`
+- `FAST symptoms`
+- `Immediate escalation`
+
+### 1:42-2:00 Real Workflow Proof
+
+Visual:
+
+- Show voice intake screen
+- Show chart scan / confirmation
+- Show patient summary
+
+Voiceover:
+
+`The workflow matches the clinic: speak symptoms, scan chart notes, confirm the extracted summary, and move straight to a safer decision.`
+
+On-screen text:
+
+- `Voice intake`
+- `Chart scan`
+- `Structured summary`
+
+### 2:00-2:20 Offline-to-System Story
+
+Visual:
+
+- Show history saved on device
+- Then cut to dashboard
+- Show outbreak radar or clinic pattern view
+
+Voiceover:
+
+`One visit is the first layer. Across many offline visits, clinic leaders can see dangerous patterns: maternal risk, respiratory clusters, and outbreak signals.`
+
+On-screen text:
+
+- `Saved on device`
+- `Synced later`
+- `Clinic insight`
+
+### 2:20-2:42 Technical Proof
+
+Visual:
+
+- Show dashboard metrics
+- Show GitHub repo
+- Show public Hugging Face adapter
+- Show completed Hugging Face job page
+
+Voiceover:
+
+`This is a working Gemma 4 system: local inference through Ollama, offline mobile storage, deterministic safety checks, public code, and a published Unsloth adapter trained on curated clinic scenarios.`
+
+On-screen text:
+
+- `Gemma 4 via Ollama`
+- `Offline-first mobile app`
+- `Public code`
+- `Public adapter`
+
+### 2:42-2:58 Closing
+
+Visual:
+
+- Return to the maternal emergency referral screen
+- End on the strongest UI state, not the dashboard
+
+Voiceover:
+
+`MediScribe brings local medical intelligence to the clinic moments where waiting is dangerous.`
+
+On-screen text:
+
+- `MediScribe`
+- `Offline AI for rural clinics`
+
+## Screen Recording Checklist
+
+Record all of these before editing:
+
+- Home screen with offline indicator visible
+- Tap into `Airplane Mode Emergency Demo`
+- Maternal emergency patient summary
+- `REFER NOW` red-state screen
+- Referral handoff screen
+- Stroke hero case escalation
+- Voice intake screen with captured text visible
+- Chart scan screen with extracted text confirmation
+- Patient history / offline save proof
+- Dashboard readiness metrics
+- Outbreak radar
+- Public GitHub repo page
+- Public HF adapter page
+- Public HF completed job page
+
+## Recording Rules
+
+- Record in portrait for phone footage
+- Keep taps slow and deliberate
+- Turn on airplane mode before the maternal demo
+- Hide system clutter and notifications
+- Use seeded demo data, not ad-hoc manual typing
+- Never scroll aimlessly
+- Hold each important screen for at least `2` full seconds
+
+## Edit Rules
+
+- Use hard cuts, not slow fades
+- Keep background music low
+- Let the voiceover lead
+- Use text overlays sparingly
+- Put the strongest phrase on screen only once:
+  `Sync can wait. Red flags cannot.`
+
+## Screenshot Pack For Judges
+
+Export these six images after recording:
+
+1. Home screen with offline readiness
+2. Maternal emergency `REFER NOW`
+3. Multi-agent safety view
+4. Stroke escalation screen
+5. Dashboard outbreak radar
+6. Hugging Face adapter proof
+
+## Final Export Checklist
+
+- Main export: `1080p` for YouTube
+- Backup export: `720p`
+- Ensure total runtime is under `3:00`
+- Confirm all on-screen numbers match current product claims
+- Confirm adapter link and repo link are visible and correct
+
+## Voiceover Rules
+
+- Calm, serious, trustworthy
+- No hype words in the first 30 seconds
+- Avoid jargon unless the visual is already proving it
+- Keep medical wording simple and precise
+
+## Last-Second QA
+
+Before upload, confirm:
+
+- The video starts with the clinic problem, not architecture
+- The maternal emergency appears before the dashboard
+- Gemma 4 is shown as real infrastructure, not just narration
+- The HF adapter and completed job are visible somewhere
+- The final frame leaves a strong human-use impression

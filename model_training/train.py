@@ -555,6 +555,20 @@ def upload_artifacts(output_dir: Path, repo_id: str, token: str) -> None:
     )
 
 
+def verify_adapter_artifacts(output_dir: Path) -> None:
+    required = [
+        output_dir / "adapter_config.json",
+        output_dir / "adapter_model.safetensors",
+        output_dir / "training_metrics.json",
+    ]
+    missing = [str(path.name) for path in required if not path.exists()]
+    if missing:
+        raise FileNotFoundError(
+            "Adapter export is incomplete. Missing required adapter artifacts: "
+            + ", ".join(missing)
+        )
+
+
 def main() -> None:
     args = parse_args()
     train_path, eval_path, benchmark_path = resolve_dataset_paths(args)
@@ -702,6 +716,7 @@ def main() -> None:
         encoding="utf-8",
     )
     write_model_card(output_dir, args, metrics, benchmark_summary)
+    verify_adapter_artifacts(output_dir)
 
     if args.save_gguf:
         gguf_dir = output_dir / "gguf"

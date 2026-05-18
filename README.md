@@ -94,6 +94,10 @@ Published adapter proof:
 - Base model for the public adapter: `unsloth/gemma-4-E4B-it-unsloth-bnb-4bit`
 - Training pack: 32 curated SFT rows, 6 held-out eval rows, 26 post-training benchmark cases
 
+The fine-tuning dataset is a curated scenario pack for rural-clinic workflows.
+It is not a real-patient validation set and should be described that way in the
+submission.
+
 If you push adapter weights to Hugging Face, use a `write` token whose account
 matches the namespace in `--hub-model-id`. For example,
 `prodigyhuh/mediscribe-medical-adapter` needs a token that can write under
@@ -160,9 +164,12 @@ matches the namespace in `--hub-model-id`. For example,
 - [Engineering Review Suggestions](docs/ENGINEERING_REVIEW_SUGGESTIONS.md)
 - [Winning Phase Implementation](docs/WINNING_PHASE_IMPLEMENTATION.md)
 - [Hackathon Readiness Scorecard](docs/HACKATHON_READINESS_SCORECARD.md)
+- [Video Production Playbook](docs/MEDISCRIBE_VIDEO_SCRIPT.md)
+- [English Voiceover Script](docs/MEDISCRIBE_VIDEO_VOICEOVER_EN.md)
+- [English Subtitle File](docs/MEDISCRIBE_VIDEO_SUBTITLES_EN.srt)
+- [AI Dubbing Handoff](docs/AIDUBBING_VIDEO_HANDOFF.md)
 - [Unsloth Fine-Tuning](docs/UNSLOTH_FINE_TUNING.md)
 - [Roadmap](ROADMAP.md)
-- [Video Script](docs/MEDISCRIBE_VIDEO_SCRIPT.md)
 - [Submission Writeup](docs/MEDISCRIBE_SUBMISSION_WRITEUP.md)
 
 ## Judge Quick Review

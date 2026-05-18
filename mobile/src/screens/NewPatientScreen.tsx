@@ -20,7 +20,7 @@ export function NewPatientScreen({
   onDraftChange: (draft: ConsultationDraft) => void;
   onNavigate: (screen: ScreenName) => void;
 }) {
-  const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
+  const copy = (key: Parameters<typeof t>[1]) => t('English', key);
   const { theme } = useAppTheme();
 
   return (
@@ -50,7 +50,7 @@ export function NewPatientScreen({
           consultationStartedAt: Date.now()
         });
         onNavigate('voice');
-      }} language={draft.language} />
+      }} language="English" />
     </ScrollView>
   );
 }

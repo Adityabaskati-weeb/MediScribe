@@ -98,9 +98,9 @@ export function DiagnosisScreen({
       {onNavigate && <ActionButton compact title="Back" onPress={() => onNavigate('summary')} variant="secondary" />}
       <ScreenHeader
         eyebrow="Step 4 of 5"
-        title="AI diagnosis"
-        subtitle="Ranked diagnosis support with safety guardrails and offline fallback."
-        right={<StatusPill label="Local AI" tone="info" />}
+        title="Diagnosis and referral"
+        subtitle="Ranked concerns, safety checks, and the next safe step."
+        right={<StatusPill label="Safety Agent" tone="info" />}
       />
       {heroContext ? (
         <View style={[styles.heroPanel, { backgroundColor: heroContext.tone === 'danger' ? theme.colors.dangerSoft : theme.colors.infoSoft, borderColor: heroContext.tone === 'danger' ? theme.colors.accent : theme.colors.primary }]}>
@@ -115,7 +115,7 @@ export function DiagnosisScreen({
       <ConsultationProgress current={4} />
       <RedFlagGuardian text={draft.transcript || ''} patient={draft.patient} />
       <View style={[styles.statusPanel, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-        <Text style={[styles.statusLabel, { color: theme.colors.muted }]}>Assessment state</Text>
+        <Text style={[styles.statusLabel, { color: theme.colors.muted }]}>Current status</Text>
         <Text style={[styles.status, { color: theme.colors.ink }]}>{status}</Text>
       </View>
       <View style={styles.actions}>
@@ -143,7 +143,7 @@ function DemoTimerPanel({ visible, seconds, offline }: { visible: boolean; secon
   const saved = Math.max(1, 28 - Math.ceil((seconds || 160) / 60));
   return (
     <View style={[styles.timerPanel, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
-      <Text style={[styles.timerKicker, { color: theme.colors.primaryDark }]}>Before vs after clinic timer</Text>
+      <Text style={[styles.timerKicker, { color: theme.colors.primaryDark }]}>Clinic time saved</Text>
       <View style={styles.timerGrid}>
         <View style={[styles.timerTile, { backgroundColor: theme.colors.dangerSoft }]}>
           <Text style={[styles.timerValue, { color: theme.colors.accent }]}>28 min</Text>

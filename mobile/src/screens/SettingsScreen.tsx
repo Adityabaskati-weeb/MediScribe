@@ -20,7 +20,7 @@ export function SettingsScreen({
   onDraftChange: (draft: ConsultationDraft) => void;
   onNavigate: (screen: ScreenName) => void;
 }) {
-  const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
+  const copy = (key: Parameters<typeof t>[1]) => t('English', key);
   const { theme, toggleTheme, setThemeMode } = useAppTheme();
   const [resetState, setResetState] = useState<'idle' | 'done' | 'failed'>('idle');
   const c = theme.colors;
@@ -31,7 +31,7 @@ export function SettingsScreen({
       await AsyncStorage.multiRemove(['mediscribe.language', 'mediscribe.theme']);
       setThemeMode('light');
       onDraftChange({
-        language: 'Hindi',
+        language: 'English',
         patient: undefined,
         transcript: '',
         chartText: '',
@@ -70,7 +70,8 @@ export function SettingsScreen({
       </Card>
 
       <Card>
-        <Text style={[styles.sectionTitle, { color: c.ink }]}>{copy('language')}</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Consultation language</Text>
+        <Text style={[styles.meta, { color: c.muted }]}>This changes dictation and saved consultation language. The interface stays in English for fast clinic use.</Text>
         <View style={styles.languageGrid}>
           {appLanguages.map((language) => (
             <Pressable
@@ -105,9 +106,9 @@ export function SettingsScreen({
       </Card>
 
       <Card>
-        <Text style={[styles.sectionTitle, { color: c.ink }]}>Safety and AI status</Text>
+        <Text style={[styles.sectionTitle, { color: c.ink }]}>Safety status</Text>
         <View style={styles.proofRows}>
-          <ProofRow label="Runtime" value="Gemma 4 via local Ollama" />
+          <ProofRow label="Runtime" value="Gemma 4 on local Ollama" />
           <ProofRow label="Fallback" value="Deterministic triage rules" />
           <ProofRow label="Clinic paths" value="26 rural care scenarios" />
           <ProofRow label="Guardrail" value="Red flags override confidence" />

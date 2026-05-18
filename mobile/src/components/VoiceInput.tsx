@@ -9,8 +9,9 @@ import { getSpeechSupportMessage, isNativeSpeechAvailable, startSpeechRecognitio
 import { speechLocaleForLanguage, t } from '../utils/i18n';
 
 export function VoiceInput({ language, onTranscript }: { language: string; onTranscript: (text: string) => void }) {
+  const copy = (key: Parameters<typeof t>[1]) => t('English', key);
   const [transcript, setTranscript] = useState('');
-  const [status, setStatus] = useState(t(language, 'useDemoOrType'));
+  const [status, setStatus] = useState(copy('useDemoOrType'));
   const [loading, setLoading] = useState(false);
   const [nativeAvailable, setNativeAvailable] = useState(false);
   const pulse = React.useRef(new Animated.Value(0)).current;
@@ -18,7 +19,7 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
   const c = theme.colors;
 
   useEffect(() => {
-    setStatus(t(language, 'useDemoOrType'));
+    setStatus(copy('useDemoOrType'));
   }, [language]);
 
   useEffect(() => {
@@ -43,7 +44,7 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
 
   const capture = async () => {
     setLoading(true);
-    setStatus(nativeAvailable ? t(language, 'listening') : t(language, 'demoDictation'));
+    setStatus(nativeAvailable ? copy('listening') : copy('demoDictation'));
     try {
       const result = await startSpeechRecognition(speechLocaleForLanguage(language));
       setTranscript(result.text);
@@ -65,11 +66,11 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
       <View style={styles.header}>
         <View style={styles.headerText}>
           <Text style={[styles.eyebrow, { color: c.primary }]}>Voice intake</Text>
-          <Text style={[styles.heading, { color: c.ink }]}>{t(language, 'dictateSymptoms')}</Text>
+          <Text style={[styles.heading, { color: c.ink }]}>{copy('dictateSymptoms')}</Text>
         </View>
         <View style={[styles.pill, { backgroundColor: nativeAvailable ? c.successSoft : c.warningSoft }]}>
           <Text style={[styles.pillText, { color: nativeAvailable ? c.success : c.warning }]}>
-            {nativeAvailable ? t(language, 'nativeMic') : t(language, 'demoMode')}
+            {nativeAvailable ? copy('nativeMic') : copy('demoMode')}
           </Text>
         </View>
       </View>
@@ -106,7 +107,7 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
             </View>
           </View>
         </View>
-        <Text style={styles.micLabel}>{nativeAvailable ? t(language, 'startSpeaking') : t(language, 'demoVoice')}</Text>
+        <Text style={styles.micLabel}>{nativeAvailable ? copy('startSpeaking') : copy('demoVoice')}</Text>
         <Text style={styles.micHint}>Offline first - {language} - tap to capture</Text>
       </Pressable>
 
@@ -124,7 +125,7 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
       <TextInput
         multiline
         numberOfLines={4}
-        placeholder={t(language, 'transcriptPlaceholder')}
+        placeholder={copy('transcriptPlaceholder')}
         placeholderTextColor={c.quiet}
         style={[styles.input, { backgroundColor: c.surfaceSoft, borderColor: c.border, color: c.ink }]}
         value={transcript}
@@ -132,7 +133,7 @@ export function VoiceInput({ language, onTranscript }: { language: string; onTra
       />
       <StructuredIntakePreview transcript={transcript} />
       <ActionButton title="Use Structured Intake" onPress={submit} disabled={!transcript.trim() || loading} variant="success" />
-      <Text style={[styles.note, { color: c.muted }]}>{t(language, 'speechSupport')}</Text>
+      <Text style={[styles.note, { color: c.muted }]}>{copy('speechSupport')}</Text>
     </Card>
   );
 }

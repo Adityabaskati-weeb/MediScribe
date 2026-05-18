@@ -20,7 +20,7 @@ export function HomeScreen({
   onDraftChange: (draft: ConsultationDraft) => void;
   onNavigate: (screen: ScreenName) => void;
 }) {
-  const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
+  const copy = (key: Parameters<typeof t>[1]) => t('English', key);
   const { theme } = useAppTheme();
   const c = theme.colors;
   const [demoCases, setDemoCases] = useState<DemoCase[]>(clinicDemoCases);
@@ -108,13 +108,13 @@ export function HomeScreen({
             <Text style={styles.brandMarkText}>MS</Text>
           </View>
           <View style={styles.identityText}>
-            <Text style={styles.kicker}>MediScribe clinic mode</Text>
-            <Text style={styles.location}>Rural OPD assistant</Text>
-          </View>
+          <Text style={styles.kicker}>MediScribe clinic mode</Text>
+          <Text style={styles.location}>Rural OPD assistant</Text>
         </View>
+      </View>
 
         <Text style={styles.title}>Start calm. Act fast when risk appears.</Text>
-        <Text style={styles.copy}>Voice, scan, or type. MediScribe keeps the visit structured, watches for danger signs, and saves care offline.</Text>
+        <Text style={styles.copy}>Voice, scan, or type. MediScribe keeps the visit structured, catches danger signs early, and saves care offline.</Text>
 
         <View style={styles.heroStats}>
           <MiniStat label="Offline" value="100%" />
@@ -124,8 +124,8 @@ export function HomeScreen({
         {primaryHeroCase ? (
           <View style={styles.promiseRow}>
             <PromiseTile label="Case" value={shortPromise(primaryHeroCase)} />
-            <PromiseTile label="Proof" value={impactProof(primaryHeroCase)} />
-            <PromiseTile label="Ready" value={launchHint(primaryHeroCase)} />
+            <PromiseTile label="Impact" value={impactProof(primaryHeroCase)} />
+            <PromiseTile label="Launch" value={launchHint(primaryHeroCase)} />
           </View>
         ) : null}
 
@@ -133,12 +133,10 @@ export function HomeScreen({
         {primaryHeroCase ? (
           <Pressable style={[styles.airplaneButton, loadingDemoId === primaryHeroCase.id && styles.loadingTile]} onPress={() => void loadCase(primaryHeroCase)}>
             <View style={styles.airplaneTopRow}>
-              <StatusPill label={primaryHeroCase.demoMode === 'offline' ? 'Offline hero' : 'AI preload'} tone={primaryHeroCase.demoMode === 'offline' ? 'danger' : 'info'} />
+              <StatusPill label={primaryHeroCase.demoMode === 'offline' ? 'Offline ready' : 'Local AI ready'} tone={primaryHeroCase.demoMode === 'offline' ? 'danger' : 'info'} />
               <StatusPill label={primaryHeroCase.risk === 'red' ? 'Emergency' : 'Ready'} tone={primaryHeroCase.risk === 'red' ? 'danger' : 'success'} />
             </View>
-            <Text style={styles.airplaneTitle}>
-              {loadingDemoId === primaryHeroCase.id ? 'Loading hero demo...' : `Hero demo: ${primaryHeroCase.title}`}
-            </Text>
+            <Text style={styles.airplaneTitle}>{loadingDemoId === primaryHeroCase.id ? 'Loading priority case...' : primaryHeroCase.title}</Text>
             <Text style={styles.airplaneCopy}>{primaryHeroCase.story}</Text>
             <Text style={styles.airplaneHint}>{impactProof(primaryHeroCase)}</Text>
           </Pressable>
@@ -199,12 +197,12 @@ export function HomeScreen({
       <Card>
         <View style={styles.cardHeader}>
           <View>
-            <Text style={[styles.panelTitle, { color: c.ink }]}>Clinic demo pack</Text>
+            <Text style={[styles.panelTitle, { color: c.ink }]}>Priority care pathways</Text>
             <Text style={[styles.helper, { color: c.muted }]}>
-              Hero cases now come from the backend when available, with local device fallback if the clinic is offline.
+              High-risk care flows open fast and stay usable with or without connectivity.
             </Text>
           </View>
-          <StatusPill label={demoSource === 'backend' ? 'Backend demo pack' : 'Device fallback'} tone={demoSource === 'backend' ? 'success' : 'info'} />
+          <StatusPill label={demoSource === 'backend' ? 'Live care pack' : 'Offline care pack'} tone={demoSource === 'backend' ? 'success' : 'info'} />
         </View>
         {heroCases.length > 0 && (
           <View style={styles.heroCaseGrid}>
@@ -222,7 +220,7 @@ export function HomeScreen({
                 onPress={() => void loadCase(demo)}
               >
                 <View style={styles.heroCaseTop}>
-                  <StatusPill label={demo.demoMode === 'offline' ? 'Offline hero' : 'AI hero'} tone={demo.demoMode === 'offline' ? 'danger' : 'info'} />
+                  <StatusPill label={demo.demoMode === 'offline' ? 'Offline ready' : 'Local AI'} tone={demo.demoMode === 'offline' ? 'danger' : 'info'} />
                   <StatusPill label={demo.risk === 'red' ? 'Emergency' : 'Ready'} tone={demo.risk === 'red' ? 'danger' : 'success'} />
                 </View>
                 <Text style={[styles.heroCaseTitle, { color: c.ink }]}>{demo.title}</Text>
@@ -230,9 +228,9 @@ export function HomeScreen({
                 <Text style={[styles.heroCaseImpact, { color: c.ink }]}>{impactProof(demo)}</Text>
                 <View style={styles.heroCaseFooter}>
                   <Text style={[styles.heroFooterText, { color: c.primaryDark }]}>{launchHint(demo)}</Text>
-                  <Text style={[styles.heroFooterText, { color: c.primaryDark }]}>{demo.demoMode === 'offline' ? 'No network required' : 'Preloaded from backend demo pack'}</Text>
+                  <Text style={[styles.heroFooterText, { color: c.primaryDark }]}>{demo.demoMode === 'offline' ? 'No network required' : 'Prepared from the local backend service'}</Text>
                 </View>
-                {loadingDemoId === demo.id ? <Text style={[styles.caseStory, { color: c.primaryDark }]}>Pulling backend demo output...</Text> : null}
+                {loadingDemoId === demo.id ? <Text style={[styles.caseStory, { color: c.primaryDark }]}>Preparing diagnosis...</Text> : null}
               </Pressable>
             ))}
           </View>
@@ -266,7 +264,7 @@ export function HomeScreen({
 
       <View style={styles.quickGrid}>
         <QuickTile index="Voice" label={copy('voiceIntake')} onPress={() => onNavigate('voice')} />
-        <QuickTile index="Scan" label="Scan chart" onPress={() => onNavigate('voice')} />
+        <QuickTile index="Chart" label="Capture chart" onPress={() => onNavigate('voice')} />
         <QuickTile index="History" label={copy('records')} onPress={() => onNavigate('history')} />
       </View>
     </ScrollView>

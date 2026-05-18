@@ -30,10 +30,18 @@ resources that fit low-resource clinic scenarios:
   https://www.who.int/news-room/fact-sheets/detail/stroke
 - WHO Cardiovascular diseases (CVDs) fact sheet:
   https://www.who.int/en/news-room/fact-sheets/detail/cardiovascular-diseases-%28cvds%29
+- CDC heart attack signs:
+  https://www.cdc.gov/heartdisease/heart_attack.htm
+- American Heart Association stroke and heart attack warning signs:
+  https://www.heart.org/
 - WHO Sepsis fact sheet:
   https://www.who.int/news-room/fact-sheets/detail/sepsis
 - WHO Pneumonia fact sheet:
   https://www.who.int/en/news-room/fact-sheets/detail/pneumonia
+- WHO dengue fact sheet:
+  https://www.who.int/news-room/fact-sheets/detail/dengue-and-severe-dengue
+- CDC dengue overview:
+  https://www.cdc.gov/dengue/
 - WHO IMCI danger signs review:
   https://www.who.int/publications/i/item/WHO-MCA-19.02
 
@@ -43,7 +51,9 @@ resources that fit low-resource clinic scenarios:
 - Stroke fast-track escalation
 - Cardiac emergency triage
 - Child respiratory and IMCI-style escalation
-- Sepsis warning detection
+- WHO pneumonia escalation
+- WHO sepsis warning detection
+- CDC dengue surveillance prompts
 - Clean referral handoff summaries for receiving facilities
 
 The app still requires clinical judgement, local protocols, medicine safety

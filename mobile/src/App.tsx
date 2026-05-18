@@ -40,7 +40,7 @@ export default function App() {
 
 function MediScribeApp() {
   const [screen, setScreen] = useState<ScreenName>('home');
-  const [draft, setDraft] = useState<ConsultationDraft>({ language: 'Hindi' });
+  const [draft, setDraft] = useState<ConsultationDraft>({ language: 'English' });
   const [splashDone, setSplashDone] = useState(false);
   const { theme } = useAppTheme();
   const screenFade = useRef(new Animated.Value(1)).current;

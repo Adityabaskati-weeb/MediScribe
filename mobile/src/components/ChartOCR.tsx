@@ -17,14 +17,14 @@ type ChartCapturePayload = {
 export function ChartOCR({ onCapture }: { onCapture: (payload: ChartCapturePayload) => void }) {
   const [imageUri, setImageUri] = useState<string | undefined>();
   const [chartText, setChartText] = useState('');
-  const [status, setStatus] = useState('Capture a chart photo, then confirm the extracted text before diagnosis.');
+  const [status, setStatus] = useState('Take a chart photo or choose one, then confirm the note before diagnosis.');
   const [captureMode, setCaptureMode] = useState<ChartCaptureMode>('manual-confirmation');
   const [confidence, setConfidence] = useState<number | undefined>();
   const { theme } = useAppTheme();
   const c = theme.colors;
 
   const scan = async (source: 'camera' | 'library') => {
-    setStatus(source === 'camera' ? 'Opening camera...' : 'Opening gallery...');
+      setStatus(source === 'camera' ? 'Opening camera...' : 'Opening photo library...');
     try {
       const result = await captureMedicalChartImage(source);
       setImageUri(result.imageUri);
@@ -40,7 +40,7 @@ export function ChartOCR({ onCapture }: { onCapture: (payload: ChartCapturePaylo
   const submit = async () => {
     const text = chartText.trim();
     if (!text) {
-      setStatus('Add chart text first: complaint, vitals, diagnosis, or medications.');
+      setStatus('Add chart text first: complaint, vitals, diagnosis, or medicines.');
       return;
     }
     const parsed = await parseExtractedMedicalData(text);
@@ -50,7 +50,7 @@ export function ChartOCR({ onCapture }: { onCapture: (payload: ChartCapturePaylo
       parsed.symptoms.length ? `Parsed symptoms: ${parsed.symptoms.join(', ')}` : '',
       parsed.medications.length ? `Medications: ${parsed.medications.join(', ')}` : ''
     ].filter(Boolean).join('\n');
-    setStatus('Chart text parsed and added to triage. The image stays attached to this visit.');
+    setStatus('Chart note added to this visit. The image stays attached for handoff and review.');
     onCapture({
       text: summary,
       imageUri,
@@ -64,13 +64,13 @@ export function ChartOCR({ onCapture }: { onCapture: (payload: ChartCapturePaylo
     setChartText(text);
     setCaptureMode('sample-chart');
     setConfidence(1);
-    setStatus('Sample chart loaded. Tap Analyze Chart Text to continue.');
+    setStatus('Sample chart loaded. Review it, then attach it to the visit.');
   };
 
   return (
     <Card>
-      <Text style={[styles.eyebrow, { color: c.primary }]}>Chart Scan Assist</Text>
-      <Text style={[styles.heading, { color: c.ink }]}>Scan vitals and clinic notes</Text>
+      <Text style={[styles.eyebrow, { color: c.primary }]}>Chart capture</Text>
+      <Text style={[styles.heading, { color: c.ink }]}>Capture vitals and clinic notes</Text>
       <View style={[styles.statusBox, { backgroundColor: c.surfaceMuted, borderColor: c.border }]}>
         <Text style={[styles.copy, { color: c.ink }]}>{status}</Text>
       </View>
@@ -79,7 +79,7 @@ export function ChartOCR({ onCapture }: { onCapture: (payload: ChartCapturePaylo
         <View style={styles.metaRow}>
           <View style={[styles.metaPill, { backgroundColor: captureMode === 'vision-assist' ? c.successSoft : c.warningSoft }]}>
             <Text style={[styles.metaText, { color: captureMode === 'vision-assist' ? c.success : c.warning }]}>
-              {captureMode === 'vision-assist' ? 'AI extract ready' : captureMode === 'sample-chart' ? 'Sample chart' : 'Manual confirmation'}
+              {captureMode === 'vision-assist' ? 'Verified extract' : captureMode === 'sample-chart' ? 'Sample chart' : 'Review before save'}
             </Text>
           </View>
           {typeof confidence === 'number' ? (
@@ -90,9 +90,9 @@ export function ChartOCR({ onCapture }: { onCapture: (payload: ChartCapturePaylo
         </View>
       ) : null}
       <View style={styles.actions}>
-        <ActionButton title="Open Camera" variant="secondary" onPress={() => scan('camera')} />
-        <ActionButton title="Choose Photo" variant="secondary" onPress={() => scan('library')} />
-        <ActionButton title="Use Sample Chart" variant="secondary" onPress={useSampleChart} />
+        <ActionButton title="Take Photo" variant="secondary" onPress={() => scan('camera')} />
+        <ActionButton title="Choose Image" variant="secondary" onPress={() => scan('library')} />
+        <ActionButton title="Load Sample" variant="secondary" onPress={useSampleChart} />
       </View>
       <TextInput
         multiline
@@ -104,7 +104,7 @@ export function ChartOCR({ onCapture }: { onCapture: (payload: ChartCapturePaylo
         onChangeText={setChartText}
       />
       <ActionButton
-        title="Analyze Chart Text"
+        title="Attach to Visit"
         onPress={submit}
         disabled={!chartText.trim()}
       />

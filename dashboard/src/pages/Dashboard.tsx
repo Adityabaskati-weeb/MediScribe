@@ -14,12 +14,25 @@ export function DashboardPage() {
   const [demoCases, setDemoCases] = useState<any[]>([]);
 
   useEffect(() => {
-    fetchDashboard().then(setDashboard).catch(console.error);
-    fetchEvaluationMetrics().then(setEvaluation).catch(console.error);
-    fetchPerformanceMetrics().then(setPerformance).catch(console.error);
-    fetchSystemArchitecture().then(setArchitecture).catch(console.error);
-    fetchDemoPack().then(setDemoPack).catch(console.error);
-    fetchDemoCases().then(setDemoCases).catch(console.error);
+    let active = true;
+
+    Promise.allSettled([fetchDashboard(), fetchDemoPack(), fetchDemoCases()]).then((results) => {
+      if (!active) return;
+      if (results[0].status === 'fulfilled') setDashboard(results[0].value);
+      if (results[1].status === 'fulfilled') setDemoPack(results[1].value);
+      if (results[2].status === 'fulfilled') setDemoCases(results[2].value);
+    });
+
+    Promise.allSettled([fetchEvaluationMetrics(), fetchPerformanceMetrics(), fetchSystemArchitecture()]).then((results) => {
+      if (!active) return;
+      if (results[0].status === 'fulfilled') setEvaluation(results[0].value);
+      if (results[1].status === 'fulfilled') setPerformance(results[1].value);
+      if (results[2].status === 'fulfilled') setArchitecture(results[2].value);
+    });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const reports = dashboard?.reports || {};
@@ -87,7 +100,7 @@ export function DashboardPage() {
         <article className="metric">
           <span>Top-3 Match</span>
           <strong>{evaluation ? `${Math.round(evaluation.top3_match_rate * 100)}%` : '--'}</strong>
-          <small>Clinical differential ranking proof</small>
+          <small>Top-ranked diagnosis match</small>
         </article>
         <article className="metric">
           <span>Red-Flag Recall</span>
@@ -97,7 +110,7 @@ export function DashboardPage() {
         <article className="metric">
           <span>Offline Success</span>
           <strong>{evaluation ? `${Math.round(evaluation.offline_success_rate * 100)}%` : '--'}</strong>
-          <small>Intake, fallback, save, and sync queue proof</small>
+          <small>Intake, fallback, and offline save success</small>
         </article>
         <article className="metric">
           <span>P95 Latency</span>
@@ -119,13 +132,13 @@ export function DashboardPage() {
 
       <section className="proof-grid">
         <article className="chart">
-          <h2>Readiness Signals</h2>
+          <h2>Clinic Readiness</h2>
           <div className="proof-list">
             {readinessSignals.map((proof: string) => <p key={proof}>{proof}</p>)}
           </div>
         </article>
         <article className="chart">
-          <h2>Local Gemma Runtime</h2>
+          <h2>Local AI Runtime</h2>
           <div className="service-row">
             <strong>{gemma?.model || 'Configured Ollama model'}</strong>
             <span>{gemma?.provider || 'Ollama local model server'}</span>
@@ -168,7 +181,7 @@ export function DashboardPage() {
       <section className="chart outbreak-panel">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Public health wow moment</p>
+            <p className="eyebrow">Public health signal</p>
             <h2>Outbreak Radar</h2>
             <p className="muted">Clusters symptoms across offline visits and flags clinic-lead actions before sync becomes perfect.</p>
           </div>
@@ -200,7 +213,7 @@ export function DashboardPage() {
           ))}
         </article>
         <article className="chart">
-          <h2>Field Workflow Story</h2>
+          <h2>Clinic Workflow</h2>
           {(demoPack?.story_beats || []).map((beat: string) => <p className="story-beat" key={beat}>{beat}</p>)}
         </article>
       </section>

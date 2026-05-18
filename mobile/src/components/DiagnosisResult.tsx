@@ -62,7 +62,7 @@ export function DiagnosisResult({
       <Text style={[styles.summary, { color: c.ink }]}>{assessment.clinical_summary}</Text>
 
       <View style={[styles.workerPanel, { backgroundColor: urgent ? c.dangerSoft : c.infoSoft, borderColor: urgent ? c.accent : c.primary }]}>
-        <Text style={[styles.workerTitle, { color: urgent ? c.accent : c.primaryDark }]}>For the health worker</Text>
+        <Text style={[styles.workerTitle, { color: urgent ? c.accent : c.primaryDark }]}>What to do now</Text>
         <Text style={[styles.workerCopy, { color: c.ink }]}>{plainLanguageExplanation(assessment, transcript, patient, offlineDemo)}</Text>
       </View>
 
@@ -81,7 +81,7 @@ export function DiagnosisResult({
         </View>
       )}
 
-      <Text style={[styles.heading, { color: c.ink }]}>AI Safety Council</Text>
+      <Text style={[styles.heading, { color: c.ink }]}>Safety review</Text>
       <View style={styles.agentGrid}>
         {buildCouncilAgents(assessment, agents, offlineDemo).map((agent) => (
           <View
@@ -105,11 +105,11 @@ export function DiagnosisResult({
         ))}
       </View>
 
-      <Text style={[styles.heading, { color: c.ink }]}>Top 3 possible diagnoses</Text>
-      {(assessment.differential_diagnoses || []).slice(0, 3).map((item: DifferentialDiagnosis, index: number) => (
+      {(assessment.differential_diagnoses || []).length > 1 ? <Text style={[styles.heading, { color: c.ink }]}>Other conditions to keep in mind</Text> : null}
+      {(assessment.differential_diagnoses || []).slice(1, 3).map((item: DifferentialDiagnosis, index: number) => (
         <View style={[styles.row, { backgroundColor: c.surfaceSoft, borderColor: c.border }]} key={item.name}>
           <View style={[styles.rank, { backgroundColor: c.primary }]}>
-            <Text style={styles.rankText}>{index + 1}</Text>
+            <Text style={styles.rankText}>{index + 2}</Text>
           </View>
           <View style={styles.rowBody}>
             <Text style={[styles.rowTitle, { color: c.ink }]}>{item.name}</Text>
@@ -117,12 +117,12 @@ export function DiagnosisResult({
               <View style={[styles.confidenceFill, { backgroundColor: c.secondary, width: `${Math.max(8, Math.round((item.confidence || 0) * 100))}%` }]} />
             </View>
             <Text style={[styles.reason, { color: c.muted }]}>Confidence {Math.round((item.confidence || 0) * 100)}%</Text>
-            <Text style={[styles.reason, { color: c.muted }]}>Why: {item.reasoning}</Text>
+            <Text style={[styles.reason, { color: c.muted }]}>Consider if symptoms shift or new findings appear.</Text>
           </View>
         </View>
       ))}
 
-      <Text style={[styles.heading, { color: c.ink }]}>Red flags</Text>
+      <Text style={[styles.heading, { color: c.ink }]}>Danger signs</Text>
       {(assessment.red_flags || []).map((item: SafetySignal, index: number) => (
         <View style={[styles.flag, { backgroundColor: c.warningSoft, borderColor: c.warning }]} key={`${item.message}-${index}`}>
           <Text style={[styles.flagLevel, { color: c.warning }]}>{item.level}</Text>
@@ -171,7 +171,7 @@ function EmergencyCatchHero({
     >
       <View style={styles.catchTopRow}>
         <Text style={[styles.catchKicker, { color: urgent ? c.accent : c.success }]}>
-          {urgent ? 'Emergency catch moment' : 'Safety check complete'}
+          {urgent ? 'Immediate risk detected' : 'Safety check complete'}
         </Text>
         <Text style={[styles.catchBadge, { backgroundColor: urgent ? c.accent : c.success }]}>
           {urgent ? 'REFER NOW' : 'SAFE FLOW'}
@@ -200,7 +200,7 @@ function LocalIntelligenceCard({ urgent, offlineDemo }: { urgent: boolean; offli
     <View style={[styles.intelligenceCard, { backgroundColor: c.surfaceSoft, borderColor: c.border }]}>
       <View>
         <Text style={[styles.intelligenceKicker, { color: c.primaryDark }]}>Local intelligence layer</Text>
-        <Text style={[styles.intelligenceTitle, { color: c.ink }]}>Gemma 4 plus deterministic safety</Text>
+        <Text style={[styles.intelligenceTitle, { color: c.ink }]}>Local AI plus safety checks</Text>
       </View>
       <View style={styles.intelligenceGrid}>
         <IntelligenceTile label="Model" value="Gemma 4 via Ollama" tone="info" />
@@ -283,7 +283,7 @@ function GuidelineGrounding({ assessment }: { assessment: MediScribeAssessment }
 
   return (
     <View style={[styles.groundingCard, { backgroundColor: c.surfaceSoft, borderColor: c.border }]}>
-      <Text style={[styles.groundingKicker, { color: c.primaryDark }]}>Guideline grounding</Text>
+      <Text style={[styles.groundingKicker, { color: c.primaryDark }]}>Guideline support</Text>
       {assessment.evidence_summary ? (
         <Text style={[styles.groundingSummary, { color: c.ink }]}>{assessment.evidence_summary}</Text>
       ) : null}

@@ -7,7 +7,7 @@ import { useAppTheme } from '../styles/ThemeContext';
 import type { PatientProfile } from '../types/clinical';
 import { t } from '../utils/i18n';
 
-export function PatientForm({ language, onSubmit }: { language: string; onSubmit: (patient: PatientProfile & { name: string }) => void }) {
+export function PatientForm({ language: _language, onSubmit }: { language: string; onSubmit: (patient: PatientProfile & { name: string }) => void }) {
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('unknown');
@@ -24,6 +24,7 @@ export function PatientForm({ language, onSubmit }: { language: string; onSubmit
 
   const canSubmit = name.trim().length > 1 && Number(age) > 0;
   const genderOptions = ['female', 'male', 'other'];
+  const copy = (key: Parameters<typeof t>[1]) => t('English', key);
 
   const field = (
     label: string,
@@ -54,16 +55,16 @@ export function PatientForm({ language, onSubmit }: { language: string; onSubmit
   return (
     <Card>
       <View style={[styles.formHeader, { backgroundColor: c.infoSoft, borderColor: c.border }]}>
-        <Text style={[styles.eyebrow, { color: c.primary }]}>{t(language, 'patientProfile')}</Text>
+        <Text style={[styles.eyebrow, { color: c.primary }]}>{copy('patientProfile')}</Text>
         <Text style={[styles.heading, { color: c.ink }]}>Fast registration for clinic queues</Text>
         <Text style={[styles.helper, { color: c.muted }]}>Name and age are required. Everything else improves safety checks.</Text>
       </View>
       <Text style={[styles.heading, { color: c.ink }]}>Required details</Text>
-      {field(t(language, 'patientName'), name, setName, 'Full name')}
+      {field(copy('patientName'), name, setName, 'Full name')}
       <View style={styles.row}>
-        <View style={styles.rowItem}>{field(t(language, 'age'), age, setAge, 'Years', { keyboardType: 'number-pad' })}</View>
+        <View style={styles.rowItem}>{field(copy('age'), age, setAge, 'Years', { keyboardType: 'number-pad' })}</View>
         <View style={styles.rowItem}>
-          <Text style={[styles.label, { color: c.muted }]}>{t(language, 'gender')}</Text>
+          <Text style={[styles.label, { color: c.muted }]}>{copy('gender')}</Text>
           <View style={styles.genderRow}>
             {genderOptions.map((option) => (
               <Pressable
@@ -84,21 +85,21 @@ export function PatientForm({ language, onSubmit }: { language: string; onSubmit
 
       <View style={[styles.sectionDivider, { backgroundColor: c.border }]} />
       <Text style={[styles.heading, { color: c.ink }]}>Contact and location</Text>
-      {field(t(language, 'phone'), phone, setPhone, 'Mobile number', { keyboardType: 'phone-pad' })}
-      {field(t(language, 'address'), address, setAddress, 'Village / clinic / block', { multiline: true })}
-      {field(t(language, 'emergencyContact'), emergencyContact, setEmergencyContact, 'Family contact or ASHA worker', { keyboardType: 'phone-pad' })}
+      {field(copy('phone'), phone, setPhone, 'Mobile number', { keyboardType: 'phone-pad' })}
+      {field(copy('address'), address, setAddress, 'Village / clinic / block', { multiline: true })}
+      {field(copy('emergencyContact'), emergencyContact, setEmergencyContact, 'Family contact or ASHA worker', { keyboardType: 'phone-pad' })}
 
       <View style={[styles.sectionDivider, { backgroundColor: c.border }]} />
       <Text style={[styles.heading, { color: c.ink }]}>Clinical risk notes</Text>
-      {field(t(language, 'conditions'), conditions, setConditions, 'Diabetes, asthma, hypertension', { multiline: true })}
-      {field(t(language, 'allergies'), allergies, setAllergies, 'Medicine or food allergies', { multiline: true })}
-      {field(t(language, 'medications'), medications, setMedications, 'Current medicines, comma separated', { multiline: true })}
+      {field(copy('conditions'), conditions, setConditions, 'Diabetes, asthma, hypertension', { multiline: true })}
+      {field(copy('allergies'), allergies, setAllergies, 'Medicine or food allergies', { multiline: true })}
+      {field(copy('medications'), medications, setMedications, 'Current medicines, comma separated', { multiline: true })}
       <View style={styles.row}>
-        <View style={styles.rowItem}>{field(t(language, 'pregnancyWeeks'), pregnancyWeeks, setPregnancyWeeks, 'Weeks', { keyboardType: 'number-pad' })}</View>
-        <View style={styles.rowItem}>{field(t(language, 'postpartumDays'), postpartumDays, setPostpartumDays, 'Days', { keyboardType: 'number-pad' })}</View>
+        <View style={styles.rowItem}>{field(copy('pregnancyWeeks'), pregnancyWeeks, setPregnancyWeeks, 'Weeks', { keyboardType: 'number-pad' })}</View>
+        <View style={styles.rowItem}>{field(copy('postpartumDays'), postpartumDays, setPostpartumDays, 'Days', { keyboardType: 'number-pad' })}</View>
       </View>
       <ActionButton
-        title={t(language, 'registerContinue')}
+        title={copy('registerContinue')}
         disabled={!canSubmit}
         onPress={() => onSubmit({
           name,

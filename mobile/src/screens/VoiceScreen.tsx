@@ -25,7 +25,7 @@ export function VoiceScreen({
   onDraftChange: (draft: ConsultationDraft) => void;
   onNavigate: (screen: ScreenName) => void;
 }) {
-  const copy = (key: Parameters<typeof t>[1]) => t(draft.language, key);
+  const copy = (key: Parameters<typeof t>[1]) => t('English', key);
   const { theme } = useAppTheme();
   const { showToast } = useToast();
   const [selectedSymptom, setSelectedSymptom] = useState('');
@@ -97,6 +97,7 @@ export function VoiceScreen({
           <View>
             <Text style={[styles.focusKicker, { color: theme.colors.primaryDark }]}>Focused capture</Text>
             <Text style={[styles.focusTitle, { color: theme.colors.ink }]}>Speak symptoms first. Edit later.</Text>
+            <Text style={[styles.focusMeta, { color: theme.colors.muted }]}>Consultation language: {draft.language}</Text>
           </View>
           <StatusPill label="Offline save" tone="success" />
         </View>
@@ -142,6 +143,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '900',
     lineHeight: 25
+  },
+  focusMeta: {
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18,
+    marginTop: 4
   },
   intakeRail: {
     alignItems: 'center',

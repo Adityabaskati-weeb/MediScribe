@@ -1,0 +1,56 @@
+1
+00:00:00,000 --> 00:00:07,000
+A rural clinic cannot wait for the cloud.
+
+2
+00:00:07,000 --> 00:00:20,000
+One health worker may see fifty patients in a day.
+The dangerous cases do not always look dramatic at first.
+
+3
+00:00:20,000 --> 00:00:42,000
+This patient is thirty-two weeks pregnant with bleeding,
+abdominal pain, and dizziness.
+The worker cannot wait for a network round-trip.
+
+4
+00:00:42,000 --> 00:01:05,000
+MediScribe does not freeze.
+It catches the red flag, explains the danger in plain language,
+creates a referral handoff, and saves the visit offline.
+
+5
+00:01:05,000 --> 00:01:22,000
+Gemma 4 helps rank diagnoses and explain the reasoning.
+But the model does not act alone.
+Safety rules override routine advice when danger signs appear.
+
+6
+00:01:22,000 --> 00:01:42,000
+The second hero path is stroke.
+When FAST symptoms appear, the app escalates immediately
+and structures the handoff while the clock is still on the patient's side.
+
+7
+00:01:42,000 --> 00:02:00,000
+The workflow matches the clinic:
+speak symptoms, scan chart notes, confirm the extracted summary,
+and move straight to a safer decision.
+
+8
+00:02:00,000 --> 00:02:20,000
+One visit is the first layer.
+Across many offline visits, clinic leaders can see dangerous patterns:
+maternal risk, respiratory clusters, and outbreak signals.
+
+9
+00:02:20,000 --> 00:02:42,000
+This is a working Gemma 4 system:
+local inference through Ollama, offline mobile storage,
+deterministic safety checks, public code,
+and a published Unsloth adapter trained on curated clinic scenarios.
+
+10
+00:02:42,000 --> 00:02:58,000
+MediScribe brings local medical intelligence
+to the clinic moments where waiting is dangerous.

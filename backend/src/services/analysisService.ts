@@ -29,6 +29,26 @@ export async function analyzeClinicalIntake(payload: ClinicalIntake) {
   return runAgenticMedicalAssessment(payload);
 }
 
+export function buildDetailedPatientPrompt(medicalData: MedicalPrompt): string {
+  const history = medicalData.medicalHistory?.length ? medicalData.medicalHistory.join(', ') : 'none reported';
+  const medications = medicalData.medications?.length ? medicalData.medications.join(', ') : 'none reported';
+  const vitals = medicalData.vitals
+    ? Object.entries(medicalData.vitals)
+        .filter(([, value]) => value !== undefined && value !== null && value !== '')
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(', ')
+    : 'no vitals recorded';
+
+  return [
+    `Patient age: ${medicalData.patientAge}`,
+    `Gender: ${medicalData.gender || 'unknown'}`,
+    `Symptoms: ${medicalData.symptoms.join(', ') || 'not recorded'}`,
+    `History: ${history}`,
+    `Medications: ${medications}`,
+    `Vitals: ${vitals}`
+  ].join(' | ');
+}
+
 export async function generateDiagnosis(medicalData: MedicalPrompt): Promise<DiagnosisResult> {
   try {
     const gemmaResponse = await analyzeMedicalCase(medicalData);
@@ -111,7 +131,7 @@ function buildFallbackDiagnosis(medicalData: MedicalPrompt): DiagnosisResult {
     primaryDiagnosis: assessment.differential_diagnoses[0]?.name || 'Undifferentiated clinical presentation',
     alternativeDiagnoses: assessment.differential_diagnoses.slice(1).map((item) => item.name),
     confidenceScores: assessment.differential_diagnoses.map((item) => item.confidence),
-    clinicalReasoning: assessment.clinical_summary,
+    clinicalReasoning: assessment.clinical_summary || `Fallback generated from: ${buildDetailedPatientPrompt(medicalData)}.`,
     recommendedDiagnosticTests: assessment.treatment.suggested_tests,
     suggestedTreatment: {
       medications: assessment.treatment.medications_to_consider.map((name) => ({
